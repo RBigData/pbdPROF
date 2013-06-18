@@ -1,0 +1,3 @@
+### "useDynLib" should be MARKED and use ".onLoad" and ".onUnload" in "R/zzz.r".
+### Since "libmpi.so" should be load before "pbdMPI.so".
+# useDynLib(pbdMPI)

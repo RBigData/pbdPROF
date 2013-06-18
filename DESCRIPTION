@@ -1,0 +1,29 @@
+Package: pbdPROF
+Version: 0.1-0
+Date: 2013-06-17
+Title: Programming with Big Data --- MPI Profiling Tools
+Authors@R: c(person("Sehrawat", "Gaurav", role=c("aut", "cre")), 
+        person("Wei-Chen", "Chen", role = c("aut", "cre"), email =
+        "wccsnow@gmail.com"), 
+        person("Drew", "Schmidt", role = "aut"),
+        person("Pragneshkumar", "Patel", role = "aut"), 
+        person("George", "Ostrouchov", role ="aut"))
+Depends: R (>= 2.14.0)
+LazyLoad: yes
+LazyData: yes
+Description: MPI profiling tools.
+SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux and Mac,
+        MPICH2 (>= 1.4.1p1) on Windows
+License: Mozilla Public License 2.0
+URL: http://r-pbd.org/
+BugReports: http://group.r-pbd.org/
+MailingList: Please send questions and comments regarding pbdR to
+        RBigData@gmail.com
+Packaged: 2013-06-17 20:26:06 UTC; snoweye
+Author: Gaurav Sehrawat [aut, cre],
+  Wei-Chen Chen [aut, cre],
+  George Ostrouchov [aut],
+  Drew Schmidt [aut],
+  Pragneshkumar Patel [aut],
+  Hao Yu [aut]
+Maintainer: Wei-Chen Chen <wccsnow@gmail.com>
