@@ -1,17 +1,18 @@
-pbdMPI is an R package providing a simplified interface to MPI by utilizing
-S4 classes and methods with a focus on SPMD parallel programming style.
+pbdPROF is a R package providing profiling to pbdR package.This profiling tool
+helps in parallel R users to profile their code, and use the best analytics and
+visualization toolbox, R, to evaluate the profiling resutls.
 
-pbdMPI requires
+pbdPROF requires
   - R version 2.14.0 or higher.
   - SUN HPC 8.2.1 (OpenMPI) for Solaris.
   - OpenMPI for Linux.
   - OpenMPI for Mac OS X.
   - MPICH2 for Windows.
 
-For installing pbdMPI, 
+For installing pbdPROF, 
   - see "INSTALL" for Solaris, Linux and Mac OS.
   - see "INSTALL.win.*" for Windows.
 
 More information about pbdMPI can be found in
-  1. pbdMPI vignette at 'pbdMPI/inst/doc/pbdMPI-guide.pdf'.
+  1. pbdPROF vignette at 'pbdPROF/inst/doc/pbdPROF-guide.pdf'.
   2. 'http://r-pbd.org/'.
