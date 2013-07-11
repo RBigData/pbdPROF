@@ -7,6 +7,7 @@ PKG_LIBS     = @FPMPI_EXT_LINK@ @PKG_LIBS@
 USER_CONF = Makeconf
 
 ### For fpmpi
+R_FPMPI = @R_FPMPI@
 FPMPI_OBJS= \
 fpmpi/commused.o \
 fpmpi/fputil.o \
@@ -15,10 +16,12 @@ fpmpi/resrc.o \
 fpmpi/testwait.o \
 fpmpi/topology.o
 
-OBJECTS = @FPMPI_OBJS@
+### For static library.
+ARCH = $(AR)
+ARCHFLAGS = cr
 
 ### Start making here.
-all: $(SHLIB)
+all: $(R_FPMPI)
 	@echo "MPIRUN = @MPIRUN@" > $(USER_CONF)
 	@echo "MPIEXEC = @MPIEXEC@" >> $(USER_CONF)
 	@echo "ORTERUN = @ORTERUN@" >> $(USER_CONF)
@@ -37,10 +40,14 @@ all: $(SHLIB)
 	@echo "FPMPI_INTERNAL = @FPMPI_INTERNAL@" >> $(USER_CONF)
 	@echo "FPMPI_OBJS = @FPMPI_OBJS@" >> $(USER_CONF)
 	@echo "INT32 = @INT32@" >> $(USER_CONF)
+	@echo "R_FPMPI = lib${R_ARCH}/@R_FPMPI@" >> $(USER_CONF)
 
-$(SHLIB): $(OBJECTS)
+$(R_FPMPI): $(FPMPI_OBJS)
+	$(ARCH) $(ARCHFLAGS) $(R_FPMPI) $(FPMPI_OBJS)
+	$(RANLIB) $(R_FPMPI)
 
 clean:
 	@rm -rf *.o *.d *.rc *.so* *.dll *.dylib *.a *.lib \
                 Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
 	@rm -rf fpmpi/*.o fpmpi/fpmpiconf.h fpmpi/profiler.h
+	@rm -rf fpmpi_win/*.o

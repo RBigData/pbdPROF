@@ -41,14 +41,16 @@ Knoxville, TN, USA \\
 \tableofcontents
 \input{./include/00-copyright}
 
-\bodyheadfoot
 \newpage
+\input{./include/00-acknowledgement}
+
+\newpage
+\bodyheadfoot
 \pagenumbering{arabic}
 \setcounter{page}{1}
 \pagestyle{fancy}
 
-\include{./include/00-acknowledgement}
-\include{./include/01-introduction}
+\input{./include/01-introduction}
 \input{./include/02-installation}
 \input{./include/03-faq}
 

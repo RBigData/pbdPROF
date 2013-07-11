@@ -1,3 +1,9 @@
+dnl This file was original for Rmpi written by Dr. Yu Hao, and may be
+dnl modified by Prof. Brian Rieply or suggested by R Core Team.
+dnl Later, it was added by Wei-Chen Chen for pbdMPI and pbdPROF for more
+dnl functionalities combining with Makevars.in.
+
+
 dnl Process this file with autoconf to produce a configure script
 AC_INIT(DESCRIPTION)
 
@@ -526,19 +532,35 @@ if test "$MPIRUN" = "F" -a "$MPIEXEC" = "F" -a "$ORTERUN" = "F" ; then
 fi
 
 
-dnl Incorporate internal fpmpi, partly adopted from fpmpi's "configure.in".
+dnl Check internal or external.
 FPMPI_EXT_LINK=""
-FPMPI_INTERNAL=""
+FPMPI_INTERNAL="yes"
 FPMPI_OBJS=""
 INT32=""
-AC_ARG_ENABLE([fpmpi],
-    AC_HELP_STRING([--enable-fpmpi], [Enable fpmpi bindings.]),
-    FPMPI_INTERNAL="yes", FPMPI_INTERNAL="no")
+R_FPMPI=""
+# AC_ARG_ENABLE([fpmpi],
+#     AC_HELP_STRING([--enable-fpmpi], [Enable fpmpi bindings.]),
+#     FPMPI_INTERNAL="yes", FPMPI_INTERNAL="no")
+AC_ARG_WITH([fpmpi],
+            AC_HELP_STRING([--with-fpmpi="'-L/..../fpmpi/lib -lfpmpi'"],
+                           [location and name of libfpmpi.a]),
+            [fpmpi_ext_link=$withval])
 
-dnl "--enable-fpmpi" is set.
+
+dnl Incorporate external fpmpi.
+if test -n "$fpmpi_ext_link"; then
+  FPMPI_EXT_LINK="${fpmpi_ext_link}"
+  FPMPI_INTERNAL="no"
+else
+  FPMPI_INTERNAL="yes"
+fi
+
+
+dnl Incorporate internal fpmpi, partly adopted from fpmpi's "configure.in".
 if test "X${FPMPI_INTERNAL}" = "Xyes"; then
   FPMPI_OBJS="\$(FPMPI_OBJS)"
   INT32=""
+  R_FPMPI="libfpmpi.a"
   AC_CONFIG_HEADER(src/fpmpi/fpmpiconf.h)
 
   AC_ARG_WITH(max_procs,
@@ -592,10 +614,26 @@ if test "X${FPMPI_INTERNAL}" = "Xyes"; then
   AC_DEFINE_UNQUOTED(SIZEOF_MPI_STATUS_IN_INTS,$SIZEOF_MPI_STATUS_IN_INTS,
                      [Define the size of MPI_Status in ints])
 
-  AC_CHECK_HEADERS(stdlib.h)
-  AC_CHECK_HEADERS(unistd.h)
-  AC_CHECK_HEADERS(sys/time.h)
-  AC_CHECK_HEADERS(sys/resource.h)
+  AC_CHECK_HEADERS([stdlib.h],,, [
+    #ifdef HAVE_STDLIB_H
+    #include <stdlib.h>
+    #endif
+    ])
+  AC_CHECK_HEADERS([unistd.h],,, [
+    #ifdef HAVE_UNISTD_H
+    #include <unistd.h>
+    #endif
+    ])
+  AC_CHECK_HEADERS([sys/time.h],,, [
+    #ifdef HAVE_SYS_TIME_H
+    #include <sys/time.h>
+    #endif
+    ])
+  AC_CHECK_HEADERS([sys/resource.h],,, [
+    #ifdef HAVE_SYS_RESOURCE_H
+    #include <sys/resource.h>
+    #endif
+    ])
   AC_TRY_LINK([#ifdef HAVE_UNISTD_H
     #include <unistd.h>
     #endif
@@ -604,37 +642,23 @@ if test "X${FPMPI_INTERNAL}" = "Xyes"; then
     #endif],
     [getrusage(RUSAGE_SELF,NULL);],
     pac_cv_has_getrusage=yes,pac_cv_has_getrusage=no)
-   if test "$pac_cv_has_getrusage" = "yes" ; then
-     AC_DEFINE(HAVE_GETRUSAGE,1,[Define for getrusage() availability])
-     # Now, test that the fields are available (they may not be if strrict POSIX
-     # compatibility is set in the compiler) 
-     AC_CACHE_CHECK([whether minflt field of struct rusage is available],
+  if test "$pac_cv_has_getrusage" = "yes" ; then
+    AC_DEFINE(HAVE_GETRUSAGE,1,[Define for getrusage() availability])
+    # Now, test that the fields are available (they may not be if strrict POSIX
+    # compatibility is set in the compiler) 
+    AC_CACHE_CHECK([whether minflt field of struct rusage is available],
                     pac_cv_have_rusage_minflt,[
-       AC_TRY_COMPILE([
-         #include <unistd.h>
-         #include <resource.h>],[struct rusage r; r.ru_minflt=0; r.ru_majflt=0;],
-         pac_cv_have_rusage_minflt=yes,pac_cv_have_rusage_minflt=no)])
-     if test "$pac_cv_have_rusage_minflt" = "yes" ; then
-        AC_DEFINE(GETRUSAGE_HAS_MINFLT,1,
-                  [Define if minflt field for getrusage is available])
-     fi
+      AC_TRY_COMPILE([
+        #include <unistd.h>
+        #include <resource.h>],[struct rusage r; r.ru_minflt=0; r.ru_majflt=0;],
+        pac_cv_have_rusage_minflt=yes,pac_cv_have_rusage_minflt=no)])
+    if test "$pac_cv_have_rusage_minflt" = "yes" ; then
+      AC_DEFINE(GETRUSAGE_HAS_MINFLT,1,
+                [Define if minflt field for getrusage is available])
+    fi
   fi
 
   AC_OUTPUT(src/fpmpi/profiler.h)
-fi
-
-
-dnl Incorporate external fpmpi.
-FPMPI_EXT_LINK=""
-AC_ARG_WITH([fpmpi],
-            AC_HELP_STRING([--with-fpmpi="'-L/..../fpmpi/lib -lfpmpi'"],
-                           [location and name of libfpmpi.a]),
-            [fpmpi_ext_link=$withval])
-if test -n "$fpmpi_ext_link"; then
-  FPMPI_EXT_LINK="${fpmpi_ext_link}"
-  FPMPI_INTERNAL="no"
-  FPMPI_OBJS=""
-  INT32=""
 fi
 
 
@@ -657,6 +681,7 @@ echo ">> FPMPI_EXT_LINK = ${FPMPI_EXT_LINK}"
 echo ">> FPMPI_INTERNAL = ${FPMPI_INTERNAL}"
 echo ">> FPMPI_OBJS = ${FPMPI_OBJS}"
 echo ">> INT32 = ${INT32}"
+echo ">> R_FPMPI = ${R_FPMPI}"
 echo " "
 echo "*************************************************************************"
 echo " "
@@ -682,10 +707,6 @@ AC_SUBST(FPMPI_EXT_LINK)
 AC_SUBST(FPMPI_INTERNAL)
 AC_SUBST(FPMPI_OBJS)
 AC_SUBST(INT32)
+AC_SUBST(R_FPMPI)
 
 AC_OUTPUT(src/Makevars)
-
-AC_SUBST(MPI_LIBPATH)
-AC_SUBST(MPITYPE)
-AC_OUTPUT(R/zzz.r)
-

@@ -6,6 +6,64 @@
 
 \subsection{fpmpi}
 
+{\color{red}WCC: Need fpmpi reference.}
+
+Using internal \pkg{fpmpi} library, via
+\begin{Command}
+R CMD INSTALL pbdPROF_0.1-0.tar.gz
+\end{Command}
+By default, this compiles \code{src/fpmpi/*}, generates a static
+library \code{libfpmpi.a}, and installs the library to
+\code{pbdPROF/lib/}.
+No shared library is generated or needed, so the directory
+\code{pbdPROF/libs/} is empty (no need to build \code{pbdPROF.so}.)
+The linking argument is saved in \code{Makeconf} and installed to
+\code{pbdPROF/etc/} for
+further linking such as \pkg{pbdMPI} is reinstalled with
+\code{--enable-pbdPROF}.
+
+Linking with external \pkg{fpmpi} library, via
+\begin{Command}
+R CMD INSTALL pbdPROF_0.1-0.tar.gz \
+  --configure-args="--with-fpmpi='-L/path_to_fpmpi/lib -lfpmpi'"
+\end{Command}
+This only provides the linking arguments \code{-L/path_to_fpmpi/lib -lfpmpi}
+which is saved in \code{Makeconf} and installed to
+\code{pbdPROF/etc/} for further linking such as \pkg{pbdMPI} is
+reinstalled with \code{--enable-pbdPROF}.
+
+Reinstall \pkg{pbdMPI}, \pkg{pbdSLAP}, and \pkg{pbdNCDF4}, via
+\begin{Command}
+R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF'"
+R CMD INSTALL pbdSLAP_0.1-6.tar.gz
+R CMD INSTALL pbdNCDF4_0.1-1.tar.gz
+\end{Command}
+Note that the \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
+used in \code{pbdMPI/configure.ac} or \code{pbdMPI/configure} to determine an
+appropriate linking flag \code{PROF_LDFLAGS} based on preset flags in
+\code{pbdPROF/etc/Makeconf}.
+
+If the internal library is used in \pkg{pbdPROF},
+then the path to the \code{pbdPROF/lib/libfpmpi.a} is set in the flag
+\code{PKG_LIBS} of \code{pbdMPI/src/Makevars.in}.
+If the external library is used in \pkg{pbdPROF},
+then the linking arguments \code{-L/path_to_fpmpi/lib -lfpmpi} is set
+in the flag \code{PKG_LIBS} of \code{pbdMPI/src/Makevars.in}.
+Therefore, the \pkg{pbdMPI} can be intercepted by the \pkg{fpmpi} library
+when MPI function calls are evoked.
+
+{\color{red}
+  WCC: I am not sure I need to reinstall \pkg{pbdSLAP} or
+ \pkg{pbdNCDF4}. I suspect only \pkg{pbdMPI} is good enough, but how
+ \pkg{fpmpi} instrument or intecept the MPI calls???
+
+ Reinstall for \pkg{pbdMPI} has no doubt to me. However, for 100\% sure,
+ we need to run a simple example twice based on \pkg{pbdBASE} demo
+ to see if the outputs are the same for both of reinstall \pkg{pbdSLAP}
+ (with \code{PROF_LDFLAGS}) and
+ no reinstall \pkg{pbdSLAP} (without \code{PROF_LDFLAGS}).
+}
+
 
 \subsection{mpiP}
 
