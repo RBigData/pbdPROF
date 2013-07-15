@@ -1,7 +1,7 @@
 ### Setup R source code and objects.
 PKG_CPPFLAGS = @PKG_CPPFLAGS@
-PKG_LIBS     = @FPMPI_EXT_LINK@ @PKG_LIBS@
-               # Order is matter for external fpmpi
+PKG_LIBS     = @FPMPI_EXT_LINK@ @MPIP_EXT_LINK@ @TAU_EXT_LINK@ @PKG_LIBS@
+               # Order is matter for external profiler
 
 ### For user configuration.
 USER_CONF = Makeconf
@@ -41,6 +41,9 @@ all: $(R_FPMPI)
 	@echo "FPMPI_OBJS = @FPMPI_OBJS@" >> $(USER_CONF)
 	@echo "INT32 = @INT32@" >> $(USER_CONF)
 	@echo "R_FPMPI = lib${R_ARCH}/@R_FPMPI@" >> $(USER_CONF)
+	@echo "MPIP_EXT_LINK = @MPIP_EXT_LINK@" >> $(USER_CONF)
+	@echo "TAU_EXT_LINK = @TAU_EXT_LINK@" >> $(USER_CONF)
+	@echo "PROF_TYPE = @PROF_TYPE@" >> $(USER_CONF)
 
 $(R_FPMPI): $(FPMPI_OBJS)
 	$(ARCH) $(ARCHFLAGS) $(R_FPMPI) $(FPMPI_OBJS)

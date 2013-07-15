@@ -1,5 +1,5 @@
 dnl This file was original for Rmpi written by Dr. Yu Hao, and may be
-dnl modified by Prof. Brian Rieply or suggested by R Core Team.
+dnl modified by Prof. Brian Rieply and suggested by R Core Team.
 dnl Later, it was added by Wei-Chen Chen for pbdMPI and pbdPROF for more
 dnl functionalities combining with Makevars.in.
 
@@ -532,23 +532,45 @@ if test "$MPIRUN" = "F" -a "$MPIEXEC" = "F" -a "$ORTERUN" = "F" ; then
 fi
 
 
-dnl Check internal or external.
+dnl Check profiler.
+AC_ARG_WITH([fpmpi],
+            AC_HELP_STRING([--with-fpmpi="'-L/..../fpmpi/lib -lfpmpi'"],
+                           [location and name of fpmpi library]),
+            [fpmpi_ext_link=$withval])
+AC_ARG_WITH([mpiP],
+            AC_HELP_STRING([--with-mpiP="'-L/..../mpiP/lib -lmpiP'"],
+                           [location and name of mpiP library]),
+            [mpiP_ext_link=$withval])
+AC_ARG_WITH([TAU],
+            AC_HELP_STRING([--with-TAU="'-L/..../TAU/lib -lTAU'"],
+                           [location and name of TAU library]),
+            [TAU_ext_link=$withval])
+N_PROF=0
+PROF_TYPE="fpmpi"
+if test -n "${fpmpi_ext_link}"; then
+  N_PROF=`expr $N_PROF + 1`
+  PROF_TYPE="fpmpi"
+fi
+if test -n "${mpiP_ext_link}"; then
+  N_PROF=`expr $N_PROF + 1`
+  PROF_TYPE="mpiP"
+fi
+if test -n "${TAU_ext_link}"; then
+  N_PROF=`expr $N_PROF + 1`
+  PROF_TYPE="TAU"
+fi
+if test ${N_PROF} -gt 1; then
+  AC_MSG_ERROR([Only one of fpmpi, mpiP, or TAU should be used.])
+fi
+
+
+dnl Incorporate external fpmpi.
 FPMPI_EXT_LINK=""
 FPMPI_INTERNAL="yes"
 FPMPI_OBJS=""
 INT32=""
 R_FPMPI=""
-# AC_ARG_ENABLE([fpmpi],
-#     AC_HELP_STRING([--enable-fpmpi], [Enable fpmpi bindings.]),
-#     FPMPI_INTERNAL="yes", FPMPI_INTERNAL="no")
-AC_ARG_WITH([fpmpi],
-            AC_HELP_STRING([--with-fpmpi="'-L/..../fpmpi/lib -lfpmpi'"],
-                           [location and name of libfpmpi.a]),
-            [fpmpi_ext_link=$withval])
-
-
-dnl Incorporate external fpmpi.
-if test -n "$fpmpi_ext_link"; then
+if test -n "${fpmpi_ext_link}"; then
   FPMPI_EXT_LINK="${fpmpi_ext_link}"
   FPMPI_INTERNAL="no"
 else
@@ -564,7 +586,8 @@ if test "X${FPMPI_INTERNAL}" = "Xyes"; then
   AC_CONFIG_HEADER(src/fpmpi/fpmpiconf.h)
 
   AC_ARG_WITH(max_procs,
-              [--with-max_procs - define the maximum number of processes],
+              AC_HELP_STRING([--with-max_procs],
+                             [define the maximum number of processes for fpmpi]),
               max_procs_value=$withval,max_procs_value=512)
   # As a convenience, we could change a "k" in the value to *1024.
   AC_DEFINE_UNQUOTED(MAX_PROCS,$max_procs_value,[maximum number of processes])
@@ -662,6 +685,20 @@ if test "X${FPMPI_INTERNAL}" = "Xyes"; then
 fi
 
 
+dnl Incorporate external mpiP.
+MPIP_EXT_LINK=""
+if test -n "${mpiP_ext_link}"; then
+  MPIP_EXT_LINK="${mpiP_ext_link}"
+fi
+
+
+dnl Incorporate external TAU.
+TAU_EXT_LINK=""
+if test -n "${TAU_ext_link}"; then
+  TAU_EXT_LINK="${TAU_ext_link}"
+fi
+
+
 dnl Report
 echo " "
 echo "******************* Results of pbdMPI package configure *****************"
@@ -677,11 +714,15 @@ echo ">> MPI_DEFS = ${MPI_DEFS}"
 echo ">> MPI_INCL2 = ${MPI_INCL2}"
 echo ">> PKG_CPPFLAGS = ${PKG_CPPFLAGS}"
 echo ">> PKG_LIBS = ${FPMPI_EXT_LINK} ${PKG_LIBS}"
+echo ">>"
 echo ">> FPMPI_EXT_LINK = ${FPMPI_EXT_LINK}"
 echo ">> FPMPI_INTERNAL = ${FPMPI_INTERNAL}"
 echo ">> FPMPI_OBJS = ${FPMPI_OBJS}"
 echo ">> INT32 = ${INT32}"
 echo ">> R_FPMPI = ${R_FPMPI}"
+echo ">> MPIP_EXT_LINK = ${MPIP_EXT_LINK}"
+echo ">> TAU_EXT_LINK = ${TAU_EXT_LINK}"
+echo ">> PROF_TYPE = ${PROF_TYPE}"
 echo " "
 echo "*************************************************************************"
 echo " "
@@ -702,11 +743,15 @@ AC_SUBST(MPI_INCL2)
 AC_SUBST(PKG_CPPFLAGS)
 AC_SUBST(PKG_LIBS)
 
-dnl For fpmpi
+dnl For profiler.
 AC_SUBST(FPMPI_EXT_LINK)
 AC_SUBST(FPMPI_INTERNAL)
 AC_SUBST(FPMPI_OBJS)
 AC_SUBST(INT32)
 AC_SUBST(R_FPMPI)
+AC_SUBST(MPIP_EXT_LINK)
+AC_SUBST(TAU_EXT_LINK)
+AC_SUBST(PROF_TYPE)
 
 AC_OUTPUT(src/Makevars)
+

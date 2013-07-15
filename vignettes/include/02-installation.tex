@@ -2,11 +2,23 @@
 \label{sec:installation}
 
 % Installation instructions/flag explanations can go here
+{\color{red}WCC: Need references and quick installations.}
+
+The \pkg{pbdPROF} currently is by default using
+\pkg{fpmpi}~\citep{fpmpi} library internally,
+i.e., a source copy of \pkg{fpmpi} is located at \pkg{pbdPROF/src/fpmpi}
+and built in a static library at \pkg{pbdPROF/lib/libfpmpi.a}.
+However, external profiler libraries
+such as \pkg{fpmpi}, \pkg{mpiP}~\citep{mpiP}, and \pkg{TAU}~\citep{TAU}
+can be also linked by \pkg{pbdPROF} via suitable
+\code{--configure-args} to \code{R CMD INSTALL}.
+We explain the whole procedure in Section~\ref{sec:fpmpi} using \pkg{fpmpi}
+as an example and leave some keys steps for \pkg{mpiP} and \pkg{TAU} in
+Sections~\ref{sec:mpiP} and~\ref{sec:TAU}.
 
 
 \subsection{fpmpi}
-
-{\color{red}WCC: Need fpmpi reference.}
+\label{sec:fpmpi}
 
 Using internal \pkg{fpmpi} library, via
 \begin{Command}
@@ -35,8 +47,6 @@ reinstalled with \code{--enable-pbdPROF}.
 Reinstall \pkg{pbdMPI}, \pkg{pbdSLAP}, and \pkg{pbdNCDF4}, via
 \begin{Command}
 R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF'"
-R CMD INSTALL pbdSLAP_0.1-6.tar.gz
-R CMD INSTALL pbdNCDF4_0.1-1.tar.gz
 \end{Command}
 Note that the \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
 used in \code{pbdMPI/configure.ac} or \code{pbdMPI/configure} to determine an
@@ -52,20 +62,38 @@ in the flag \code{PKG_LIBS} of \code{pbdMPI/src/Makevars.in}.
 Therefore, the \pkg{pbdMPI} can be intercepted by the \pkg{fpmpi} library
 when MPI function calls are evoked.
 
-{\color{red}
-  WCC: I am not sure I need to reinstall \pkg{pbdSLAP} or
- \pkg{pbdNCDF4}. I suspect only \pkg{pbdMPI} is good enough, but how
- \pkg{fpmpi} instrument or intecept the MPI calls???
+No mater the external or internal library is used, the \code{PROF_LDFLAGS}
+in \code{pbdMPI/etc/Makefile} provides the linking information to the
+profiler library. It is also used in \code{PKG_LIBS} which will be
+export to other \proglang{pbdR} packages at installation via the flag
+\code{SPMD_LDFLAGS}, therefore, no need to add further flags to
+\code{R CMD INSTALL} when reinstall packages for further profiling.
 
- Reinstall for \pkg{pbdMPI} has no doubt to me. However, for 100\% sure,
- we need to run a simple example twice based on \pkg{pbdBASE} demo
- to see if the outputs are the same for both of reinstall \pkg{pbdSLAP}
- (with \code{PROF_LDFLAGS}) and
- no reinstall \pkg{pbdSLAP} (without \code{PROF_LDFLAGS}).
-}
+For further profiling, such as \pkg{pbdSLAP} and \pkg{pbdBASE}, one may
+reinstall both packages, via
+\begin{Command}
+R CMD INSTALL pbdSLAP_0.1-6.tar.gz
+R CMD INSTALL pbdBASE_0.2-2.tar.gz
+\end{Command}
+Note that since both packages have MPI \proglang{C} functions involved, it
+is necessary to link with profiler library in order to profile communications
+evoked by both packages.
+
+For profiling \pkg{pbdNCD4}, one may need to recompile \pkg{HDF5} and
+\pkg{netCDF4} libraries and link with profiler library, since those are
+the MPI functions involved such as MPI-IO. Also, as recompile finish, one may
+reinstall the package, via
+\begin{Command}
+R CMD INSTALL pbdNCDF4_0.1-1.tar.gz
+\end{Command}
 
 
 \subsection{mpiP}
+\label{sec:mpiP}
+
+
+\subsection{TAU}
+\label{sec:TAU}
 
 
 \subsection{Test Script}
