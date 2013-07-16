@@ -1,7 +1,6 @@
 ### Setup R source code and objects.
 PKG_CPPFLAGS = @PKG_CPPFLAGS@
-PKG_LIBS     = @FPMPI_EXT_LINK@ @MPIP_EXT_LINK@ @TAU_EXT_LINK@ @PKG_LIBS@
-               # Order is matter for external profiler
+PKG_LIBS     = @PKG_LIBS@
 
 ### For user configuration.
 USER_CONF = Makeconf
@@ -35,7 +34,7 @@ all: $(R_FPMPI)
 	@echo "MPI_DEFS = @MPI_DEFS@" >> $(USER_CONF)
 	@echo "MPI_INCL2 = @MPI_INCL2@" >> $(USER_CONF)
 	@echo "PKG_CPPFLAGS = @PKG_CPPFLAGS@" >> $(USER_CONF)
-	@echo "PKG_LIBS = @FPMPI_EXT_LINK@ @PKG_LIBS@" >> $(USER_CONF)
+	@echo "PKG_LIBS = ${PKG_LIBS}" >> $(USER_CONF)
 	@echo "FPMPI_EXT_LINK = @FPMPI_EXT_LINK@" >> $(USER_CONF)
 	@echo "FPMPI_INTERNAL = @FPMPI_INTERNAL@" >> $(USER_CONF)
 	@echo "FPMPI_OBJS = @FPMPI_OBJS@" >> $(USER_CONF)
@@ -53,4 +52,3 @@ clean:
 	@rm -rf *.o *.d *.rc *.so* *.dll *.dylib *.a *.lib \
                 Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
 	@rm -rf fpmpi/*.o fpmpi/fpmpiconf.h fpmpi/profiler.h
-	@rm -rf fpmpi_win/*.o
