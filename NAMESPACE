@@ -1,2 +1,8 @@
-### "useDynLib" should be MARKED and use ".onLoad" and ".onUnload" in "R/zzz.r".
-# useDynLib(pbdPROF)
+### All functions
+exportPattern("^prof\\.[[:alpha:]]+")
+exportPattern("^[[:alpha:]]+")
+
+### S3 methods
+S3method(parse.prof, fpmpi)
+S3method(parse.prof, mpip)
+S3method(parse.prof, tau)

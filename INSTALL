@@ -69,11 +69,3 @@
    Note that I still need 'PATH' and 'LD_LIBRARY_PATH' to be set correctly in
    this case.
 
-
---- Test 'pbdPROF':
-   Suppose 'PATH' and 'LD_LIBRARY_ATH' are set correctly, I can run test
-   examples by
-
-     > cd pbdPROF/inst/examples/test_prof/
-     > ./00_test_all.sh
-

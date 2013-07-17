@@ -23,4 +23,15 @@
   Gaurav Sehrawat, Wei-Chen Chen, Drew Schmidt, Pragneshkumar Patel, and
   George Ostrouchov.
 }
+\seealso{
+  \code{\link{read.prof}},
+  \code{\link{parse.prof}}.
+}
+\examples{
+\dontrun{
+demo(allreduce, "pbdPROF")
+demo(svd, "pbdPROF")
+demo(masterslavePI, "pbdPROF")
+}
+}
 \keyword{Package}

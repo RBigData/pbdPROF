@@ -19,6 +19,10 @@ fpmpi/topology.o
 ARCH = $(AR)
 ARCHFLAGS = cr
 
+### Fool R CMD check.
+SHLIB=
+OBJECTS=
+
 ### Start making here.
 all: $(R_FPMPI)
 	@echo "MPIRUN = @MPIRUN@" > $(USER_CONF)
