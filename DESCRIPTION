@@ -1,6 +1,6 @@
 Package: pbdPROF
 Version: 0.1-0
-Date: 2013-07-08
+Date: 2013-07-17
 Title: Programming with Big Data --- MPI Profiling Tools
 Authors@R: c(person("Sehrawat", "Gaurav", role=c("aut", "cre")), 
         person("Wei-Chen", "Chen", role = c("aut", "cre"), email =
@@ -9,7 +9,6 @@ Authors@R: c(person("Sehrawat", "Gaurav", role=c("aut", "cre")),
         person("Pragneshkumar", "Patel", role = "aut"), 
         person("George", "Ostrouchov", role ="aut"))
 Depends: R (>= 2.14.0)
-Enhances: pbdMPI, pmclust
 LazyLoad: yes
 LazyData: yes
 OS_type: unix
@@ -23,7 +22,7 @@ URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
 MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
-Packaged: 2013-07-16 17:16:23 UTC; snoweye
+Packaged: 2013-07-17 14:29:27 UTC; snoweye
 Author: Sehrawat Gaurav [aut, cre],
   Wei-Chen Chen [aut, cre],
   Drew Schmidt [aut],

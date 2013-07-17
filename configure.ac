@@ -564,138 +564,159 @@ if test ${N_PROF} -gt 1; then
 fi
 
 
-dnl Incorporate external fpmpi.
+dnl Initial
 FPMPI_EXT_LINK=""
-FPMPI_INTERNAL="yes"
+FPMPI_INTERNAL=""
 FPMPI_OBJS=""
 INT32=""
 R_FPMPI=""
-if test -n "${fpmpi_ext_link}"; then
-  FPMPI_EXT_LINK="${fpmpi_ext_link}"
-  FPMPI_INTERNAL="no"
-else
-  FPMPI_INTERNAL="yes"
-fi
-
-
-dnl Incorporate internal fpmpi, partly adopted from fpmpi's "configure.in".
-if test "X${FPMPI_INTERNAL}" = "Xyes"; then
-  FPMPI_OBJS="\$(FPMPI_OBJS)"
-  INT32=""
-  R_FPMPI="libfpmpi.a"
-  AC_CONFIG_HEADER(src/fpmpi/fpmpiconf.h)
-
-  AC_ARG_WITH(max_procs,
-              AC_HELP_STRING([--with-max_procs],
-                             [define the maximum number of processes for fpmpi]),
-              max_procs_value=$withval,max_procs_value=512)
-  # As a convenience, we could change a "k" in the value to *1024.
-  AC_DEFINE_UNQUOTED(MAX_PROCS,$max_procs_value,[maximum number of processes])
-  max_procsby32=`expr \( $max_procs_value + 31 \) / 32`
-  AC_DEFINE_UNQUOTED(MAX_PROCBY32,$max_procsby32,[maximum number of processes,
-                     divided by 32 (for use with int32 bit vectors)])
-
-  FPMPI2_VERSION='"'2.2'"'
-  AC_DEFINE_UNQUOTED(FPMPI2_VERSION,$FPMPI2_VERSION,
-                     [Provide the version for FPMPI 2])
-
-  # See if unsigned ints are 32-bit
-  AC_LANG_C
-  if test -z "$CROSS_SIZEOF_UINT" ; then
-    CROSS_SIZEOF_UINT=0
-  fi
-  AC_CACHE_CHECK([for int32_t],pac_cv_have_int32_t,[
-  AC_TRY_COMPILE([
-  #include <stdlib.h>
-  #include <sys/types.h>],
-  [int32_t a=0;],pac_cv_have_int32_t=yes,pac_cv_have_int32_t=no)])
-
-  if test "$pac_cv_have_int32_t" = yes ; then
-    AC_DEFINE(HAVE_INT32_T,1,[Define if int32_t is available])
-  else
-    AC_CHECK_SIZEOF(unsigned int,$CROSS_SIZEOF_UINT)
-    if test "X$ac_cv_sizeof_unsigned_int" = "X4" ; then
-        INT32="unsigned int"
-    else
-        INT32=""
-        AC_MSG_WARN($ac_t You must define int32 in profiler.h manually!)
-    fi
-    AC_SUBST(INT32)
-  fi
-  AC_CHECK_SIZEOF(long long)
-  AC_CHECK_SIZEOF(int)
-  AC_CHECK_SIZEOF(MPI_Status,,[#include "mpi.h"])
-  SIZEOF_MPI_STATUS=$ac_cv_sizeof_MPI_Status
-  AC_DEFINE_UNQUOTED(SIZEOF_MPI_STATUS,$SIZEOF_MPI_STATUS,
-                     [Define the size of MPI_Status])
-  if test "$ac_cv_sizeof_int" != "0" ; then
-    SIZEOF_MPI_STATUS_IN_INTS=`expr $SIZEOF_MPI_STATUS / $ac_cv_sizeof_int`
-  else
-    # Pick a likely default (the actual code will check this)
-    SIZEOF_MPI_STATUS_IN_INTS=5
-  fi
-  AC_DEFINE_UNQUOTED(SIZEOF_MPI_STATUS_IN_INTS,$SIZEOF_MPI_STATUS_IN_INTS,
-                     [Define the size of MPI_Status in ints])
-
-  AC_CHECK_HEADERS([stdlib.h],,, [
-    #ifdef HAVE_STDLIB_H
-    #include <stdlib.h>
-    #endif
-    ])
-  AC_CHECK_HEADERS([unistd.h],,, [
-    #ifdef HAVE_UNISTD_H
-    #include <unistd.h>
-    #endif
-    ])
-  AC_CHECK_HEADERS([sys/time.h],,, [
-    #ifdef HAVE_SYS_TIME_H
-    #include <sys/time.h>
-    #endif
-    ])
-  AC_CHECK_HEADERS([sys/resource.h],,, [
-    #ifdef HAVE_SYS_RESOURCE_H
-    #include <sys/resource.h>
-    #endif
-    ])
-  AC_TRY_LINK([#ifdef HAVE_UNISTD_H
-    #include <unistd.h>
-    #endif
-    #ifdef HAVE_SYS_RESOURCE_H
-    #include <sys/resource.h>
-    #endif],
-    [getrusage(RUSAGE_SELF,NULL);],
-    pac_cv_has_getrusage=yes,pac_cv_has_getrusage=no)
-  if test "$pac_cv_has_getrusage" = "yes" ; then
-    AC_DEFINE(HAVE_GETRUSAGE,1,[Define for getrusage() availability])
-    # Now, test that the fields are available (they may not be if strrict POSIX
-    # compatibility is set in the compiler) 
-    AC_CACHE_CHECK([whether minflt field of struct rusage is available],
-                    pac_cv_have_rusage_minflt,[
-      AC_TRY_COMPILE([
-        #include <unistd.h>
-        #include <resource.h>],[struct rusage r; r.ru_minflt=0; r.ru_majflt=0;],
-        pac_cv_have_rusage_minflt=yes,pac_cv_have_rusage_minflt=no)])
-    if test "$pac_cv_have_rusage_minflt" = "yes" ; then
-      AC_DEFINE(GETRUSAGE_HAS_MINFLT,1,
-                [Define if minflt field for getrusage is available])
-    fi
-  fi
-
-  AC_OUTPUT(src/fpmpi/profiler.h)
-fi
-
-
-dnl Incorporate external mpiP.
 MPIP_EXT_LINK=""
-if test -n "${mpiP_ext_link}"; then
-  MPIP_EXT_LINK="${mpiP_ext_link}"
+TAU_EXT_LINK=""
+
+
+dnl fpmpi
+if test "X${PROF_TYPE}" = "Xfpmpi"; then
+  dnl Incorporate external fpmpi.
+  FPMPI_EXT_LINK=""
+  FPMPI_INTERNAL="yes"
+  FPMPI_OBJS=""
+  INT32=""
+  R_FPMPI=""
+  if test -n "${fpmpi_ext_link}"; then
+    FPMPI_EXT_LINK="${fpmpi_ext_link}"
+    FPMPI_INTERNAL="no"
+  else
+    FPMPI_INTERNAL="yes"
+  fi
+
+
+  dnl Incorporate internal fpmpi, partly adopted from fpmpi's "configure.in".
+  if test "X${FPMPI_INTERNAL}" = "Xyes"; then
+    FPMPI_OBJS="\$(FPMPI_OBJS)"
+    INT32=""
+    R_FPMPI="libfpmpi.a"
+    AC_CONFIG_HEADER(src/fpmpi/fpmpiconf.h)
+
+    AC_ARG_WITH(max_procs,
+                AC_HELP_STRING([--with-max_procs],
+                               [define the maximum number of processes for fpmpi]),
+                max_procs_value=$withval,max_procs_value=512)
+    # As a convenience, we could change a "k" in the value to *1024.
+    AC_DEFINE_UNQUOTED(MAX_PROCS,$max_procs_value,[maximum number of processes])
+    max_procsby32=`expr \( $max_procs_value + 31 \) / 32`
+    AC_DEFINE_UNQUOTED(MAX_PROCBY32,$max_procsby32,[maximum number of processes,
+                       divided by 32 (for use with int32 bit vectors)])
+
+    FPMPI2_VERSION='"'2.2'"'
+    AC_DEFINE_UNQUOTED(FPMPI2_VERSION,$FPMPI2_VERSION,
+                       [Provide the version for FPMPI 2])
+
+    # See if unsigned ints are 32-bit
+    AC_LANG_C
+    if test -z "$CROSS_SIZEOF_UINT" ; then
+      CROSS_SIZEOF_UINT=0
+    fi
+    AC_CACHE_CHECK([for int32_t],pac_cv_have_int32_t,[
+    AC_TRY_COMPILE([
+    #include <stdlib.h>
+    #include <sys/types.h>],
+    [int32_t a=0;],pac_cv_have_int32_t=yes,pac_cv_have_int32_t=no)])
+
+    if test "$pac_cv_have_int32_t" = yes ; then
+      AC_DEFINE(HAVE_INT32_T,1,[Define if int32_t is available])
+    else
+      AC_CHECK_SIZEOF(unsigned int,$CROSS_SIZEOF_UINT)
+      if test "X$ac_cv_sizeof_unsigned_int" = "X4" ; then
+          INT32="unsigned int"
+      else
+          INT32=""
+          AC_MSG_WARN($ac_t You must define int32 in profiler.h manually!)
+      fi
+      AC_SUBST(INT32)
+    fi
+    AC_CHECK_SIZEOF(long long)
+    AC_CHECK_SIZEOF(int)
+    AC_CHECK_SIZEOF(MPI_Status,,[#include "mpi.h"])
+    SIZEOF_MPI_STATUS=$ac_cv_sizeof_MPI_Status
+    AC_DEFINE_UNQUOTED(SIZEOF_MPI_STATUS,$SIZEOF_MPI_STATUS,
+                       [Define the size of MPI_Status])
+    if test "$ac_cv_sizeof_int" != "0" ; then
+      SIZEOF_MPI_STATUS_IN_INTS=`expr $SIZEOF_MPI_STATUS / $ac_cv_sizeof_int`
+    else
+      # Pick a likely default (the actual code will check this)
+      SIZEOF_MPI_STATUS_IN_INTS=5
+    fi
+    AC_DEFINE_UNQUOTED(SIZEOF_MPI_STATUS_IN_INTS,$SIZEOF_MPI_STATUS_IN_INTS,
+                       [Define the size of MPI_Status in ints])
+
+    AC_CHECK_HEADERS([stdlib.h],,, [
+      #ifdef HAVE_STDLIB_H
+      #include <stdlib.h>
+      #endif
+      ])
+    AC_CHECK_HEADERS([unistd.h],,, [
+      #ifdef HAVE_UNISTD_H
+      #include <unistd.h>
+      #endif
+      ])
+    AC_CHECK_HEADERS([sys/time.h],,, [
+      #ifdef HAVE_SYS_TIME_H
+      #include <sys/time.h>
+      #endif
+      ])
+    AC_CHECK_HEADERS([sys/resource.h],,, [
+      #ifdef HAVE_SYS_RESOURCE_H
+      #include <sys/resource.h>
+      #endif
+      ])
+    AC_TRY_LINK([#ifdef HAVE_UNISTD_H
+      #include <unistd.h>
+      #endif
+      #ifdef HAVE_SYS_RESOURCE_H
+      #include <sys/resource.h>
+      #endif],
+      [getrusage(RUSAGE_SELF,NULL);],
+      pac_cv_has_getrusage=yes,pac_cv_has_getrusage=no)
+    if test "$pac_cv_has_getrusage" = "yes" ; then
+      AC_DEFINE(HAVE_GETRUSAGE,1,[Define for getrusage() availability])
+      # Now, test that the fields are available (they may not be if strrict POSIX
+      # compatibility is set in the compiler) 
+      AC_CACHE_CHECK([whether minflt field of struct rusage is available],
+                      pac_cv_have_rusage_minflt,[
+        AC_TRY_COMPILE([
+          #include <unistd.h>
+          #include <resource.h>],[struct rusage r; r.ru_minflt=0; r.ru_majflt=0;],
+          pac_cv_have_rusage_minflt=yes,pac_cv_have_rusage_minflt=no)])
+      if test "$pac_cv_have_rusage_minflt" = "yes" ; then
+        AC_DEFINE(GETRUSAGE_HAS_MINFLT,1,
+                  [Define if minflt field for getrusage is available])
+      fi
+    fi
+
+    AC_OUTPUT(src/fpmpi/profiler.h)
+  fi
+fi
+dnl End of fpmpi.
+
+
+dnl mpiP
+if test "X${PROF_TYPE}" = "XmpiP"; then
+  dnl Incorporate external mpiP.
+  if test -n "${mpiP_ext_link}"; then
+    MPIP_EXT_LINK="${mpiP_ext_link}"
+  else
+    AC_MSG_ERROR([--with-mpiP="'-L/..../mpiP/lib -lmpiP'"])
+  fi
 fi
 
 
-dnl Incorporate external TAU.
-TAU_EXT_LINK=""
-if test -n "${TAU_ext_link}"; then
-  TAU_EXT_LINK="${TAU_ext_link}"
+dnl TAU
+if test "X${PROF_TYPE}" = "XTAU"; then
+  if test -n "${TAU_ext_link}"; then
+    TAU_EXT_LINK="${TAU_ext_link}"
+  else
+    AC_MSG_ERROR([--with-TAU="'-L/..../TAU/lib -lTAU'"])
+  fi
 fi
 
 

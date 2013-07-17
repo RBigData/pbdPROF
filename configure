@@ -4534,23 +4534,33 @@ fi
 
 
 FPMPI_EXT_LINK=""
-FPMPI_INTERNAL="yes"
+FPMPI_INTERNAL=""
 FPMPI_OBJS=""
 INT32=""
 R_FPMPI=""
-if test -n "${fpmpi_ext_link}"; then
-  FPMPI_EXT_LINK="${fpmpi_ext_link}"
-  FPMPI_INTERNAL="no"
-else
+MPIP_EXT_LINK=""
+TAU_EXT_LINK=""
+
+
+if test "X${PROF_TYPE}" = "Xfpmpi"; then
+    FPMPI_EXT_LINK=""
   FPMPI_INTERNAL="yes"
-fi
-
-
-if test "X${FPMPI_INTERNAL}" = "Xyes"; then
-  FPMPI_OBJS="\$(FPMPI_OBJS)"
+  FPMPI_OBJS=""
   INT32=""
-  R_FPMPI="libfpmpi.a"
-  ac_config_headers="$ac_config_headers src/fpmpi/fpmpiconf.h"
+  R_FPMPI=""
+  if test -n "${fpmpi_ext_link}"; then
+    FPMPI_EXT_LINK="${fpmpi_ext_link}"
+    FPMPI_INTERNAL="no"
+  else
+    FPMPI_INTERNAL="yes"
+  fi
+
+
+    if test "X${FPMPI_INTERNAL}" = "Xyes"; then
+    FPMPI_OBJS="\$(FPMPI_OBJS)"
+    INT32=""
+    R_FPMPI="libfpmpi.a"
+    ac_config_headers="$ac_config_headers src/fpmpi/fpmpiconf.h"
 
 
 
@@ -4561,47 +4571,47 @@ else
   max_procs_value=512
 fi
 
-  # As a convenience, we could change a "k" in the value to *1024.
+    # As a convenience, we could change a "k" in the value to *1024.
 
 cat >>confdefs.h <<_ACEOF
 #define MAX_PROCS $max_procs_value
 _ACEOF
 
-  max_procsby32=`expr \( $max_procs_value + 31 \) / 32`
+    max_procsby32=`expr \( $max_procs_value + 31 \) / 32`
 
 cat >>confdefs.h <<_ACEOF
 #define MAX_PROCBY32 $max_procsby32
 _ACEOF
 
 
-  FPMPI2_VERSION='"'2.2'"'
+    FPMPI2_VERSION='"'2.2'"'
 
 cat >>confdefs.h <<_ACEOF
 #define FPMPI2_VERSION $FPMPI2_VERSION
 _ACEOF
 
 
-  # See if unsigned ints are 32-bit
-  ac_ext=c
+    # See if unsigned ints are 32-bit
+    ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-  if test -z "$CROSS_SIZEOF_UINT" ; then
-    CROSS_SIZEOF_UINT=0
-  fi
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for int32_t" >&5
+    if test -z "$CROSS_SIZEOF_UINT" ; then
+      CROSS_SIZEOF_UINT=0
+    fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for int32_t" >&5
 $as_echo_n "checking for int32_t... " >&6; }
 if ${pac_cv_have_int32_t+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-  #include <stdlib.h>
-  #include <sys/types.h>
+    #include <stdlib.h>
+    #include <sys/types.h>
 int
 main ()
 {
@@ -4620,12 +4630,12 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $pac_cv_have_int32_t" >&5
 $as_echo "$pac_cv_have_int32_t" >&6; }
 
-  if test "$pac_cv_have_int32_t" = yes ; then
+    if test "$pac_cv_have_int32_t" = yes ; then
 
 $as_echo "#define HAVE_INT32_T 1" >>confdefs.h
 
-  else
-    # The cast to long int works around a bug in the HP C Compiler
+    else
+      # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
 # This bug is HP SR number 8606223364.
@@ -4658,16 +4668,16 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-    if test "X$ac_cv_sizeof_unsigned_int" = "X4" ; then
-        INT32="unsigned int"
-    else
-        INT32=""
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $ac_t You must define int32 in profiler.h manually!" >&5
+      if test "X$ac_cv_sizeof_unsigned_int" = "X4" ; then
+          INT32="unsigned int"
+      else
+          INT32=""
+          { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $ac_t You must define int32 in profiler.h manually!" >&5
 $as_echo "$as_me: WARNING: $ac_t You must define int32 in profiler.h manually!" >&2;}
-    fi
+      fi
 
-  fi
-  # The cast to long int works around a bug in the HP C Compiler
+    fi
+    # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
 # This bug is HP SR number 8606223364.
@@ -4700,7 +4710,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-  # The cast to long int works around a bug in the HP C Compiler
+    # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
 # This bug is HP SR number 8606223364.
@@ -4733,7 +4743,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-  # The cast to long int works around a bug in the HP C Compiler
+    # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
 # This bug is HP SR number 8606223364.
@@ -4767,30 +4777,30 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-  SIZEOF_MPI_STATUS=$ac_cv_sizeof_MPI_Status
+    SIZEOF_MPI_STATUS=$ac_cv_sizeof_MPI_Status
 
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_MPI_STATUS $SIZEOF_MPI_STATUS
 _ACEOF
 
-  if test "$ac_cv_sizeof_int" != "0" ; then
-    SIZEOF_MPI_STATUS_IN_INTS=`expr $SIZEOF_MPI_STATUS / $ac_cv_sizeof_int`
-  else
-    # Pick a likely default (the actual code will check this)
-    SIZEOF_MPI_STATUS_IN_INTS=5
-  fi
+    if test "$ac_cv_sizeof_int" != "0" ; then
+      SIZEOF_MPI_STATUS_IN_INTS=`expr $SIZEOF_MPI_STATUS / $ac_cv_sizeof_int`
+    else
+      # Pick a likely default (the actual code will check this)
+      SIZEOF_MPI_STATUS_IN_INTS=5
+    fi
 
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_MPI_STATUS_IN_INTS $SIZEOF_MPI_STATUS_IN_INTS
 _ACEOF
 
 
-  for ac_header in stdlib.h
+    for ac_header in stdlib.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "
-    #ifdef HAVE_STDLIB_H
-    #include <stdlib.h>
-    #endif
+      #ifdef HAVE_STDLIB_H
+      #include <stdlib.h>
+      #endif
 
 "
 if test "x$ac_cv_header_stdlib_h" = xyes; then :
@@ -4802,12 +4812,12 @@ fi
 
 done
 
-  for ac_header in unistd.h
+    for ac_header in unistd.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "
-    #ifdef HAVE_UNISTD_H
-    #include <unistd.h>
-    #endif
+      #ifdef HAVE_UNISTD_H
+      #include <unistd.h>
+      #endif
 
 "
 if test "x$ac_cv_header_unistd_h" = xyes; then :
@@ -4819,12 +4829,12 @@ fi
 
 done
 
-  for ac_header in sys/time.h
+    for ac_header in sys/time.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "sys/time.h" "ac_cv_header_sys_time_h" "
-    #ifdef HAVE_SYS_TIME_H
-    #include <sys/time.h>
-    #endif
+      #ifdef HAVE_SYS_TIME_H
+      #include <sys/time.h>
+      #endif
 
 "
 if test "x$ac_cv_header_sys_time_h" = xyes; then :
@@ -4836,12 +4846,12 @@ fi
 
 done
 
-  for ac_header in sys/resource.h
+    for ac_header in sys/resource.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "sys/resource.h" "ac_cv_header_sys_resource_h" "
-    #ifdef HAVE_SYS_RESOURCE_H
-    #include <sys/resource.h>
-    #endif
+      #ifdef HAVE_SYS_RESOURCE_H
+      #include <sys/resource.h>
+      #endif
 
 "
 if test "x$ac_cv_header_sys_resource_h" = xyes; then :
@@ -4853,14 +4863,14 @@ fi
 
 done
 
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #ifdef HAVE_UNISTD_H
-    #include <unistd.h>
-    #endif
-    #ifdef HAVE_SYS_RESOURCE_H
-    #include <sys/resource.h>
-    #endif
+      #include <unistd.h>
+      #endif
+      #ifdef HAVE_SYS_RESOURCE_H
+      #include <sys/resource.h>
+      #endif
 int
 main ()
 {
@@ -4876,23 +4886,23 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-  if test "$pac_cv_has_getrusage" = "yes" ; then
+    if test "$pac_cv_has_getrusage" = "yes" ; then
 
 $as_echo "#define HAVE_GETRUSAGE 1" >>confdefs.h
 
-    # Now, test that the fields are available (they may not be if strrict POSIX
-    # compatibility is set in the compiler)
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether minflt field of struct rusage is available" >&5
+      # Now, test that the fields are available (they may not be if strrict POSIX
+      # compatibility is set in the compiler)
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether minflt field of struct rusage is available" >&5
 $as_echo_n "checking whether minflt field of struct rusage is available... " >&6; }
 if ${pac_cv_have_rusage_minflt+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-        #include <unistd.h>
-        #include <resource.h>
+          #include <unistd.h>
+          #include <resource.h>
 int
 main ()
 {
@@ -4910,14 +4920,14 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $pac_cv_have_rusage_minflt" >&5
 $as_echo "$pac_cv_have_rusage_minflt" >&6; }
-    if test "$pac_cv_have_rusage_minflt" = "yes" ; then
+      if test "$pac_cv_have_rusage_minflt" = "yes" ; then
 
 $as_echo "#define GETRUSAGE_HAS_MINFLT 1" >>confdefs.h
 
+      fi
     fi
-  fi
 
-  ac_config_files="$ac_config_files src/fpmpi/profiler.h"
+    ac_config_files="$ac_config_files src/fpmpi/profiler.h"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6191,18 +6201,25 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
+  fi
 fi
 
 
-MPIP_EXT_LINK=""
-if test -n "${mpiP_ext_link}"; then
-  MPIP_EXT_LINK="${mpiP_ext_link}"
+if test "X${PROF_TYPE}" = "XmpiP"; then
+    if test -n "${mpiP_ext_link}"; then
+    MPIP_EXT_LINK="${mpiP_ext_link}"
+  else
+    as_fn_error $? "--with-mpiP=\"'-L/..../mpiP/lib -lmpiP'\"" "$LINENO" 5
+  fi
 fi
 
 
-TAU_EXT_LINK=""
-if test -n "${TAU_ext_link}"; then
-  TAU_EXT_LINK="${TAU_ext_link}"
+if test "X${PROF_TYPE}" = "XTAU"; then
+  if test -n "${TAU_ext_link}"; then
+    TAU_EXT_LINK="${TAU_ext_link}"
+  else
+    as_fn_error $? "--with-TAU=\"'-L/..../TAU/lib -lTAU'\"" "$LINENO" 5
+  fi
 fi
 
 
