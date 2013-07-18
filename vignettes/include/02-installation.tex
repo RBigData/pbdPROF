@@ -69,23 +69,14 @@ export to other \proglang{pbdR} packages at installation via the flag
 \code{SPMD_LDFLAGS}, therefore, no need to add further flags to
 \code{R CMD INSTALL} when reinstall packages for further profiling.
 
-For further profiling, such as \pkg{pbdSLAP} and \pkg{pbdBASE}, one may
+For further profiling, such as \pkg{pbdBASE}, one may
 reinstall both packages, via
 \begin{Command}
-R CMD INSTALL pbdSLAP_0.1-6.tar.gz
 R CMD INSTALL pbdBASE_0.2-2.tar.gz
 \end{Command}
 Note that since both packages have MPI \proglang{C} functions involved, it
 is necessary to link with profiler library in order to profile communications
 evoked by both packages.
-
-For profiling \pkg{pbdNCD4}, one may need to recompile \pkg{HDF5} and
-\pkg{netCDF4} libraries and link with profiler library, since those are
-the MPI functions involved such as MPI-IO. Also, as recompile finish, one may
-reinstall the package, via
-\begin{Command}
-R CMD INSTALL pbdNCDF4_0.1-1.tar.gz
-\end{Command}
 
 
 \subsection{mpiP}

@@ -11,9 +11,8 @@ Authors@R: c(person("Sehrawat", "Gaurav", role=c("aut", "cre")),
 Depends: R (>= 2.14.0)
 LazyLoad: yes
 LazyData: yes
-OS_type: unix
 Copyright: See pbdPROF/inst/fpmpi_LICENSE.txt for the files in
-        src/fpmpi/.
+        src/fpmpi/ and src/fpmpi_win.
 Description: MPI profiling tools.
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux and Mac,
         MPICH2 (>= 1.4.1p1) on Windows
@@ -22,7 +21,7 @@ URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
 MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
-Packaged: 2013-07-17 19:24:07 UTC; snoweye
+Packaged: 2013-07-18 17:21:59 UTC; snoweye
 Author: Sehrawat Gaurav [aut, cre],
   Wei-Chen Chen [aut, cre],
   Drew Schmidt [aut],

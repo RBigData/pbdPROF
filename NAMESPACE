@@ -1,6 +1,11 @@
 ### All functions
 exportPattern("^prof\\.[[:alpha:]]+")
-exportPattern("^[[:alpha:]]+")
+exportPattern("^parse\\.[[:alpha:]]+")
+
+### S3 functions
+export(
+  "read.prof"
+)
 
 ### S3 methods
 S3method(parse.prof, fpmpi)
