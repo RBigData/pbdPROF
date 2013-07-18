@@ -4,4 +4,4 @@
   lib.type = "fpmpi"
 ) # End of .PROF.CT
 
-.PROF.LIB <- c("fpmpi", "mpiP", "TAU")
+.PROF.LIB <- c("fpmpi", "mpip", "tau")

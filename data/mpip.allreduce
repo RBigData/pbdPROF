@@ -1,0 +1,89 @@
+@ mpiP
+@ Command : /home/snoweye/work-my/local/R-devel/lib/R/bin/exec/R --slave --no-restore --file=allreduce.r --args 
+@ Version                  : 3.3.0
+@ MPIP Build date          : Jul 18 2013, 16:09:19
+@ Start time               : 2013 07 18 16:12:59
+@ Stop time                : 2013 07 18 16:12:59
+@ Timer Used               : PMPI_Wtime
+@ MPIP env var             : [null]
+@ Collector Rank           : 0
+@ Collector PID            : 12205
+@ Final Output Dir         : .
+@ Report generation        : Single collector task
+@ MPI Task Assignment      : 0 wolf-vb9
+@ MPI Task Assignment      : 1 wolf-vb9
+
+---------------------------------------------------------------------------
+@--- MPI Time (seconds) ---------------------------------------------------
+---------------------------------------------------------------------------
+Task    AppTime    MPITime     MPI%
+   0      0.149     0.0133     8.94
+   1      0.146    0.00417     2.85
+   *      0.296     0.0175     5.92
+---------------------------------------------------------------------------
+@--- Callsites: 6 ---------------------------------------------------------
+---------------------------------------------------------------------------
+ ID Lev File/Address        Line Parent_Funct             MPI_Call
+  1   0 0x7f1efa9e4144           [unknown]                Barrier
+  2   0 0x7f1efa9e3e6c           [unknown]                Allreduce
+  3   0 0x7f1efa9e3f3c           [unknown]                Allreduce
+  4   0 0x7fc98898d144           [unknown]                Barrier
+  5   0 0x7fc98898ce6c           [unknown]                Allreduce
+  6   0 0x7fc98898cf3c           [unknown]                Allreduce
+---------------------------------------------------------------------------
+@--- Aggregate Time (top twenty, descending, milliseconds) ----------------
+---------------------------------------------------------------------------
+Call                 Site       Time    App%    MPI%     COV
+Barrier                 1       12.9    4.37   73.79    0.00
+Barrier                 4       3.87    1.31   22.11    0.00
+Allreduce               2      0.307    0.10    1.75    0.00
+Allreduce               5      0.191    0.06    1.09    0.00
+Allreduce               3      0.115    0.04    0.66    0.00
+Allreduce               6      0.105    0.04    0.60    0.00
+---------------------------------------------------------------------------
+@--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
+---------------------------------------------------------------------------
+Call                 Site      Count      Total       Avrg  Sent%
+Allreduce               3          4        160         40  42.55
+Allreduce               6          4        160         40  42.55
+Allreduce               2          6         28       4.67   7.45
+Allreduce               5          6         28       4.67   7.45
+---------------------------------------------------------------------------
+@--- Callsite Time statistics (all, milliseconds): 6 ----------------------
+---------------------------------------------------------------------------
+Name              Site Rank  Count      Max     Mean      Min   App%   MPI%
+Allreduce            2    0      6    0.143   0.0512    0.023   0.21   2.30
+Allreduce            2    *      6    0.143   0.0512    0.023   0.10   1.75
+
+Allreduce            3    0      4    0.043   0.0288    0.023   0.08   0.86
+Allreduce            3    *      4    0.043   0.0288    0.023   0.04   0.66
+
+Allreduce            5    1      6    0.063   0.0318    0.024   0.13   4.58
+Allreduce            5    *      6    0.063   0.0318    0.024   0.06   1.09
+
+Allreduce            6    1      4    0.037   0.0262    0.021   0.07   2.52
+Allreduce            6    *      4    0.037   0.0262    0.021   0.04   0.60
+
+Barrier              1    0     21     11.6    0.615    0.018   8.66  96.84
+Barrier              1    *     21     11.6    0.615    0.018   4.37  73.79
+
+Barrier              4    1     21    0.625    0.184     0.02   2.64  92.89
+Barrier              4    *     21    0.625    0.184     0.02   1.31  22.11
+---------------------------------------------------------------------------
+@--- Callsite Message Sent statistics (all, sent bytes) -------------------
+---------------------------------------------------------------------------
+Name              Site Rank   Count       Max      Mean       Min       Sum
+Allreduce            2    0       6         8     4.667         4        28
+Allreduce            2    *       6         8     4.667         4        28
+
+Allreduce            3    0       4        40        40        40       160
+Allreduce            3    *       4        40        40        40       160
+
+Allreduce            5    1       6         8     4.667         4        28
+Allreduce            5    *       6         8     4.667         4        28
+
+Allreduce            6    1       4        40        40        40       160
+Allreduce            6    *       4        40        40        40       160
+---------------------------------------------------------------------------
+@--- End of Report --------------------------------------------------------
+---------------------------------------------------------------------------

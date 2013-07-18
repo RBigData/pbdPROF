@@ -1,0 +1,65 @@
+@ mpiP
+@ Command : /home/snoweye/work-my/local/R-devel/lib/R/bin/exec/R --no-init-file --slave --no-save -f /home/snoweye/work-my/local/R-devel/lib/R/library/Rmpi/demo/masterslavePI.R 
+@ Version                  : 3.3.0
+@ MPIP Build date          : Jul 18 2013, 16:09:19
+@ Start time               : 2013 07 18 16:18:15
+@ Stop time                : 2013 07 18 16:18:15
+@ Timer Used               : PMPI_Wtime
+@ MPIP env var             : [null]
+@ Collector Rank           : 0
+@ Collector PID            : 16273
+@ Final Output Dir         : .
+@ Report generation        : Single collector task
+@ MPI Task Assignment      : 0 wolf-vb9
+
+---------------------------------------------------------------------------
+@--- MPI Time (seconds) ---------------------------------------------------
+---------------------------------------------------------------------------
+Task    AppTime    MPITime     MPI%
+   0     0.0368    0.00121     3.28
+   *     0.0368    0.00121     3.28
+---------------------------------------------------------------------------
+@--- Callsites: 4 ---------------------------------------------------------
+---------------------------------------------------------------------------
+ ID Lev File/Address        Line Parent_Funct             MPI_Call
+  1   0 0x7fa032a80004           [unknown]                Comm_free
+  2   0 0x7fa032a7f35f           [unknown]                Reduce
+  3   0 0x7fa032a7fca1           [unknown]                Comm_free
+  4   0 0x7fa032a800a7           [unknown]                Intercomm_merge
+---------------------------------------------------------------------------
+@--- Aggregate Time (top twenty, descending, milliseconds) ----------------
+---------------------------------------------------------------------------
+Call                 Site       Time    App%    MPI%     COV
+Intercomm_merge         4       1.04    2.83   86.16    0.00
+Reduce                  2       0.09    0.24    7.46    0.00
+Comm_free               1      0.048    0.13    3.98    0.00
+Comm_free               3      0.029    0.08    2.40    0.00
+---------------------------------------------------------------------------
+@--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
+---------------------------------------------------------------------------
+Call                 Site      Count      Total       Avrg  Sent%
+Reduce                  2          1          8          8 100.00
+---------------------------------------------------------------------------
+@--- Callsite Time statistics (all, milliseconds): 4 ----------------------
+---------------------------------------------------------------------------
+Name              Site Rank  Count      Max     Mean      Min   App%   MPI%
+Comm_free            1    0      1    0.048    0.048    0.048   0.13   3.98
+Comm_free            1    *      1    0.048    0.048    0.048   0.13   3.98
+
+Comm_free            3    0      1    0.029    0.029    0.029   0.08   2.40
+Comm_free            3    *      1    0.029    0.029    0.029   0.08   2.40
+
+Intercomm_merge      4    0      1     1.04     1.04     1.04   2.83  86.16
+Intercomm_merge      4    *      1     1.04     1.04     1.04   2.83  86.16
+
+Reduce               2    0      1     0.09     0.09     0.09   0.24   7.46
+Reduce               2    *      1     0.09     0.09     0.09   0.24   7.46
+---------------------------------------------------------------------------
+@--- Callsite Message Sent statistics (all, sent bytes) -------------------
+---------------------------------------------------------------------------
+Name              Site Rank   Count       Max      Mean       Min       Sum
+Reduce               2    0       1         8         8         8         8
+Reduce               2    *       1         8         8         8         8
+---------------------------------------------------------------------------
+@--- End of Report --------------------------------------------------------
+---------------------------------------------------------------------------
