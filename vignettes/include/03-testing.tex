@@ -1,0 +1,91 @@
+\section{Test Scripts}
+
+We provide two short \proglang{R} scripts for \pkg{pbdMPI} and \pkg{Rmpi}
+to test the installation of profiling libraries and \pkg{pbdPROF}.
+If installation is correct, one may profile the following scripts to obtain
+correcponding outputs.
+
+
+\subsection{Test with \pkg{pbdMPI}}
+
+Below we provide sample scripts to test that the installation of
+\pkg{pbdPROF} was successful.  For \pkg{pbdMPI}, use:
+\begin{lstlisting}[title=Test script for pbdMPI]
+### Save this in a file: prof_pbdMPI.r
+library(pbdMPI, quiet = TRUE)
+init()
+
+set.seed(comm.rank())
+x <- allreduce(rnorm(100), op = "sum")
+
+finalize()
+\end{lstlisting}
+and run this code by
+\begin{Code}
+mpiexec -np 2 Rscript prof_pbdMPI.r
+\end{Code}
+
+A successful output of \pkg{fpmpi}
+in the profiling file \code{fpmpi_profile.txt} may contain
+\begin{Output}
+Details for each MPI routine
+                  Average of sums over all processes
+                                                   % by message length
+                                (max over          0.........1........1........
+                                 processes [rank])           K        M
+MPI_Allreduce:
+        Calls     :          2            2 [   0] 0500000005000000000000000000
+        Time      :   3.61e-05     3.72e-05 [   0] 0700000003000000000000000000
+        Data Sent :        804          804 [   0]
+        SyncTime  :    0.00149      0.00287 [   0] 0*0000000.000000000000000000
+        By bin    : 1-4 [1,1]   [   2.5e-05,  2.72e-05] [   4.1e-05,   0.00286]
+                  : 513-1024    [1,1]   [     1e-05,     1e-05] [   1.1e-05,  7.61e-05]
+\end{Output}
+In this \proglang{R} script,
+one MPI \proglang{C} function \code{MPI_Allreduce} is called twice and
+804 bytes are sent that a hundred of double precision (8 bytes) for
+100 normal random variables, and one integer (4 bytes) for checking
+data type to call the corresponding S4 method.
+
+
+\subsection{Test with \pkg{Rmpi}}
+
+For \pkg{Rmpi}, use:
+\begin{lstlisting}[title=Test script for pbdMPI]
+### Save this in a file: prof_Rmpi.r
+library(Rmpi, quiet = TRUE)
+mpi.comm.dup(0, 1)
+
+set.seed(mpi.comm.rank())
+x <- mpi.allreduce(rnorm(100), type = 2, op = "sum")
+
+mpi.quit()
+\end{lstlisting}
+and run this code by
+\begin{Code}
+mpiexec -np 2 Rscript prof_Rmpi.r
+\end{Code}
+
+A successful output of \pkg{fpmpi}
+in the profiling file \code{fpmpi_profile.txt} could be
+\begin{Output}
+Details for each MPI routine
+                  Average of sums over all processes
+                                                   % by message length
+                                (max over          0.........1........1........
+                                 processes [rank])           K        M
+MPI_Allreduce:
+        Calls     :          1            1 [   0] 000000000*000000000000000000
+        Time      :   4.01e-05     4.41e-05 [   1] 000000000*000000000000000000
+        Data Sent :        800          800 [   0]
+        SyncTime  :    0.00103      0.00204 [   1] 000000000*000000000000000000
+        By bin    : 513-1024    [1,1]   [   3.6e-05,  4.41e-05] [  2.79e-05,   0
+.00204]
+MPI_Comm_dup:     
+        Calls     :          1
+        Time      :   5.81e-05
+        SyncTime  :   0.000211
+\end{Output}
+Two MPI \proglang{C} functions \code{MPI_Allreduce} and \code{MPI_Comm_dup}
+are called one time for each.
+

@@ -20,9 +20,22 @@ and any changes in future versions can be found on website:
 \section{Introduction}
 \label{sec:introduction}
 
-The main features of \pkg{pbdPROF} are:
+The goal of \pkg{pbdPROF} is to utilize external MPI profiling libraries,
+such as \pkg{fpmpi}~\citep{fpmpi}, \pkg{mpiP}~\citep{mpiP}, or
+\pkg{TAU}~\citep{TAU},
+to profile parallel \proglang{R} code and understand hidden MPI
+communications between processors. Numbers of communications,
+sizes of messages, times and types of functions calls all affect program
+performance and design of algorithm. The MPI profiling libraries are able to
+high-jack MPI functions at run time that intercept some of MPI function calls,
+then provide MPI information without disturbing original programs or algorithms.
+
+The current main features of \pkg{pbdPROF} include:
 \begin{enumerate}
-\item ...
+\item providing linking information to \proglang{pbdR}~\citep{pbdR2012},
+\item output profiling information associated with MPI calls,
+\item parsing and summarizing profiling information, and
+\item support three MPI profiling libraries.
 \end{enumerate}
 
 
@@ -30,5 +43,5 @@ The main features of \pkg{pbdPROF} are:
 \label{sec:system_requirements}
 
 \pkg{pbdPROF} requires an MPI installation and an MPI-using package, such as \pkg{pbdMPI}~\citep{Chen2012pbdMPIpackage} or
-\pkg{Rmpi}~\citep{Yu2010}.  For information regarding how to install MPI or \pkg{pbdMPI}, please see the \pkg{pbdMPI} vignette~\citep{Chen2012pbdMPIvignette} or the pbdR website \url{http://r-pbd.org/}.
+\pkg{Rmpi}~\citep{Yu2002}.  For information regarding how to install MPI or \pkg{pbdMPI}, please see the \pkg{pbdMPI} vignette~\citep{Chen2012pbdMPIvignette} or the pbdR website \url{http://r-pbd.org/}.
 

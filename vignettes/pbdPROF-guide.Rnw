@@ -39,6 +39,8 @@ Knoxville, TN, USA \\
 \maketitle
 \pagenumbering{roman}
 \tableofcontents
+
+\newpage
 \input{./include/00-copyright}
 
 \newpage
@@ -52,7 +54,7 @@ Knoxville, TN, USA \\
 
 \input{./include/01-introduction}
 \input{./include/02-installation}
-\input{./include/03-faq}
+\input{./include/03-testing}
 \input{./include/04-example}
 
 \bibliographystyle{./include/jss}

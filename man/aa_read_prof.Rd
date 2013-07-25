@@ -18,21 +18,17 @@
 ??
 }
 \references{
-  fpmpi website:
-  \url{http://??}
-
-  mpiP website:
-  \url{http://??}
-
-  TAU website:
-  \url{http://??}
-
   Programming with Big Data in R Website:
   \url{http://r-pbd.org/}
-}
-\author{
-  Gaurav Sehrawat, Wei-Chen Chen, Drew Schmidt, Pragneshkumar Patel, and
-  George Ostrouchov.
+
+  fpmpi website:
+  \url{http://www.mcs.anl.gov/research/projects/fpmpi/WWW/}
+
+  mpiP website:
+  \url{http://mpip.sourceforge.net/}
+
+  TAU website:
+  \url{http://www.cs.uoregon.edu/research/tau/home.php}
 }
 \examples{
 \dontrun{
