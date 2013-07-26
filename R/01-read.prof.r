@@ -1,6 +1,6 @@
 ### For reading profile outputs.
 
-read.prof <- function(file.name, lib.type = .PROF.CT$lib.type){
+read.prof <- function(file.name, lib.type = .PROF.CT$lib.type, ...){
   if(! file.exists(file.name[1])){
     stop("The input file is not exists")
   }
@@ -8,13 +8,13 @@ read.prof <- function(file.name, lib.type = .PROF.CT$lib.type){
   lib.type <- match.arg(tolower(lib.type[1]), .PROF.LIB)
  
   if(lib.type[1] == "fpmpi"){
-    ret <- readLines(file.name[1])
+    ret <- readLines(file.name[1], ...)
     class(ret) <- "fpmpi"
   } else if(lib.type[1] == "mpip"){
-    ret <- readLines(file.name[1])
+    ret <- readLines(file.name[1], ...)
     class(ret) <- "mpip"
   } else if(lib.type[1] == "tau"){
-    ret <- readLines(file.name[1])
+    ret <- readLines(file.name[1], ...)
     class(ret) <- "tau"
   } else{
     stop("The reading function is not implemented.")

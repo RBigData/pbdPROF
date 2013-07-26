@@ -18,10 +18,11 @@
   \item{...}{extra options to parse.}
 }
 \details{
-??
+  These functions take in the output of \code{read.prof()} and parse it
+  into dataset which is useful and easier to utlize and analyze in R.
 }
 \value{
-??
+  A summarized data matrix.
 }
 \references{
   Programming with Big Data in R Website:
@@ -43,7 +44,7 @@ library(pbdPROF)
 fn <- system.file("data/fpmpi.allreduce", package = "pbdPROF")
 da <- read.prof(fn, lib.type = "fpmpi")
 str(da)
-parse.prof(da)
+(da.out <- parse.prof(da))
 }
 }
 \keyword{utility}
