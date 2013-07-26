@@ -9,13 +9,13 @@ read.prof <- function(file.name, lib.type = .PROF.CT$lib.type, ...){
  
   if(lib.type[1] == "fpmpi"){
     ret <- readLines(file.name[1], ...)
-    class(ret) <- "fpmpi"
+    class(ret) <- "fpmpi.read"
   } else if(lib.type[1] == "mpip"){
     ret <- readLines(file.name[1], ...)
-    class(ret) <- "mpip"
+    class(ret) <- "mpip.read"
   } else if(lib.type[1] == "tau"){
     ret <- readLines(file.name[1], ...)
-    class(ret) <- "tau"
+    class(ret) <- "tau.read" 
   } else{
     stop("The reading function is not implemented.")
   }

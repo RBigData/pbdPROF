@@ -1,17 +1,17 @@
 \name{parse prof}
 \alias{parse.prof}
 \alias{parse.prof.default}
-\alias{parse.prof.fpmpi}
-\alias{parse.prof.mpip}
-\alias{parse.prof.tau}
+\alias{parse.prof.fpmpi.read}
+\alias{parse.prof.mpip.read}
+\alias{parse.prof.tau.read}
 \title{ Parsing Profiling Outputs }
 \description{
-  These function parse profiling outputs.
+  These functions parse profiling outputs.
 }
 \usage{
-\method{parse.prof}{fpmpi}(x, ...)
-\method{parse.prof}{mpip}(x, ...)
-\method{parse.prof}{tau}(x, ...)
+\method{parse.prof}{fpmpi.read}(x, ...)
+\method{parse.prof}{mpip.read}(x, ...)
+\method{parse.prof}{tau.read}(x, ...)
 }
 \arguments{
   \item{x}{input for parsing (returns of \code{read.prof()}.)}
@@ -22,7 +22,8 @@
   into dataset which is useful and easier to utlize and analyze in R.
 }
 \value{
-  A summarized data matrix.
+  A list contains summarized information, and the list has a class
+  attribute, 'fpmpi.parse', 'mpip.parse', or 'tau.parse'.
 }
 \references{
   Programming with Big Data in R Website:
@@ -43,7 +44,6 @@ library(pbdPROF)
 
 fn <- system.file("data/fpmpi.allreduce", package = "pbdPROF")
 da <- read.prof(fn, lib.type = "fpmpi")
-str(da)
 (da.out <- parse.prof(da))
 }
 }

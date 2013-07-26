@@ -17,7 +17,8 @@
   assigns corresponding class to the return values.
 }
 \value{
-  A vector contains text of profiling file.
+  A vector contains text of profiling file, and the vector has a class
+  attribute, 'fpmpi.read', 'mpip.read', or 'tau.read'.
 }
 \references{
   Programming with Big Data in R Website:
