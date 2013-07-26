@@ -1,12 +1,12 @@
 ### Setup R source code and objects.
 PKG_CPPFLAGS = @PKG_CPPFLAGS@
-PKG_LIBS     = @FPMPI_EXT_LINK@ @PKG_LIBS@
-               # Order is matter for external fpmpi
+PKG_LIBS     = @PKG_LIBS@
 
 ### For user configuration.
 USER_CONF = Makeconf
 
 ### For fpmpi
+R_FPMPI = @R_FPMPI@
 FPMPI_OBJS= \
 fpmpi/commused.o \
 fpmpi/fputil.o \
@@ -15,10 +15,16 @@ fpmpi/resrc.o \
 fpmpi/testwait.o \
 fpmpi/topology.o
 
-OBJECTS = @FPMPI_OBJS@
+### For static library.
+ARCH = $(AR)
+ARCHFLAGS = cr
+
+### Fool R CMD check.
+SHLIB=
+OBJECTS=
 
 ### Start making here.
-all: $(SHLIB)
+all: $(R_FPMPI)
 	@echo "MPIRUN = @MPIRUN@" > $(USER_CONF)
 	@echo "MPIEXEC = @MPIEXEC@" >> $(USER_CONF)
 	@echo "ORTERUN = @ORTERUN@" >> $(USER_CONF)
@@ -32,13 +38,19 @@ all: $(SHLIB)
 	@echo "MPI_DEFS = @MPI_DEFS@" >> $(USER_CONF)
 	@echo "MPI_INCL2 = @MPI_INCL2@" >> $(USER_CONF)
 	@echo "PKG_CPPFLAGS = @PKG_CPPFLAGS@" >> $(USER_CONF)
-	@echo "PKG_LIBS = @FPMPI_EXT_LINK@ @PKG_LIBS@" >> $(USER_CONF)
+	@echo "PKG_LIBS = ${PKG_LIBS}" >> $(USER_CONF)
 	@echo "FPMPI_EXT_LINK = @FPMPI_EXT_LINK@" >> $(USER_CONF)
 	@echo "FPMPI_INTERNAL = @FPMPI_INTERNAL@" >> $(USER_CONF)
 	@echo "FPMPI_OBJS = @FPMPI_OBJS@" >> $(USER_CONF)
 	@echo "INT32 = @INT32@" >> $(USER_CONF)
+	@echo "R_FPMPI = lib${R_ARCH}/@R_FPMPI@" >> $(USER_CONF)
+	@echo "MPIP_EXT_LINK = @MPIP_EXT_LINK@" >> $(USER_CONF)
+	@echo "TAU_EXT_LINK = @TAU_EXT_LINK@" >> $(USER_CONF)
+	@echo "PROF_TYPE = @PROF_TYPE@" >> $(USER_CONF)
 
-$(SHLIB): $(OBJECTS)
+$(R_FPMPI): $(FPMPI_OBJS)
+	$(ARCH) $(ARCHFLAGS) $(R_FPMPI) $(FPMPI_OBJS)
+	$(RANLIB) $(R_FPMPI)
 
 clean:
 	@rm -rf *.o *.d *.rc *.so* *.dll *.dylib *.a *.lib \
