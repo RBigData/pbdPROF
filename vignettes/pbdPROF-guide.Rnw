@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{pbdBASE-guide}
+%\VignetteIndexEntry{pbdPROF-guide}
 
 \documentclass{article}
 \usepackage[margin=1.1in]{geometry}
@@ -39,23 +39,25 @@ Knoxville, TN, USA \\
 \maketitle
 \pagenumbering{roman}
 \tableofcontents
+
+\newpage
 \input{./include/00-copyright}
 
-\bodyheadfoot
 \newpage
+\input{./include/00-acknowledgement}
+
+\newpage
+\bodyheadfoot
 \pagenumbering{arabic}
 \setcounter{page}{1}
 \pagestyle{fancy}
 
-\include{./include/00-acknowledgement}
-\include{./include/01-introduction}
+\input{./include/01-introduction}
 \input{./include/02-installation}
-\input{./include/03-faq}
+\input{./include/03-testing}
+\input{./include/04-example}
 
-\newpage
-\phantomsection
-\addcontentsline{toc}{section}{References}
-\bibliographystyle{include/jss}
+\bibliographystyle{./include/jss}
 \bibliography{./include/pbdPROF}
 
 \end{document}

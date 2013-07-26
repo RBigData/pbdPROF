@@ -41,14 +41,40 @@ PKG_LIBS = -L"$(MPI_LIB)" -lmpi
 ### For user configuration.
 USER_CONF = Makeconf
 
+### For fpmpi
+R_FPMPI = libfpmpi.a 
+FPMPI_OBJS= \
+fpmpi/commused.o \
+fpmpi/fputil.o \
+fpmpi/profiler.o \
+fpmpi/resrc.o \
+fpmpi/testwait.o \
+fpmpi/topology.o
+
+### For static library.
+ARCH = $(AR)
+ARCHFLAGS = cr
+
 ### Start making here.
 all: $(SHLIB)
-	@$(CP) ../R/windows/zzz.r ../R/
-	@$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' > $(USER_CONF)
-	@$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
+
+# all: $(R_FPMPI) $(SHLIB)
+# 	@$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' > $(USER_CONF)
+# 	@$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
+# 	@$(ECHO) 'R_FPMPI = lib${R_ARCH}/$(R_FPMPI)' >> $(USER_CONF)
 
 $(SHLIB): $(OBJECTS)
+
+$(R_FPMPI): $(FPMPI_OBJS)
+	$(ARCH) $(ARCHFLAGS) $(R_FPMPI) $(FPMPI_OBJS)
+	$(RANLIB) $(R_FPMPI)
+
+$(FPMPI_OBJS): cp_header
+
+cp_header:
+	cp -f fpmpi/win/*.h fpmpi/
 
 clean:
 	@$(RM) -rf *.o *.d *.rc *.so* *.dll *.dylib *.a *.lib \
                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
+	@$(RM) -rf fpmpi/*.o fpmpi/fpmpiconf.h fpmpi/profiler.h

@@ -1,0 +1,63 @@
+\section{Profiling with \pkg{fpmpi}}
+\label{sec:ex_fpmpi}
+
+
+\subsection{Demo of \pkg{pbdMPI}}
+
+The \code{allreduce.r} is originally in \pkg{pbdMPI/demo/} and can be profiled
+by
+\begin{Code}
+mpiexec -np 2 Rscript -e "demo(allreduce,'pbdMPI',ask=F,echo=F)"
+\end{Code}
+which will provide an output file \code{fpmpi_profile.txt}.
+Part of output is listed in the next as
+\begin{Output}
+Processes:      2
+Execute time:   1.176
+Timing Stats: [seconds] [min/max]       [min rank/max rank]
+  wall-clock: 1.176 sec 1.171488 / 1.180277     0 / 1
+        user: 0.378 sec 0.360000 / 0.396000     0 / 1
+         sys: 0.07 sec  0.040000 / 0.100000     1 / 0
+
+                  Average of sums over all processes
+Routine                 Calls       Time Msg Length    %Time by message length
+                                                    0.........1........1........
+                                                              K        M
+MPI_Allreduce       :      10   0.000118        188 0610030000000000000000000000
+MPI_Barrier         :      21     0.0054        
+
+Details for each MPI routine
+                  Average of sums over all processes
+                                                   % by message length
+                                (max over          0.........1........1........
+                                 processes [rank])           K        M
+MPI_Allreduce:
+        Calls     :         10           10 [   0] 0510040000000000000000000000
+        Time      :   0.000118     0.000119 [   0] 0610030000000000000000000000
+        Data Sent :        188          188 [   0]
+        SyncTime  :   0.000312     0.000453 [   0] 07.0020000000000000000000000
+        By bin    : 1-4 [5,5]   [  7.01e-05,  7.01e-05] [  0.000117,  0.000343]
+                  : 5-8 [1,1]   [  7.87e-06,  9.06e-06] [  9.06e-06,  9.06e-06]
+                  : 33-64       [4,4]   [  3.91e-05,  4.03e-05] [  4.51e-05,    0.0001]
+MPI_Barrier:
+        Calls     :         21
+        Time      :     0.0054
+\end{Output}
+Two MPI \proglang{C} functions \code{MPI_Allreduce} and \code{MPI_Barrier} are
+evoked inside this \proglang{R} code. The \code{MPI_Allreduce} is called $10$
+times, span $0.000156$ seconds, and 188 bytes are sent.
+The \code{MPI_Barrier} is called $21$ times and span $0.00608$ seconds.
+
+
+\subsection{Demo of \pkg{pbdDMAT}}
+
+\code{pbdDMAT/demo/svd.r} in \pkg{pbdDMAT}~\citep{Schmidt2012pbdBASEpackage}
+
+$<<\mbox{TBD}>>$
+
+
+\subsection{Demo of \pkg{Rmpi}}
+
+\code{Rmpi/demo/masterslavePI.R} in \pkg{Rmpi}
+
+$<<\mbox{TBD}>>$
