@@ -7,7 +7,16 @@ export(
   "read.prof"
 )
 
+
 ### S3 methods
 S3method(parse.prof, fpmpi)
 S3method(parse.prof, mpip)
 S3method(parse.prof, tau)
+
+### S4 classes and methods
+exportClasses("prof")
+
+exportMethods(
+  "show",
+  "print"
+)

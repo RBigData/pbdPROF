@@ -2,13 +2,15 @@
 setClass(
          "prof", 
           representation(
-                         type="character",
-						 parse="data.frame"
+                         profiler="character",
+                         raw="character",
+                         parsed="data.frame"
           ),
           
           prototype(
-                         type="",
-						 parse=data.frame()
+                         profiler="",
+                         raw="character",
+                         parsed=data.frame()
           )
 )
 
