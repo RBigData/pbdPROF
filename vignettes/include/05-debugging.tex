@@ -1,0 +1,23 @@
+\section{Debugging \pkg{pbdPROF}}
+\label{sec:debug}
+
+
+\subsection{Installation related problems}
+
+1.If you have downloaded the package from github and tried to using R CMD INSTALL \pkg{pbdPROF} and you see an error similar to this
+\begin{Output}
+ERROR: 'configure' exists but is not executable -- see the 'R Installation and Administration Manual'
+\end{Output}
+Solution:You have to make the configure executable which means giving it permission , which can done by chmod +x configure after changing the folder to package's main directory.
+
+2.If you are using \pkg{fpmpi}~\citep{fpmpi} externally and during it's installation you get an error similar to this
+\begin{Output}
+error :checking for library containing MPI_Init... (cached) no configure: 
+error: Could not find MPI library
+\end{Output}
+Solution: You probably need to specify the path to MPI library using this in command line in the fpmpi main directory
+\begin{Code}
+./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
+\end{Code}
+
+
