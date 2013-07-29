@@ -12,4 +12,4 @@ get.mpi <- function(arch = c("32", "64")){
     }
   }
   invisible()
-} # End of get.mpi().
+}

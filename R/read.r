@@ -20,15 +20,12 @@ read.prof <- function(file.name, ...)
   
   raw <- readLines(file.name[1L], ...)
   
-  if (profiler == 'fpmpi')
-    parsed <- parse.prof.fpmpi(x=raw)
+  class(raw) <- profiler
+  
+  parsed <- parse.prof(x=raw)
   
   ret <- new("prof", profiler=profiler, raw=raw, parsed=parsed)
   
   return( ret )
-} # End of read.prof().
-
-
-
-
+}
 

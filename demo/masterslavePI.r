@@ -1,5 +1,10 @@
 library(pbdPROF, quiet = TRUE)
 
 fn <- system.file("data/fpmpi.masterslavePI", package = "pbdPROF")
-da <- read.prof(fn, lib.type = "fpmpi")
+da <- read.prof(fn)
 
+da
+
+if (interactive()){
+  plot(da)
+}
