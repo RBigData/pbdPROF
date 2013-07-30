@@ -3,30 +3,33 @@ plot_fpmpi <- function(x, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profil
 {
   df <- x@parsed
   
+  df$Routine <- factor(df$Routine)
+  df$Calls <- factor(df$Calls)
+  
   ### Set up plots
-  g1 <- ggplot(df, aes(x=factor(Routine), y=factor(Calls))) + 
-          geom_bar(stat="identity", aes(fill=Routine)) + 
+  g1 <- ggplot(df, aes_string(x='Routine', y='Calls')) + 
+          geom_bar(stat="identity", aes_string(fill='Routine')) + 
           xlab("Routine") + 
           ylab("Calls") +
           theme(axis.text.x=element_text(angle=20, hjust=1)) +
           theme(legend.position="none")
   
-  g2 <- ggplot(df, aes(x=factor(Routine), y=Time)) + 
-          geom_bar(stat="identity", aes(fill=Routine)) + 
+  g2 <- ggplot(df, aes_string(x='Routine', y='Time')) + 
+          geom_bar(stat="identity", aes_string(fill='Routine')) + 
           xlab("Routine") +
           ylab("Time (seconds)") + 
           theme(axis.text.x=element_text(angle=20, hjust=1)) +
           theme(legend.position="none")
   
-  g3 <- ggplot(df, aes(x=factor(Routine), y=Data.Sent)) + 
-          geom_bar(stat="identity", aes(fill=Routine)) + 
+  g3 <- ggplot(df, aes_string(x='Routine', y='Data.Sent')) + 
+          geom_bar(stat="identity", aes_string(fill='Routine')) + 
           xlab("Routine") +
           ylab("Data Sent (bytes)") + 
           theme(axis.text.x=element_text(angle=20, hjust=1)) +
           theme(legend.position="none")
   
-  g4 <- ggplot(df, aes(x=factor(Routine), y=SyncTime)) + 
-          geom_bar(stat="identity", aes(fill=Routine)) + 
+  g4 <- ggplot(df, aes_string(x='Routine', y='SyncTime')) + 
+          geom_bar(stat="identity", aes_string(fill='Routine')) + 
           xlab("Routine") +
           ylab("Sync Time (seconds)") + 
           theme(axis.text.x=element_text(angle=20, hjust=1)) +

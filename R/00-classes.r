@@ -1,3 +1,10 @@
+### Virtual classes
+setClass("rawprof", representation="VIRTUAL")
+setClass("fpmpi", contains="rawprof", representation="VIRTUAL")
+setClass("mpiP", contains="rawprof", representation="VIRTUAL")
+setClass("tau", contains="rawprof", representation="VIRTUAL")
+
+
 ### Profiler class checker
 valid_prof <- function(object)
 {
@@ -23,11 +30,4 @@ setClass(
           ),
           validity=valid_prof
 )
-
-
-### Virtual classes
-setClass("rawprof", representation="VIRTUAL")
-setClass("fpmpi", contains="rawprof", representation="VIRTUAL")
-setClass("mpiP", contains="rawprof", representation="VIRTUAL")
-setClass("tau", contains="rawprof", representation="VIRTUAL")
 
