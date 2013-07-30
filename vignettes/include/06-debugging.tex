@@ -1,0 +1,62 @@
+\section{Debugging \pkg{pbdPROF}}
+\label{sec:debug}
+
+
+\subsection{Installation related problems}
+
+{\color{red}Problem:1.}If you have downloaded the package from github and tried to using R CMD INSTALL \pkg{pbdPROF} and you see an error similar to this
+\begin{Output}
+ERROR: 'configure' exists but is not executable -- see the 'R Installation and Administration Manual'
+\end{Output}
+{\color{dkgreen}Solution:}You have to make the configure executable which means giving it permission , which can done by
+\begin{Code}
+chmod +x configure
+\end{Code}
+after changing the folder to package's main directory.
+
+{\color{red}Problem:2.}If you are using \pkg{fpmpi}~\citep{fpmpi} externally and during it's installation you get an error similar to this
+\begin{Output}
+error :checking for library containing MPI_Init... (cached) no configure: 
+error: Could not find MPI library
+\end{Output}
+{\color{dkgreen}Solution:} You probably need to specify the path to MPI library using this in command line in the fpmpi main directory
+\begin{Code}
+./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
+\end{Code}
+
+\subsection{Error on running}
+
+{\color{red}Problem:1.}While Running \pkg{Rmpi} code for profiling and  you encounter the below error:
+\begin{Output}
+error: mpiexec was unable to launch the specified application as it could not access
+or execute an executable:
+Executable: /path/to/R/package_installation_directory/2.15/Rmpi/Rslaves.sh
+Node: "Your_node"
+while attempting to start process rank 0.
+\end{Output}
+{\color{dkgreen}Solution:}You need to make executable of the shell scripts in the "inst" directory of "Rmpi" main directory using the following command from command line in "inst" directory:
+\begin{Code}
+chmod +x *.sh
+\end{Code}
+
+{\color{red}Problem:2.}While Running \pkg{Rmpi} code for profiling and  you are encountering the below error:
+\begin{Output}
+[G:12221] [[39704,0],0] ORTE_ERROR_LOG: Not found in file ../../../../../orte/mca/plm/base/plm_base_launch_support.c at line 758
+--------------------------------------------------------------------------
+mpiexec was unable to start the specified application as it encountered an error.
+More information may be available above.
+--------------------------------------------------------------------------
+\end{Output}
+{\color{dkgreen}Solution:}
+\begin{enumerate}
+\item You need to check whether your \pkg{Rmpi} is working without the \pkg{pbdPROF}.If yes try running your \pkg{Rmpi} code on single process only.
+\item If above does not help, then you may need .Rprofile in Rmpi/inst/ to run your code from "inst" directory.
+\item If still your code does not run ,you need to update your OPENMPI version to the latest one.You can check your openmpi version\url{http://www.open-mpi.org/software/ompi/} through 
+\begin{Output}
+ompi_info
+\end{Output}
+\item If further you came to this far and luck is not with you somehow(pun intended), there might some configuration problem in your machine.
+\end{enumerate}
+
+
+

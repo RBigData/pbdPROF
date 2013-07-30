@@ -13,20 +13,20 @@
 \author{
 \begin{minipage}{6in}
 \centering
-Gaurav Sehrawat$^1$, Wei-Chen Chen$^2$, Drew Schmidt$^3$, Pragneshkumar Patel$^3$, and George Ostrouchov$^{2,3}$\\
+Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^2$, and George Ostrouchov$^{1,2}$\\
 \end{minipage}
 \\
 \\
-$^1$Jaypee Institute of Information Technology\\
-Uttar Pradesh, India\\
-\\
-$^2$Computer Science and Mathematics Division, \\
+$^1$Computer Science and Mathematics Division, \\
 Oak Ridge National Laboratory, \\
 Oak Ridge, TN, USA \\
 \\
-$^3$Remote Data Analysis and Visualization Center\\
+$^2$Remote Data Analysis and Visualization Center\\
 University of Tennessee, \\
 Knoxville, TN, USA \\
+\\
+$^3$Jaypee Institute of Information Technology\\
+Uttar Pradesh, India\\
 %\\
 %\\
 %\today
@@ -56,6 +56,8 @@ Knoxville, TN, USA \\
 \input{./include/02-installation}
 \input{./include/03-testing}
 \input{./include/04-example}
+%\input{./include/05-profiling}
+\input{./include/06-debugging}
 
 \bibliographystyle{./include/jss}
 \bibliography{./include/pbdPROF}

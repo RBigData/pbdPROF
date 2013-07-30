@@ -1,3 +1,3 @@
-allreduce	pbdPROF		An example of pbdMPI/demo/allreduce.r
-svd		pbdPROF		An example of pbdDMAT/demo/svd.r
-masterslavePI	pbdPROF		An example of Rmpi/demo/masterslavePI.r
+allreduce  pbdPROF    An example of pbdMPI/demo/allreduce.r
+svd    pbdPROF    An example of pbdDMAT/demo/svd.r
+masterslavePI  pbdPROF    An example of Rmpi/demo/masterslavePI.r

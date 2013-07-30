@@ -1,21 +1,20 @@
 ### All functions
 exportPattern("^prof\\.[[:alpha:]]+")
-exportPattern("^parse\\.[[:alpha:]]+")
-exportPattern("^print\\.[[:alpha:]]+")
-exportPattern("^summary\\.[[:alpha:]]+")
+# exportPattern("^parse\\.[[:alpha:]]+")
+
 
 ### S3 functions
 export(
-  "read.prof"
+  "read.prof",
+  "plot"
 )
 
-### S3 methods
-S3method(parse.prof, fpmpi.read)
-S3method(parse.prof, mpip.read)
-S3method(parse.prof, tau.read)
-S3method(print, fpmpi.parse)
-S3method(print, mpip.parse)
-S3method(print, tau.parse)
-S3method(summary, fpmpi.parse)
-S3method(summary, mpip.parse)
-S3method(summary, tau.parse)
+
+### S4 classes and methods
+exportClasses("prof")
+
+exportMethods(
+  "show",
+  "print",
+  "plot"
+)

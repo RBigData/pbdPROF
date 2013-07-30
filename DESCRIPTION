@@ -2,13 +2,13 @@ Package: pbdPROF
 Version: 0.1-0
 Date: 2013-07-26
 Title: Programming with Big Data --- MPI Profiling Tools
-Authors@R: c(person("Sehrawat", "Gaurav", role="aut"), 
-        person("Wei-Chen", "Chen", role = c("aut", "cre"), email =
-        "wccsnow@gmail.com"),
+Authors@R: c(person("Wei-Chen", "Chen", role = c("aut", "cre"), 
+        email = "wccsnow@gmail.com"),
         person("Drew", "Schmidt", role = "aut"),
+        person("Sehrawat", "Gaurav", role="aut"), 
         person("Pragneshkumar", "Patel", role = "aut"), 
         person("George", "Ostrouchov", role ="aut"))
-Depends: R (>= 2.14.0)
+Depends: R (>= 2.14.0), methods, graphics, grid, ggplot2
 LazyLoad: yes
 LazyData: yes
 Copyright: See pbdPROF/inst/fpmpi_LICENSE.txt for the files in
@@ -21,10 +21,10 @@ URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
 MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
-Packaged: 2013-07-26 20:03:23 UTC; snoweye
-Author: Sehrawat Gaurav [aut],
-  Wei-Chen Chen [aut, cre],
+Packaged: 2013-07-30 15:54:37 UTC; snoweye
+Author: Wei-Chen Chen [aut, cre],
   Drew Schmidt [aut],
+  Sehrawat Gaurav [aut],
   Pragneshkumar Patel [aut],
   George Ostrouchov [aut]
 Maintainer: Wei-Chen Chen <wccsnow@gmail.com>

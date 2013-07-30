@@ -1,5 +1,6 @@
 \name{pbdPROF-package}
 \alias{pbdPROF-package}
+\alias{pbdPROF}
 \docType{package}
 \title{MPI Profiling Tools}
 \description{
@@ -20,12 +21,11 @@
   \url{http://r-pbd.org/}
 }
 \author{
-  Gaurav Sehrawat, Wei-Chen Chen, Drew Schmidt, Pragneshkumar Patel, and
+  Wei-Chen Chen, Drew Schmidt, Gaurav Sehrawat, Pragneshkumar Patel, and
   George Ostrouchov.
 }
 \seealso{
-  \code{\link{read.prof}},
-  \code{\link{parse.prof}}.
+  \code{\link{read.prof}}
 }
 \examples{
 \dontrun{

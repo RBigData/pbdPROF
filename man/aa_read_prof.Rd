@@ -2,23 +2,21 @@
 \alias{read.prof}
 \title{ Reading Profiling Outputs }
 \description{
-  These function read profiling outputs.
+  Reader for profiler outputs.
 }
 \usage{
-  read.prof(file.name, lib.type = .PROF.CT$lib.type, ...)
+  read.prof(file.name, ...)
 }
 \arguments{
   \item{file.name}{a full file name.}
-  \item{lib.type}{type of profiling library.}
   \item{...}{options for \code{readLines}}
 }
 \details{
   This function reads in profiling outputs from parallel R code and
-  assigns corresponding class to the return values.
+  stores the output in a \code{prof} class.
 }
 \value{
-  A vector contains text of profiling file, and the vector has a class
-  attribute, 'fpmpi.read', 'mpip.read', or 'tau.read'.
+  A \code{prof} class object.
 }
 \references{
   Programming with Big Data in R Website:
@@ -39,6 +37,8 @@ library(pbdPROF)
 
 fn <- system.file("data/fpmpi.allreduce", package = "pbdPROF")
 da <- read.prof(fn, lib.type = "fpmpi")
+
+da
 }
 }
 \keyword{utility}
