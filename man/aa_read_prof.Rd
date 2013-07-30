@@ -9,7 +9,6 @@
 }
 \arguments{
   \item{file.name}{a full file name.}
-  \item{lib.type}{type of profiling library.}
   \item{...}{options for \code{readLines}}
 }
 \details{

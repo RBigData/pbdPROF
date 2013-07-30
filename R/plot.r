@@ -116,5 +116,8 @@ setMethod("plot", signature(x="prof"),
 
 
 # autoplot compatibility
-autoplot.prof <- plot_fpmpi
+autoplot.prof <- function(object, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profiler Output")
+{
+  plot_fpmpi(x=object, which=which, show.title=show.title, label=label, ...)
+}
 

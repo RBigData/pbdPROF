@@ -1,9 +1,9 @@
 library(pbdPROF, quiet = TRUE)
 
-fn <- system.file("data/fpmpi.masterslavePI", package = "pbdPROF")
+fn <- system.file("extdata/fpmpi.masterslavePI", package = "pbdPROF")
 da <- read.prof(fn)
 
-da
+print(da)
 
 if (interactive()){
   plot(da)
