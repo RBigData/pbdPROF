@@ -5,13 +5,14 @@ The \pkg{pbdPROF} currently is by default using
 \pkg{fpmpi} library internally,
 i.e., a source copy of \pkg{fpmpi} is located at \pkg{pbdPROF/src/fpmpi}
 and built in a static library at \pkg{pbdPROF/lib/libfpmpi.a}.
-However, external profiler libraries
+However, external profiling libraries
 such as \pkg{fpmpi}, \pkg{mpiP}, and \pkg{TAU}
 can be also linked by \pkg{pbdPROF} via suitable
 \code{--configure-args} to \code{R CMD INSTALL}.
 We explain the whole procedure in Section~\ref{sec:fpmpi} using \pkg{fpmpi}
-as an example and leave some keys steps for \pkg{mpiP} and \pkg{TAU} in
-Sections~\ref{sec:mpiP} and~\ref{sec:TAU}.
+as an example and leave some keys steps for \pkg{mpiP} and \pkg{TAU}
+in furture Sections.
+% ~\ref{sec:mpiP} and~\ref{sec:TAU}.
 
 {\color{red}
 No matter using \pkg{fpmpi}, \pkg{mpiP}, or \pkg{TAU}, we strongly recommend
@@ -60,7 +61,7 @@ reinstalled with \code{--enable-pbdPROF}.
 
 Reinstall \pkg{pbdMPI} via
 \begin{Command}
-R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF'"
+R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF"
 \end{Command}
 Note that the \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
 used in \code{pbdMPI/configure.ac} or \code{pbdMPI/configure} to determine an
@@ -79,7 +80,7 @@ when MPI function calls are evoked.
 
 No mater the external or internal library is used, the \code{PROF_LDFLAGS}
 in \code{pbdMPI/etc/Makefile} provides the linking information to the
-profiler library. It is also used in \code{PKG_LIBS} which will be
+profiling library. It is also used in \code{PKG_LIBS} which will be
 export to other \proglang{pbdR} packages at installation via the flag
 \code{SPMD_LDFLAGS}, therefore, no need to add further flags to
 \code{R CMD INSTALL} when reinstall packages for further profiling.
@@ -88,7 +89,7 @@ export to other \proglang{pbdR} packages at installation via the flag
 \label{sec:pbdBASE}
 
 For further profiling, such as \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}, one may
-reinstall both packages, via
+reinstall the package, via
 \begin{Command}
 R CMD INSTALL pbdBASE_0.2-2.tar.gz
 \end{Command}
@@ -96,8 +97,8 @@ There is no need to provide any flag since \pkg{pbdMPI/etc/Makefile} has the
 information and installation of \pkg{pbdBASE} already considers it.
 Note that since both packages (\pkg{pbdMPI} and \pkg{pbdBASE})
 have MPI \proglang{C} functions involved, it
-is necessary to link with profiler library in order to profile communications
-evoked by both packages.
+is necessary to link with profiling library in order to profile communications
+evoked by the package.
 
 
 \subsubsection{Reinstall \pkg{Rmpi}}
@@ -117,7 +118,7 @@ R CMD build --no-resave-data Rmpi
 R CMD INSTALL Rmpi_0.6-4.tar.gz --configure-args="--enable-pbdPROF'"
 \end{Command}
 Note that {\color{red} 0.6-4} is not an official release of \pkg{Rmpi}.
-It is a modified version of 0.6-3 and it is available at
+It is a modified version of 0.6-3 and it is currently available at
 \url{https://github.com/snoweye/Rmpi_PROF}.  The authors of \pkg{Rmpi} have plans 
 to eventually incorporate these changes, once a stable version of \pkg{pbdPROF}
 hits the CRAN.
