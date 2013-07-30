@@ -1,5 +1,6 @@
 \name{pbdPROF-package}
 \alias{pbdPROF-package}
+\alias{pbdPROF}
 \docType{package}
 \title{MPI Profiling Tools}
 \description{

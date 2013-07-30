@@ -51,9 +51,9 @@ The \code{MPI_Barrier} is called $21$ times and span $0.00608$ seconds.
 
 \subsection{Demo of \pkg{pbdDMAT}}
 
-\code{pbdDMAT/demo/svd.r} in \pkg{pbdDMAT}~\citep{Schmidt2012pbdBASEpackage}
-The \code{svd.r} is originally in \pkg{pbdDMA/demo/} and can be profiled
-by
+The \code{svd.r} is originally in
+\pkg{pbdDMA/demo/}~\citep{Schmidt2012pbdBASEpackage}
+and can be profiled by
 \begin{Code}
 mpiexec -np 2 Rscript -e "demo(svd,'pbdDMAT',ask=F,echo=F)"
 \end{Code}
@@ -100,13 +100,10 @@ The \code{MPI_Barrier} is called $8$ times and span $0.000784$ seconds.
 
 \subsection{Demo of \pkg{Rmpi}}
 
-\code{Rmpi/demo/masterslavePI.R} in \pkg{Rmpi}
-
-
-The \code{masterSlavePI.r} is originally in \pkg{Rmpi/demo/} and can be profiled
-by
+The \code{masterSlavePI.r} is originally in \pkg{Rmpi/demo/} and can be
+profiled by
 \begin{Code}
-mpiexec -np 1 Rscript -e "demo(masterslavePI,'pbdRmpi',ask=F,echo=F)"
+mpiexec -np 4 Rscript -e "demo(masterslavePI,'Rmpi',ask=F,echo=F)"
 \end{Code}
 which will provide an output file \code{fpmpi_profile.txt}.
 Part of output is listed in the next as
@@ -138,5 +135,6 @@ MPI_Reduce:
 One MPI \proglang{C} function \code{MPI_Reduce} is
 evoked inside this \proglang{R} code. The \code{MPI_Reduce} is called only $1$
 time, span $6.51e-05$ seconds, and 8 bytes are sent.
-
-
+Note that there is only one processor (master in \code{comm=0})
+profiled by \pkg{fpmpi}, and the other three processors
+(slaves in \code{comm=1}) are not.
