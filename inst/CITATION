@@ -3,29 +3,28 @@ citHeader("To cite pbdPROF in a publication use:")
 citEntry(
   entry = "Misc",
   title = "pbdPROF: Programming with Big Data -- MPI Profiling Tools",
-  author = personList(as.person("Gaurav Sehrawat"),
-                      as.person("Wei-Chen Chen"),
+  author = personList(as.person("Wei-Chen Chen"),
                       as.person("Drew Schmidt"),
+                      as.person("Gaurav Sehrawat"),
                       as.person("Pragneshkumar Patel"),
                       as.person("George Ostrouchov")),
   year = "2013",
   note = "{R} Package",
   url = "http://cran.r-project.org/package=pbdPROF",
-  textVersion = "Sehrawat, G., Chen, W.-C., Schmidt, D., Patel, P., and Ostrouchov, G. (2013) pbdPROF: MPI Profiling Tools. R Package, URL http://cran.r-project.org/package=pbdPROF"
+  textVersion = "Chen, W.-C., Schmidt, D., Sehrawat, G., Patel, P., and Ostrouchov, G. (2013) pbdPROF: MPI Profiling Tools. R Package, URL http://cran.r-project.org/package=pbdPROF"
 )
 
 citEntry(
   entry = "Manual",
   title = "A Quick Guide for the pbdPROF Package",
-  author = personList(as.person("Gaurav Sehrawat"),
-                      as.person("Wei-Chen Chen"),
+  author = personList(as.person("Wei-Chen Chen"),
                       as.person("Drew Schmidt"),
+                      as.person("Gaurav Sehrawat"),
                       as.person("Pragneshkumar Patel"),
                       as.person("George Ostrouchov")),
   year = "2013",
   note = "{R} Vignette",
   url = "http://cran.r-project.org/package=pbdPROF",
-  textVersion = "Sehrawat, G., Chen, W.-C., Schmidt, D., Patel, P., and Ostrouchov, G. (2013) A Quick Guide for the pbdPROF Package. R Vignette, URL http://cran.r-project.org/package=pbdPROF"
+  textVersion = "Chen, W.-C., Schmidt, D., Sehrawat, G., Patel, P., and Ostrouchov, G. (2013) A Quick Guide for the pbdPROF Package. R Vignette, URL http://cran.r-project.org/package=pbdPROF"
 )
-
 
