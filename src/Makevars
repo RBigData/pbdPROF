@@ -1,0 +1,58 @@
+### Setup R source code and objects.
+PKG_CPPFLAGS = -I/usr/lib/openmpi/include  -DMPI2 -DOPENMPI
+PKG_LIBS     = -L/usr/lib/openmpi/lib -lmpi  -lutil -lpthread
+
+### For user configuration.
+USER_CONF = Makeconf
+
+### For fpmpi
+R_FPMPI = libfpmpi.a
+FPMPI_OBJS= \
+fpmpi/commused.o \
+fpmpi/fputil.o \
+fpmpi/profiler.o \
+fpmpi/resrc.o \
+fpmpi/testwait.o \
+fpmpi/topology.o
+
+### For static library.
+ARCH = $(AR)
+ARCHFLAGS = cr
+
+### Fool R CMD check.
+SHLIB=
+OBJECTS=
+
+### Start making here.
+all: $(R_FPMPI)
+	@echo "MPIRUN = mpirun" > $(USER_CONF)
+	@echo "MPIEXEC = mpiexec" >> $(USER_CONF)
+	@echo "ORTERUN = orterun" >> $(USER_CONF)
+	@echo "TMP_INC = /usr/lib/openmpi/include" >> $(USER_CONF)
+	@echo "TMP_LIB = /usr/lib/openmpi/lib" >> $(USER_CONF)
+	@echo "MPI_ROOT = " >> $(USER_CONF)
+	@echo "MPITYPE = OPENMPI" >> $(USER_CONF)
+	@echo "MPI_INCLUDE_PATH = /usr/lib/openmpi/include" >> $(USER_CONF)
+	@echo "MPI_LIBPATH = /usr/lib/openmpi/lib" >> $(USER_CONF)
+	@echo "MPI_LIBS =  -lutil -lpthread" >> $(USER_CONF)
+	@echo "MPI_DEFS = -DMPI2" >> $(USER_CONF)
+	@echo "MPI_INCL2 = " >> $(USER_CONF)
+	@echo "PKG_CPPFLAGS = -I/usr/lib/openmpi/include  -DMPI2 -DOPENMPI" >> $(USER_CONF)
+	@echo "PKG_LIBS = ${PKG_LIBS}" >> $(USER_CONF)
+	@echo "FPMPI_EXT_LINK = " >> $(USER_CONF)
+	@echo "FPMPI_INTERNAL = yes" >> $(USER_CONF)
+	@echo "FPMPI_OBJS = $(FPMPI_OBJS)" >> $(USER_CONF)
+	@echo "INT32 = " >> $(USER_CONF)
+	@echo "R_FPMPI = lib${R_ARCH}/libfpmpi.a" >> $(USER_CONF)
+	@echo "MPIP_EXT_LINK = " >> $(USER_CONF)
+	@echo "TAU_EXT_LINK = " >> $(USER_CONF)
+	@echo "PROF_TYPE = fpmpi" >> $(USER_CONF)
+
+$(R_FPMPI): $(FPMPI_OBJS)
+	$(ARCH) $(ARCHFLAGS) $(R_FPMPI) $(FPMPI_OBJS)
+	$(RANLIB) $(R_FPMPI)
+
+clean:
+	@rm -rf *.o *.d *.rc *.so* *.dll *.dylib *.a *.lib \
+                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
+	@rm -rf fpmpi/*.o fpmpi/fpmpiconf.h fpmpi/profiler.h

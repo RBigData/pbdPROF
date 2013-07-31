@@ -8,7 +8,8 @@
 \docType{data}
 \title{Small example datasets}
 \description{
-  These datasets are small for test operations and functions.
+  These datasets are small for test operations and functions.These datasets will be used in demo
+  part for showing parsing and plotting.They are located in exdata directory of installated package.
 }
 \format{
   Each dataset contains information profiled by \pkg{fpmpi} or \pkg{mpip}
