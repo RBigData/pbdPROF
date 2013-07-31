@@ -9,7 +9,7 @@
 
 \title{ Plotting }
 \description{
-  Plot and methods for \code{prof} class objects.
+  Plot methods for \code{prof} class objects.
 }
 \section{Methods}{
 \describe{

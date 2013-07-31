@@ -1,9 +1,9 @@
 library(pbdPROF, quiet = TRUE)
 
-fn <- system.file("data/fpmpi.allreduce", package = "pbdPROF")
+fn <- system.file("extdata/fpmpi.allreduce", package = "pbdPROF")
 da <- read.prof(fn)
 
-da
+print(da)
 
 if (interactive()){
   plot(da)
