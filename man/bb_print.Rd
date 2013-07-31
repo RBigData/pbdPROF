@@ -26,9 +26,6 @@
   \item{x, object}{\code{prof} class object}
   \item{...}{extra arguments}
 }
-\value{
-  Returns a string.
-}
 \seealso{
   \code{
     \link{prof-class}, 
