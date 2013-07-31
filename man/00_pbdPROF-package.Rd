@@ -1,11 +1,12 @@
 \name{pbdPROF-package}
+\alias{pbdPROF}
 \alias{pbdPROF-package}
 \alias{pbdPROF}
 \docType{package}
 \title{MPI Profiling Tools}
 \description{
-  This package contains several libraries for MPI profiling, as well as some 
-  R tools for parsing and analyzing their outputs.
+  This package contains several libraries for profiling MPI codes, as well as 
+  some R tools for parsing, analyzing, and plotting their outputs.
 }
 \details{
 \tabular{ll}{
@@ -23,9 +24,6 @@
 \author{
   Wei-Chen Chen, Drew Schmidt, Gaurav Sehrawat, Pragneshkumar Patel, and
   George Ostrouchov.
-}
-\seealso{
-  \code{\link{read.prof}}
 }
 \examples{
 \dontrun{

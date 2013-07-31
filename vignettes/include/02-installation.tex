@@ -1,43 +1,123 @@
 \section{Installation}
 \label{sec:installation}
 
-The \pkg{pbdPROF} currently is by default using
-\pkg{fpmpi} library internally,
-i.e., a source copy of \pkg{fpmpi} is located at \pkg{pbdPROF/src/fpmpi}
-and built in a static library at \pkg{pbdPROF/lib/libfpmpi.a}.
-However, external profiling libraries
-such as \pkg{fpmpi}, \pkg{mpiP}, and \pkg{TAU}
-can be also linked by \pkg{pbdPROF} via suitable
-\code{--configure-args} to \code{R CMD INSTALL}.
-We explain the whole procedure in Section~\ref{sec:fpmpi} using \pkg{fpmpi}
-as an example and leave some keys steps for \pkg{mpiP} and \pkg{TAU}
-in furture Sections.
+
+\subsection[System Requirements]{System Requirements}
+\label{sec:system_requirements}
+
+The \pkg{pbdPROF} package requires an MPI installation, such as OpenMPI or 
+MPICH2.  Additionally, the package is basically useless without some kind of 
+MPI-using \proglang{R} package, such 
+as \pkg{pbdMPI}~\citep{Chen2012pbdMPIpackage} or \pkg{Rmpi}~\citep{Yu2002}.
+For information regarding how to install MPI or \pkg{pbdMPI}, please see the 
+\pkg{pbdMPI} vignette~\citep{Chen2012pbdMPIvignette} or the pbdR website 
+\url{http://r-pbd.org/install}.
+
+
+\subsection{The Big Picture}
+
+Before pressing on, let us stop to take a moment and understand the ``big 
+picture'' here. The following sections will contain \emph{more than sufficient} 
+detail, to the point where it would be easy to lose sight of the proverbial 
+forest for the trees.
+
+For the remainder of this document, we will be providing information for two 
+fairly distinct groups of people:  \proglang{R}-level MPI package developers, 
+and \proglang{C}/\proglang{Fortran}-level MPI package developers.  If you are 
+in the former category, then the use of this package is a bit simpler for you.  
+All you need to do is get \pkg{pbdPROF} installed and reinstall your MPI-using 
+package of choice (\pkg{pbdMPI}, \pkg{Rmpi}, etc. \dots).  Each package that 
+directly uses MPI (packages produced by developers in the latter category) will 
+have to explicitly support \pkg{pbdPROF} (or the reader will have to get 
+his/her hands dirty in another developer's makefiles --- an unpleasant 
+business).  It is worth nothing here that there are instructions in this 
+document for how a developer of the second kind could explicitly add 
+\pkg{pbdPROF} support to his/her package.
+  
+So why the need to reinstall things?  It boils down to how the profilers 
+actually work.  Under normal circumstances, a user writes some \proglang{R} code 
+from an MPI-using package (e.g., \code{allreduce(x)} from \pkg{pbdMPI}, 
+\code{mpi.allreduce(x, type=2)} from \pkg{Rmpi}, etc. \dots).
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=.4]{include/pics/mpi_normal}
+  \caption{Without a Profiler}
+  \label{fig:normalmpi}
+\end{figure}
+This then makes a call to some \proglang{C} or \proglang{Fortran} code which 
+directly interfaces with MPI.  You can see this pictures in 
+Figure~\ref{fig:normalmpi}.  When you use a profiler, you instead hijack the 
+calls to MPI from the \proglang{C}/\proglang{Fortran} code so that some 
+metadata can be stored about MPI usage.
+\begin{figure}[h]
+%   \centering
+  \hspace*{6.1cm}\includegraphics[scale=.4]{include/pics/mpi_profiler}
+  \caption{With the Profiler}
+  \label{fig:profmpi}
+\end{figure}
+This process is represented in Figure~\ref{fig:profmpi}.  Hopefully it should 
+be clear what, and when, something should be reinstalled.  For the sake of 
+completion, we summarize the possibilities below:
+
+To \emph{enable} MPI profiling:
+\begin{enumerate}
+  \item install \pkg{pbdPROF}
+  \item reinstall an MPI-using package and link it with \pkg{pbdPROF}
+  \item write and execute your MPI-using \proglang{R} code as normal
+  \item use the \pkg{pbdPROF} utilities \code{read.prof()}, \code{plot()}, etc. 
+for interpreting profiling results
+\end{enumerate}
+To \emph{disable} MPI profiling:
+\begin{enumerate}
+  \item reinstall any MPI-using package that was linked it with \pkg{pbdPROF}, 
+and this time \emph{do not} link with \pkg{pbdPROF}
+\end{enumerate}
+
+
+
+\subsection{Choice of Profiler}
+
+The \pkg{pbdPROF} package currently uses the \pkg{fpmpi} library by default.  
+More explicitly, a source copy of \pkg{fpmpi} is located at 
+\code{pbdPROF/src/fpmpi} of the \pkg{pbdPROF} source.  If this profiler is used, 
+static library will be built and placed in \code{pbdPROF/lib/libfpmpi.a}
+of the \pkg{pbdPROF} install directory.  However, external profiling 
+libraries such as \pkg{mpiP}, \pkg{TAU}, or even  \pkg{fpmpi} can be also 
+linked with \pkg{pbdPROF} by passing a suitable \code{--configure-args} 
+argument during an installation via \code{R CMD INSTALL}. We will explain this 
+procedure in depth in Section~\ref{sec:fpmpi} using an external \pkg{fpmpi}
+as an example, but we will leave some keys steps for \pkg{mpiP} and \pkg{TAU}
+for future Sections.
 % ~\ref{sec:mpiP} and~\ref{sec:TAU}.
 
+%%% FIXME remove this clause for the final package
+While it is possible to link with other profiling libraries, at the time of 
+writing (for version 0.1-0), we only support \pkg{fpmpi}.  We anticipate full 
+support of \pkg{mpiP} and \pkg{TAU} for the next version of this package.
+
 {\color{red}
-No matter using \pkg{fpmpi}, \pkg{mpiP}, or \pkg{TAU}, we strongly recommend
-to add \code{CPPFLAGS="-fPIC"} at the \code{configure} step.
+Regardless of whether \pkg{fpmpi}, \pkg{mpiP}, or \pkg{TAU} is used, we 
+strongly recommend adding \code{CPPFLAGS="-fPIC"} at the \code{configure} step.
 }
 
 
 \subsection{fpmpi}
 \label{sec:fpmpi}
 
-Using internal \pkg{fpmpi} library, via
+We can install \pkg{pbdPROF} using the internal \pkg{fpmpi} library via
 \begin{Command}
 R CMD INSTALL pbdPROF_0.1-0.tar.gz
 \end{Command}
-By default, this compiles \code{src/fpmpi/*}, generates a static
-library \code{libfpmpi.a}, and installs the library to
-\code{pbdPROF/lib/}.
-No shared library is generated or needed, so the directory
-\code{pbdPROF/libs/} is empty (no need to build \code{pbdPROF.so}.)
+By default, this compiles \code{pbdPROF/src/fpmpi/*} of the \pkg{pbdPROF} source, 
+generates a static library \code{libfpmpi.a}, and installs the library to
+\code{pbdPROF/lib/} of the \pkg{pbdPROF} install. No shared library is generated 
+or needed, so the directory
+\code{pbdPROF/libs/} is empty, i.e., there is no need to build \code{pbdPROF.so}.
 The linking argument is saved in \code{Makeconf} and installed to
-\code{pbdPROF/etc/} for
-further linking such as \pkg{pbdMPI} is reinstalled with
-\code{--enable-pbdPROF}.
+\code{pbdPROF/etc/} for later use by other packages, such as \pkg{pbdMPI} or \pkg{Rmpi}.
 
-Linking with external \pkg{fpmpi} library, via
+
+However, if we choose, we can link with an external \pkg{fpmpi} library, via
 \begin{Command}
 R CMD INSTALL pbdPROF_0.1-0.tar.gz \
   --configure-args="--with-fpmpi='/path_to_fpmpi/lib/libfpmpi.a'"
@@ -48,13 +128,13 @@ R CMD INSTALL pbdPROF_0.1-0.tar.gz \
   --configure-args="--with-fpmpi='-L/path_to_fpmpi/lib -lfpmpi'"
 \end{Command}
 Since \pkg{fpmpi} only builds a static library \code{libfpmpi.a}, there is
-no difference of these two installations of \pkg{pbdPROF}.
-This only provides the linking arguments either
+no difference between these two installations of \pkg{pbdPROF}.
+This only provides the linking arguments, either
 \code{/path_to_fpmpi/lib/libfpmpi.a} or
-\code{-L/path_to_fpmpi/lib -lfpmpi}
+\code{-L/path_to_fpmpi/lib -lfpmpi},
 which is saved in \code{Makeconf} and installed to
-\code{pbdPROF/etc/} for further linking such as \pkg{pbdMPI} is
-reinstalled with \code{--enable-pbdPROF}.
+\code{pbdPROF/etc/} for later use by other packages, such as \pkg{pbdMPI} or \pkg{Rmpi}.
+
 
 \subsubsection{Reinstall \pkg{pbdMPI}}
 \label{sec:pbdMPI}
@@ -63,13 +143,14 @@ Reinstall \pkg{pbdMPI} via
 \begin{Command}
 R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF"
 \end{Command}
-Note that the \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
+Package developers who are directly interfacing with MPI (via \proglang{C} or \proglang{Fortran}) 
+should note that \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
 used in \code{pbdMPI/configure.ac} or \code{pbdMPI/configure} to determine an
 appropriate linking flag \code{PROF_LDFLAGS} based on preset flags in
 \code{pbdPROF/etc/Makeconf}.
 
 If the internal library is used in \pkg{pbdPROF},
-then the path to the \code{pbdPROF/lib/libfpmpi.a} is set in the flag
+then the path to \code{pbdPROF/lib/libfpmpi.a} is set in the flag
 \code{PKG_LIBS} of \code{pbdMPI/src/Makevars.in}.
 If the external library is used in \pkg{pbdPROF},
 then the linking arguments either \code{/path_to_fpmpi/lib/libfpmpi.a} or
@@ -78,12 +159,12 @@ in the flag \code{PKG_LIBS} of \code{pbdMPI/src/Makevars.in}.
 Therefore, the \pkg{pbdMPI} can be intercepted by the \pkg{fpmpi} library
 when MPI function calls are evoked.
 
-No mater the external or internal library is used, the \code{PROF_LDFLAGS}
+No mater which library is used, internal or external, the \code{PROF_LDFLAGS}
 in \code{pbdMPI/etc/Makefile} provides the linking information to the
-profiling library. It is also used in \code{PKG_LIBS} which will be
-export to other \proglang{pbdR} packages at installation via the flag
-\code{SPMD_LDFLAGS}, therefore, no need to add further flags to
-\code{R CMD INSTALL} when reinstall packages for further profiling.
+profiling library. It is also used in \code{PKG_LIBS}, which will be
+exported to other \proglang{pbdR} packages at installation via the flag
+\code{SPMD_LDFLAGS}.  Therefore there is no need for additional flags in
+\code{R CMD INSTALL} when reinstalling packages for profiling.
 
 \subsubsection{Reinstall \pkg{pbdBASE}}
 \label{sec:pbdBASE}
@@ -96,8 +177,8 @@ R CMD INSTALL pbdBASE_0.2-2.tar.gz
 There is no need to provide any flag since \pkg{pbdMPI/etc/Makefile} has the
 information and installation of \pkg{pbdBASE} already considers it.
 Note that since both packages (\pkg{pbdMPI} and \pkg{pbdBASE})
-have MPI \proglang{C} functions involved, it
-is necessary to link with profiling library in order to profile communications
+have MPI-using \proglang{C}/\proglang{Fortran} functions involved, it
+is necessary to link with \pkg{pbdPROF} in order to profile communications
 evoked by the package.
 
 
@@ -120,5 +201,5 @@ R CMD INSTALL Rmpi_0.6-4.tar.gz --configure-args="--enable-pbdPROF'"
 Note that {\color{red} 0.6-4} is not an official release of \pkg{Rmpi}.
 It is a modified version of 0.6-3 and it is currently available at
 \url{https://github.com/snoweye/Rmpi_PROF}.  The authors of \pkg{Rmpi} have plans 
-to eventually incorporate these changes, once a stable version of \pkg{pbdPROF}
-hits the CRAN.
+to eventually incorporate these changes, but this can be used as a temporary 
+measure.

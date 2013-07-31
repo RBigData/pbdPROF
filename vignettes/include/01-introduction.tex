@@ -5,7 +5,7 @@ and should not be construed to represent any determination or
 policy of University, Agency, and National Laboratory.
 
 This document is written to explain the main
-functions of \pkg{pbdPROF}~\citep{Sehrawat2013pbdPROFpackage}, version 0.1-0.
+functions of \pkg{pbdPROF}~\citep{Chen2013pbdPROFpackage}, version 0.1-0.
 Every effort will be made to ensure future versions are consistent with
 these instructions, but features in later versions may not be explained
 in this document.
@@ -24,26 +24,19 @@ The goal of \pkg{pbdPROF} is to utilize external MPI profiling libraries,
 such as \pkg{fpmpi}~\citep{fpmpi}, \pkg{mpiP}~\citep{mpiP}, or
 \pkg{TAU}~\citep{TAU},
 to profile parallel \proglang{R} code and understand hidden MPI
-communications between processors. Numbers of communications,
-sizes of messages, times and types of functions calls all affect program
-performance and design of algorithm. The MPI profiling libraries are able to
-high-jack MPI functions at run time that intercept some of MPI function calls,
-then provide MPI information without disturbing original programs or algorithms.
+communications between processors. The number of communications,
+sizes of messages, times, and types of functions calls all affect program
+performance, and so having these measurements can greatly aid in debugging and 
+algorithm design. These MPI profiling libraries are able to
+hijack calls to MPI functions and then capture the profiling information 
+(as described above), all without disturbing the execution of the original program.
 
 The current main features of \pkg{pbdPROF} include:
 \begin{enumerate}
-\item providing linking information to \proglang{pbdR}~\citep{pbdR2012},
+\item providing linking information to \proglang{pbdR}~\citep{pbdR2012} and other MPI-using \proglang{R} packages
 \item output profiling information associated with MPI calls,
 \item parsing and summarizing profiling information, and
-\item support three MPI profiling libraries.
+\item support several MPI profiling libraries.
 \end{enumerate}
 
-
-\subsection[System Requirements]{System Requirements}
-\label{sec:system_requirements}
-
-\pkg{pbdPROF} requires an MPI installation, such as OpenMPI or MPICH2,
-and it also profiles an MPI-using package, such as
-\pkg{pbdMPI}~\citep{Chen2012pbdMPIpackage} or \pkg{Rmpi}~\citep{Yu2002}.
-For information regarding how to install MPI or \pkg{pbdMPI}, please see the \pkg{pbdMPI} vignette~\citep{Chen2012pbdMPIvignette} or the pbdR website \url{http://r-pbd.org/}.
 
