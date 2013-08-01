@@ -1,3 +1,9 @@
+2013-08-31: ver. 0.1-1
+  * Fix author name.
+
+2013-07-26: ver. 0.1-0
+  * Add vignette and man.
+
 ======================= Log Before Release =====================================
 2013-07-15:
   * Add external mpiP and TAU.
