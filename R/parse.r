@@ -76,4 +76,63 @@ parse.prof.fpmpi <- function(x, ...)
   return( ret )
 }
 
+parse.prof.mpip(x, ...){
+#Rscript for profiling mpiP
 
+ret_mpip<-list()
+#x<-readLines("mpip.allreduce",n=-1,warn=TRUE)
+
+#loop flags
+id.start <- grep("@--- MPI Time", x)
+id.end <- grep("@--- Callsites:", x)
+x.sub <- x[(id.start + 2):(id.end - 2)]
+loop<-(id.end-1)-(id.start+2)
+
+#the objects starting with "c" are actually modified/copied from orginal objects
+#filtering the 
+l <- lapply(seq.int(loop), function(i) { tmp <- unlist(strsplit(x.sub[i], split=" ")); tmp[which(tmp!="")] })
+head<-as.list(l[[1]])
+cloop<-loop-1
+copyl<-l[2:loop]
+first_stat<-matrix(ncol=4,nrow=loop-1,0)
+colnames(first_stat)<-c(head)
+#changing datatypes for plotting
+for (j in 1:cloop)
+  first_stat[j,] <- copyl[[j]]
+
+
+
+#second_part
+#loop flags
+id2.start <- grep("@--- Aggregate Time", x)
+id2.end <- grep("@--- Aggregate Sent", x)
+x.sub <- x[(id2.start + 2):(id2.end - 2)]
+loop <- (id2.end-1)-(id2.start+2)
+
+
+#for subsetting the valid #expressions leaving out the spaces
+l2 <- lapply(seq.int(loop), 
+             function(i) 
+             { 
+               tmp <- unlist(strsplit(x.sub[i], split=" "))
+               tmp[which(tmp!="")] 
+             }
+)
+#"copy" is the modified version of original while the numeric addition is respect to resemblance   to previous codes
+head <- as.list(l2[[1]])
+copyl2 <- l2[2:loop] #separate subset for handling the numeric
+cloop2 <- loop-1 #loop limit
+
+second_stat <- matrix(ncol=5,nrow=loop-1,0)
+colnames(second_stat) <- l2[[1]][-1]
+rownames(second_stat) <- c(1:cloop2)
+#changing datatypes for plotting purposes                    
+for (j in 1:cloop2)
+  second_stat[j,] <- as.vector(as.numeric(copyl2[[j]][-1])) #could be [-1] if character are removed
+
+second <- as.data.frame(second_stat) #converted to data.frame for handling the plotting #second stat
+
+#return list
+ret_mpiP<-list(first=first_stat,second=second_stat)
+return(ret_mpip)
+}
