@@ -1,4 +1,4 @@
-# Internals
+cd# Internals
 plot_fpmpi <- function(x, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profiler Output")
 {
   df <- x@parsed
@@ -113,6 +113,47 @@ setMethod("plot", signature(x="prof"),
       stop("Unknown profiler")
   }
 )
+
+
+
+##mpip plotter
+plot_mpi <- function(x, ..., which=1L:4L, show.title=TRUE, label="MPIP Profiler Output")
+{
+
+  output<-x@parsed
+#grid plot1
+#timing stats summary
+#first plot
+library(ggplot2)
+library(gridExtra)
+  timestat<-output$value[[3]]
+  timevscallname<-data.frame(Call1=timestat$Call,Time=timestat$Time)
+  Legends1=factor(timevscallname$Call1)
+  a<-qplot(Call1,Time,data=timevscallname,geom="bar",stat="identity",fill=Legends1)+xlab("Call_Name")+ylab("Time(in milliseconds)")+geom_text(data=timevscallname,aes(label=Time,y=Time),size=3)
+  ##second plot
+  timevscallname_per<-data.frame(Call2=timestat$Call,Time_per=timestat$MPI.)
+  Legends2=factor(timevscallname_per$Call2)
+  b<-qplot(Call2,Time_per,data=timevscallname_per,geom="bar",stat="identity",fill=Legends2)+xlab("Call_Name")+ylab("Time(in percent)")+geom_text(data=timevscallname_per,aes(label=Time_per,y=Time_per),size=3)
+
+##third part 
+sentstat<-output$value[[4]]
+sentvscallname<-data.frame(Call3=sentstat$Call,Message_size=sentstat$Total)
+Legends3=factor(sentvscallname$Call3)
+c<-qplot(Call3,Message_size,data=sentvscallname,geom="bar",stat="identity",fill=Legends3)+xlab("Call_Name")+ylab("Message size(in bytes)")+geom_text(data=sentvscallname,aes(label=Message_size,y=Message_size),size=3)
+
+##fourth part
+
+
+sentvscallname_per<-data.frame(Call3=sentstat$Call,Message_size_per=sentstat$Sent.)
+Legends4=factor(sentvscallname_per$Call3)
+d<-qplot(Call3,Message_size_per,data=sentvscallname_per,geom="bar",stat="identity",fill=Legends4)+xlab("Call_Name")+ylab("Message size(in bytes)")+geom_text(data=sentvscallname_per,aes(label=Message_size_per,y=Message_size_per),size=3)
+
+##plot in grid
+grid.arrange(a,b,c,d,nrow=2,ncol=2)
+
+}
+
+
 
 
 # autoplot compatibility
