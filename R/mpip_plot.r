@@ -4,6 +4,21 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, label="MPIP Profiler
   
 output<-x@parsed
 
+##very first plot
+rankvsmpi<-output$value[[1]]
+rankvsmpi1<-data.frame(Rank=rankvsmpi$Task,MPI_time=rankvsmpi$MPITime)
+
+rankvsmpi1<-rankvsmpi1[(rankvsmpi1$Rank != "*"),]
+##pseduo trick to add total time with every rank
+ranker<-data.frame(Rank=0:(NROW(rankvsmpi1)-1),MPI_time=sum(rankvsmpi1$MPI_time))
+rankvsmpi1<-rbind(ranker,rankvsmpi1)
+
+plot_first<-qplot(Rank,MPI_time,data=rankvsmpi1,fill=factor(MPI_time),geom="bar",stat="identity")+ylab("MPI time(in millisecond)")+theme(legend.position="none")
+plot_first
+
+
+
+
 #mpip_plot.r
 #grid plot1
 #timing stats summary
