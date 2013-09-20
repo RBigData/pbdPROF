@@ -76,31 +76,31 @@ parse.prof.fpmpi <- function(x, ...)
   return( ret )
 }
 
-parse.prof.mpip(x, ...){
+parse.prof.mpip <- function(x, ...)
+{
   #Rscript for profiling mpiP
-
-ret_mpip<-list()
+  
+  ret_mpip<-list()
 
   #lines <- readLines("12-null-null.exe.1.24393.1.mpiP")
-lines<-x 
+  lines<-x 
   #selection the region between ---- and --- putting it in time series space using embed
-regions<-t(t(embed(grep("@---", lines),2))+c(-2,2)) 
+  regions<-t(t(embed(grep("@---", lines),2))+c(-2,2)) 
   #mapply on set of regions
-mapply(function(start,stop) {
+  mapply(function(start,stop) {
     #converting to character without having to worry about spaces and empty lines
-  chunk<-paste(lines[start:stop],collapse="\n")
+    chunk<-paste(lines[start:stop],collapse="\n")
     #resusing the chunk
-  chunk<-gsub("Line Parent_Funct","Line_Parent_Funct", chunk)
+    chunk<-gsub("Line Parent_Funct","Line_Parent_Funct", chunk)
     #making a text file connection to read it as table since it follows pattern
-  tc<-textConnection(chunk)
+    tc<-textConnection(chunk)
     #reading as table
-  df<-read.table(tc, header=T)
+    df<-read.table(tc, header=T)
     #closing connection
-  close(tc)
+    close(tc)
     #returning the result
-  ret_mpip<-df
-  return(ret_mpip)
+    ret_mpip<-df
+    return(ret_mpip)
     #arguments of mapply
-}, regions[,2], regions[,1])
-
+  }, regions[,2], regions[,1])
 }

@@ -29,9 +29,9 @@ mpip/pc_lookup.o\
 mpip/report.o\
 mpip/wrappers_special.o\
 mpip/glob.o\
-mpip/mpiP-hash.o
-mpip/pcontrol.o
-mpip/util.o\
+mpip/mpiP-hash.o\
+mpip/pcontrol.o\
+mpip/util.o
 
 
 ### For static library.
