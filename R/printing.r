@@ -1,7 +1,7 @@
 ### print and show methods
 which.article <- function(profiler)
 {
-  if (profiler == 'fpmpi' || profiler == 'mpiP')
+  if (profiler == 'fpmpi' || profiler == 'mpip')
     return( "An" )
   else if (profiler == 'tau' )
     return( "A" )

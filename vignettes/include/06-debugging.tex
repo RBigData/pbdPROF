@@ -27,6 +27,33 @@ error: Could not find MPI library
 ./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
 \end{Code}
 
+{\color{red}Problem 3:}  If you are using \pkg{mpiP}~\citep{mpiP} externally
+and during it's installation you get an error similar to this
+\begin{Output}
+libmpiP.a(wrappers.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a shared object; recompile with -fPIC
+libmpiP.a: could not read symbols: Bad value collect2: error: ld returned 1 exit status
+\end{Output}
+{\color{dkgreen}Solution:} You probably need to specify the path to MPI library
+using this in command line when installing \pkg{mpiP}
+\begin{Code}
+./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
+\end{Code}
+
+{\color{red}Problem 4:}  If you are using \pkg{mpiP}~\citep{mpiP} externally
+and during \pkg{pbdMPI}~\citep{Chen2012pbdMPIpackage}
+installation you get an error similar to this
+\begin{Output}
+Error : .onLoad failed in loadNamespace() for 'pbdMPI', details:
+  call: dyn.load(file, DLLpath = DLLpath, ...)
+  error: unable to load shared object 'pbdMPI.so':
+  pbdMPI/libs/pbdMPI.so: undefined symbol: _Ux86_64_getcontext
+\end{Output}
+{\color{dkgreen}Solution:} You probably need to disable some external library
+prerequisite by \pkg{mpiP},
+using this in command line when installing \pkg{mpiP}
+\begin{Code}
+./configure --disable-libunwind CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
+\end{Code}
 
 
 \subsection{Running}

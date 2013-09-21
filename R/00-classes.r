@@ -1,14 +1,14 @@
 ### Virtual classes
 setClass("rawprof", representation="VIRTUAL")
 setClass("fpmpi", contains="rawprof", representation="VIRTUAL")
-setClass("mpiP", contains="rawprof", representation="VIRTUAL")
+setClass("mpip", contains="rawprof", representation="VIRTUAL")
 setClass("tau", contains="rawprof", representation="VIRTUAL")
 
 
 ### Profiler class checker
 valid_prof <- function(object)
 {
-  profilers <- c("fpmpi", "mpiP", "tau")
+  profilers <- c("fpmpi", "mpip", "tau")
   
   if ( !(object@profiler %in% profilers) )
     return("Invalid profiler")
@@ -26,7 +26,7 @@ setClass(
           representation(
                          profiler="character",
                          raw="rawprof",
-                         parsed="data.frame"
+                         parsed="list"
           ),
           validity=valid_prof
 )

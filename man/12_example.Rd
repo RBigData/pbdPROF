@@ -1,8 +1,11 @@
 \name{Example datasets}
 
-\alias{fpmpi.allreduce}
-\alias{fpmpi.masterslavePI}
-\alias{fpmpi.svd}
+\alias{allreduce.fpmpi}
+\alias{masterslavePI.fpmpi}
+\alias{svd.fpmpi}
+\alias{allreduce.mpip}
+\alias{masterslavePI.mpip}
+\alias{svd.mpip}
 
 \docType{data}
 \title{Small example datasets}
@@ -12,8 +15,12 @@
 }
 \format{
   Each dataset contains information profiled by \pkg{fpmpi}
-  for \code{pbdMPI/demo/allreduce.r}, \code{pbdDMAT/demo/svd.r}, and
-  \code{Rmpi/demo/masterslavePI.r}.
+  for \code{pbdMPI/demo/allreduce.fpmpi.r}, \code{pbdDMAT/demo/svd.fpmpi.r}, and
+  \code{Rmpi/demo/masterslavePI.fpmpi.r}.
+
+  Each dataset contains information profiled by \pkg{mpiP}
+  for \code{pbdMPI/demo/allreduce.mpip.r}, \code{pbdDMAT/demo/svd.mpip.r}, and
+  \code{Rmpi/demo/masterslavePI.mpip.r}.
 }
 \details{
   Several sample profiler outputs are provided with the package, and utilized
