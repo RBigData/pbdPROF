@@ -2,6 +2,10 @@
 \docType{class}
 \alias{prof}
 \alias{prof-class}
+\alias{fpmpi-class}
+\alias{mpip-class}
+\alias{tau-class}
+\alias{rawprof-class}
 
 \title{Class prof}
 \description{Class for Profiler Output}

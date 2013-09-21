@@ -15,35 +15,35 @@ if test -z "${R_HOME}"; then
 fi
 
 dnl One way is to specify both include and lib paths
-AC_ARG_WITH([Rmpi-include],
-            AC_HELP_STRING([--with-Rmpi-include=INCLUDE_PATH],
+AC_ARG_WITH([mpi-include],
+            AC_HELP_STRING([--with-mpi-include=INCLUDE_PATH],
                            [location of MPI header files]),
             [mpi_include_path=$withval])
 if test -n "${mpi_include_path}" ; then
   MPI_INCLUDE_PATH="${mpi_include_path}"
   if test ! -f "${MPI_INCLUDE_PATH}/mpi.h" ; then
-    AC_MSG_ERROR([Value of --with-Rmpi-include does not contain mpi.h])
+    AC_MSG_ERROR([Value of --with-mpi-include does not contain mpi.h])
   fi
 else
-  if test -n "${RMPI_INCLUDE}" ; then
-    MPI_INCLUDE_PATH="${RMPI_INCLUDE}"
+  if test -n "${MPI_INCLUDE}" ; then
+    MPI_INCLUDE_PATH="${MPI_INCLUDE}"
     if test ! -f "${MPI_INCLUDE_PATH}/mpi.h" ; then
-      AC_MSG_ERROR([Value of RMPI_INCLUDE does not contain mpi.h])
+      AC_MSG_ERROR([Value of MPI_INCLUDE does not contain mpi.h])
     fi
-    echo "setting mpi include path from RMPI_INCLUDE"
+    echo "setting mpi include path from MPI_INCLUDE"
   fi
 fi
 
-AC_ARG_WITH([Rmpi-libpath],
-            AC_HELP_STRING([--with-Rmpi-libpath=LIB_PATH],
+AC_ARG_WITH([mpi-libpath],
+            AC_HELP_STRING([--with-mpi-libpath=LIB_PATH],
                            [location of MPI library files]),
             [mpi_lib_path=$withval])
 if test -n "${mpi_lib_path}" ; then
   MPI_LIBPATH="${mpi_lib_path}"
 else
-  if test -n "${RMPI_LIB_PATH}" ; then
-    MPI_LIBPATH="${RMPI_LIB_PATH}"
-    echo "setting mpi lib path from RMPI_LIB_PATH"
+  if test -n "${MPI_LIB_PATH}" ; then
+    MPI_LIBPATH="${MPI_LIB_PATH}"
+    echo "setting mpi lib path from MPI_LIB_PATH"
   fi
 fi
 
@@ -56,15 +56,15 @@ fi
 
 MPITYPE="UNKNOWN"
 
-AC_ARG_WITH([Rmpi-type],
-            AC_HELP_STRING([--with-Rmpi-type=MPI_TYPE],
-                           [type of MPI: OPENMPI, MPICH2, or LAM]),
+AC_ARG_WITH([mpi-type],
+            AC_HELP_STRING([--with-mpi-type=MPI_TYPE],
+                           [type of MPI: OPENMPI, MPICH2, or MPICH3]),
             [mpi_type=$withval])
 if test -n "${mpi_type}" ; then
   MPITYPE="${mpi_type}"
 else
-  if test -n "${RMPI_TYPE}" ; then
-    MPITYPE="${RMPI_TYPE}"
+  if test -n "${MPI_TYPE}" ; then
+    MPITYPE="${MPI_TYPE}"
   fi
 fi
 
@@ -143,11 +143,11 @@ if test -z "${MPI_INCLUDE_PATH}" ; then
 fi
 
 
-dnl For MPICH2
+dnl For MPICH3/MPICH2/MPICH
 if test -z "${MPI_INCLUDE_PATH}" ; then
 #  if test "$MPITYPE" = "UNKNOWN" -o "$MPITYPE" = "MPICH2" ; then
-### MPICH2 users have to specify --with-Rmpi-type=MPICH2 to get this.
-  if test "$MPITYPE" = "MPICH2" ; then
+### MPICH2 users have to specify --with-mpi-type=MPICH2 to get this.
+  if test "$MPITYPE" = "MPICH2" -o "$MPITYPE" = "MPICH" -o "$MPITYPE" = "MPICH3" ; then
     if test "$SED" != "F" -a "$MPICC" != "F" -a "$MPICH2VERSION" != "F" ; then
       echo "found sed, mpicc, and mpich2version ..."
       TMP_INC="F"
@@ -192,7 +192,7 @@ if test -z "${MPI_INCLUDE_PATH}" ; then
         echo "found mpi.h and libmpich.so ..."
         echo ">> TMP_INC = ${TMP_INC}"
         echo ">> TMP_LIB = ${TMP_LIB}"
-        MPITYPE="MPICH2"
+        MPITYPE="${MPITYPE}"
         MPI_INCLUDE_PATH="${TMP_INC}"
         MPI_LIBPATH="${TMP_LIB}"
       fi
@@ -310,10 +310,20 @@ if test -z "${MPI_INCLUDE_PATH}" ; then
         MPI_ROOT=$d
         MPITYPE="LAM"
         break
+      elif test -f $d/mpich3/include/mpi.h; then
+        echo "I am here $d/mpich3 and it is MPICH3"
+        MPI_ROOT=$d/mpich3
+        MPITYPE="MPICH3"
+        break
       elif test -f $d/mpich2/include/mpi.h; then
         echo "I am here $d/mpich2 and it is MPICH2"
         MPI_ROOT=$d/mpich2
         MPITYPE="MPICH2"
+        break
+      elif test -f $d/mpich/include/mpi.h; then
+        echo "I am here $d/mpich and it is MPICH"
+        MPI_ROOT=$d/mpich
+        MPITYPE="MPICH"
         break
       elif test -f $d/mpi/include/mpi.h; then
         echo "I am here $d/mpi"
@@ -501,7 +511,7 @@ dnl Now we have found the include and lib paths and may know the type
 AC_CHECK_LIB(util, openpty, [ MPI_LIBS="$MPI_LIBS -lutil" ])
 AC_CHECK_LIB(pthread, main, [ MPI_LIBS="$MPI_LIBS -lpthread" ])
 
-if test "$MPITYPE" = "OPENMPI" -o "$MPITYPE" = "LAM" -o "$MPITYPE" = "MPICH2"; then
+if test "$MPITYPE" = "OPENMPI" -o "$MPITYPE" = "LAM" -o "$MPITYPE" = "MPICH2" -o "$MPITYPE" = "MPICH3" ; then
   MPI_DEFS="-DMPI2"
 fi
 
@@ -513,14 +523,17 @@ case "$MPITYPE" in
   LAM)
     PKG_LIBS="-L${MPI_LIBPATH} -lmpi -llam ${MPI_LIBS}"
     ;;
-  MPICH)
-    PKG_LIBS="-L${MPI_LIBPATH} -lmpich -lmpl -lopa ${MPI_LIBS}"
+  MPICH3)
+    PKG_LIBS="-L${MPI_LIBPATH} -lmpich -lmpl ${MPI_LIBS}"
     ;;
   MPICH2)
     PKG_LIBS="-L${MPI_LIBPATH} -lmpich -lmpl -lopa ${MPI_LIBS}"
     ;;
+  MPICH)
+    PKG_LIBS="-L${MPI_LIBPATH} -lmpich -lmpl -lopa ${MPI_LIBS}"
+    ;;
   *)
-    AC_MSG_ERROR([Unknown type of mpi: use --with-Rmpi-type or RMPI_TYPE to specify it])
+    AC_MSG_ERROR([Unknown type of mpi: use --with-mpi-type or MPI_TYPE to specify it])
     ;;
 esac
 
@@ -534,15 +547,15 @@ fi
 
 dnl Check profiler.
 AC_ARG_WITH([fpmpi],
-            AC_HELP_STRING([--with-fpmpi="'-L/..../fpmpi/lib -lfpmpi'"],
+            AC_HELP_STRING([--with-fpmpi="-L/..../fpmpi/lib -lfpmpi"],
                            [location and name of fpmpi library]),
             [fpmpi_ext_link=$withval])
 AC_ARG_WITH([mpiP],
-            AC_HELP_STRING([--with-mpiP="'-L/..../mpiP/lib -lmpiP'"],
+            AC_HELP_STRING([--with-mpiP="-L/..../mpiP/lib -lmpiP"],
                            [location and name of mpiP library]),
             [mpiP_ext_link=$withval])
 AC_ARG_WITH([TAU],
-            AC_HELP_STRING([--with-TAU="'-L/..../TAU/lib -lTAU'"],
+            AC_HELP_STRING([--with-TAU="-L/..../TAU/lib -lTAU"],
                            [location and name of TAU library]),
             [TAU_ext_link=$withval])
 N_PROF=0
@@ -705,7 +718,7 @@ if test "X${PROF_TYPE}" = "XmpiP"; then
   if test -n "${mpiP_ext_link}"; then
     MPIP_EXT_LINK="${mpiP_ext_link}"
   else
-    AC_MSG_ERROR([--with-mpiP="'-L/..../mpiP/lib -lmpiP'"])
+    AC_MSG_ERROR([--with-mpiP="-L/..../mpiP/lib -lmpiP"])
   fi
 fi
 
@@ -715,7 +728,7 @@ if test "X${PROF_TYPE}" = "XTAU"; then
   if test -n "${TAU_ext_link}"; then
     TAU_EXT_LINK="${TAU_ext_link}"
   else
-    AC_MSG_ERROR([--with-TAU="'-L/..../TAU/lib -lTAU'"])
+    AC_MSG_ERROR([--with-TAU="-L/..../TAU/lib -lTAU"])
   fi
 fi
 

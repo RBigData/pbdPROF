@@ -3,10 +3,13 @@ which.profiler <- function(file.name)
 {
   test <- readLines(file.name, n=1)
   
-  if (length(grep(pattern="FPMPI", x=test)) > 0)
+  if(length(grep(pattern="FPMPI", x=test)) > 0){
     return( 'fpmpi' )
-  else
+  } else if(length(grep(pattern="mpiP", x=test)) > 0){
+    return ('mpip')
+  } else{
     stop("This profiler is not implemented at this time.")
+  }
 }
 
 
@@ -22,9 +25,9 @@ read.prof <- function(file.name, ...)
   
   class(raw) <- profiler
   
-  parsed <- parse.prof(x=raw)
+  parsed <- parse.prof(x = raw)
   
-  ret <- new("prof", profiler=profiler, raw=raw, parsed=parsed)
+  ret <- new("prof", profiler = profiler, raw = raw, parsed = parsed)
   
   return( ret )
 }
