@@ -28,7 +28,7 @@
 \dontrun{
 library(pbdPROF)
 
-fn <- system.file("data/fpmpi.allreduce", package = "pbdPROF")
+fn <- system.file("data/allreduce.fpmpi", package = "pbdPROF")
 da <- read.prof(fn, lib.type = "fpmpi")
 
 da

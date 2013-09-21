@@ -27,9 +27,12 @@
 }
 \examples{
 \dontrun{
-demo(allreduce, "pbdPROF")
-demo(svd, "pbdPROF")
-demo(masterslavePI, "pbdPROF")
+demo(allreduce.fpmpi, "pbdPROF")
+demo(svd.fpmpi, "pbdPROF")
+demo(masterslavePI.fpmpi, "pbdPROF")
+demo(allreduce.mpip, "pbdPROF")
+demo(svd.mpip, "pbdPROF")
+demo(masterslavePI.mpip, "pbdPROF")
 }
 }
 \keyword{Package}
