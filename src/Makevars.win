@@ -35,8 +35,8 @@ ifeq "$(MPI_LIB)" ""
 endif
 
 ### Set PKG_*
-PKG_CPPFLAGS = -I"$(MPI_ROOT)/include" -DMPI2 -DWIN
-PKG_LIBS = -L"$(MPI_LIB)" -lmpi
+# PKG_CPPFLAGS = -I"$(MPI_ROOT)/include" -DMPI2 -DWIN
+# PKG_LIBS = -L"$(MPI_LIB)" -lmpi
 
 ### For user configuration.
 USER_CONF = Makeconf

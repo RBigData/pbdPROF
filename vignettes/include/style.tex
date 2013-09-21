@@ -89,8 +89,10 @@ commentstyle=\color{dkgreen},
   morecomment=[l]{!\ }
 }
 
+\usepackage{caption}
+\captionsetup{labelformat=empty,labelsep=none}
 
-
+\lstset{aboveskip=5pt,belowskip=0pt}
 \lstset{numbers=none,numberstyle=\footnotesize\ttfamily,
         frame=single,frameround=tttt,language=R,
         showspaces=false,showstringspaces=false,
@@ -104,7 +106,7 @@ commentstyle=\color{dkgreen},
 \makeatother
 \lstnewenvironment{Command}[1][title=Shell Command]{\lstset{#1}}{}
 \lstnewenvironment{Code}[1][title=R Script]{\lstset{#1}}{}
-\lstnewenvironment{Output}[1][title=\ ]{\lstset{#1}}{}
+\lstnewenvironment{Output}[1][title=\ ]{\vspace{-10pt}\lstset{#1}}{}
 \lstnewenvironment{CodeOutput}[1][title=R Output]{\lstset{#1}}{}
 \lstnewenvironment{Error}[1][]{
   \lstset{title=Error Message,basicstyle=\small\ttfamily}\color{Red}}{}

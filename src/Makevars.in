@@ -15,6 +15,25 @@ fpmpi/resrc.o \
 fpmpi/testwait.o \
 fpmpi/topology.o
 
+### For mpip
+R_MPIP = @R_MPIP@
+MPIP_OBJS= \
+mpip/diag_msgs_api.o \
+mpip/lookup.o \
+mpip/mpiPi.o \
+mpip/record_stack.o \
+mpip/wrappers.o \
+mpip/diag_msgs.o\
+mpip/mpiP-API.o\
+mpip/pc_lookup.o\
+mpip/report.o\
+mpip/wrappers_special.o\
+mpip/glob.o\
+mpip/mpiP-hash.o\
+mpip/pcontrol.o\
+mpip/util.o
+
+
 ### For static library.
 ARCH = $(AR)
 ARCHFLAGS = cr
@@ -22,6 +41,8 @@ ARCHFLAGS = cr
 ### Fool R CMD check.
 SHLIB=
 OBJECTS=
+
+
 
 ### Start making here.
 all: $(R_FPMPI)

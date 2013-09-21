@@ -30,19 +30,19 @@ MPI_Pcontrol may be used to control the collection of data.  Use the values
 defined in fpmpi.h, such as FPMPI_PROF_COLLSYNC, to control what data is 
 collected or reported by FPMPI2.
 
-Date:     	Wed Jul 17 13:24:09 2013
+Date:     	Tue Jul 30 11:33:20 2013
 Processes:	1
-Execute time:	0.05362
+Execute time:	0.0507
 Timing Stats: [seconds]	[min/max]    	[min rank/max rank]
-  wall-clock: 0.05362 sec	0.053622 / 0.053622	0 / 0
-        user: 0.236 sec	0.236000 / 0.236000	0 / 0
-         sys: 0.052 sec	0.052000 / 0.052000	0 / 0
+  wall-clock: 0.0507 sec	0.050697 / 0.050697	0 / 0
+        user: 0.304 sec	0.304000 / 0.304000	0 / 0
+         sys: 0.04 sec	0.040000 / 0.040000	0 / 0
 
                   Average of sums over all processes
 Routine                 Calls       Time Msg Length    %Time by message length
                                                     0.........1........1........
                                                               K        M
-MPI_Reduce          :       1   6.51e-05          8 00*0000000000000000000000000
+MPI_Reduce          :       1   0.000131          8 00*0000000000000000000000000
 
 Details for each MPI routine
                   Average of sums over all processes
@@ -51,9 +51,9 @@ Details for each MPI routine
                                  processes [rank])           K        M
 MPI_Reduce:
 	Calls     :          1            1 [   0] 00*0000000000000000000000000
-	Time      :   6.51e-05     6.51e-05 [   0] 00*0000000000000000000000000
+	Time      :   0.000131     0.000131 [   0] 00*0000000000000000000000000
 	Data Sent :          8            8 [   0]
-	By bin    : 5-8	[1,1]	[  6.51e-05,  6.51e-05]
+	By bin    : 5-8	[1,1]	[  0.000131,  0.000131]
 
 Summary of target processes for point-to-point communication:
 1-norm distance of point-to-point with an assumed 2-d topology
