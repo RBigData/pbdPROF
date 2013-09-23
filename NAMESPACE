@@ -9,3 +9,7 @@ exportMethods(
   "print",
   "plot"
 )
+
+export(
+  read.prof
+)

@@ -8,7 +8,7 @@ Authors@R: c(person("Wei-Chen", "Chen", role = c("aut", "cre"),
         person("Gaurav", "Sehrawat", role="aut"), 
         person("Pragneshkumar", "Patel", role = "aut"), 
         person("George", "Ostrouchov", role ="aut"))
-Depends: R (>= 2.14.0), methods, graphics, grid, ggplot2
+Depends: R (>= 2.14.0), methods, graphics, grid, ggplot2, gridExtra
 LazyLoad: yes
 LazyData: yes
 Copyright: See pbdPROF/inst/fpmpi_LICENSE.txt for the files in

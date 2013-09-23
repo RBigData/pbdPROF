@@ -16,7 +16,7 @@ setMethod("plot", signature(x="prof"),
 
 
 # autoplot compatibility
-autoplot.prof <- function(object, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profiler Output")
+autoplot.prof <- function(object, ...)
 {
   if (x@profiler == 'fpmpi')
     plot_fpmpi(x=object, which=which, show.title=show.title, label=label, ...)
@@ -32,8 +32,7 @@ autoplot.prof <- function(object, ..., which=1L:4L, show.title=TRUE, label="FPMP
 
 
 ### fpmpi
-plot_fpmpi <- function(x, ..., which = 1L:4L, show.title = TRUE,
-                       label = "FPMPI Profiler Output")
+plot_fpmpi <- function(x, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profiler Output")
 {
   df <- as.data.frame(x@parsed)
   
@@ -80,69 +79,75 @@ plot_fpmpi <- function(x, ..., which = 1L:4L, show.title = TRUE,
 
 
 ### mpip
-plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
-                      label = "MPIP Profiler Output")
+plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", label)
 {
+  plot.type <- match.arg(tolower(plot.type), c("timing", "data", "statistics", "other"))
+  
+  add.legend <- FALSE
+  
   output <- x@parsed
   
   # --------------------------------------------------------
   # Timing plots
   # --------------------------------------------------------
   
-  # Time by Rank
-  rankvsmpi <- output[[1]]
-  rankvsmpi1 <- data.frame(Rank=rankvsmpi$Task, MPI_time=rankvsmpi$MPITime)
-  
-  rankvsmpi1 <- rankvsmpi1[(rankvsmpi1$Rank != "*"),]
-  ranker <- data.frame(Rank = 0:(NROW(rankvsmpi1) - 1),
-                       MPI_time = sum(rankvsmpi1$MPI_time))
-  rankvsmpi1 <- rbind(ranker, rankvsmpi1)
-  Timing <- factor(c(rep("Serial", length(unique(rankvsmpi1$Rank))), rep("MPI", length(unique(rankvsmpi1$Rank)))))
-  rankvsmpi1 <- cbind(rankvsmpi1, Timing)
-  
-  g1 <- qplot(Rank, MPI_time, data=rankvsmpi1, fill=Timing, geom="bar", stat="identity") +
-          ylab("Run Time (in millisecond)") + 
-          opts(legend.direction="horizontal", 
-            plot.margin=unit(c(1, 0, 0, 0), "cm"), 
-            legend.position=c(0.5, 1.05))
-  
-  # Proportional time by rank
-  tot <- sapply(unique(rankvsmpi1$Rank), function(i) sum(rankvsmpi1$MPI_time[which(rankvsmpi1$Rank==i)]))
-  rankvsmpi2 <- rankvsmpi1
-  rankvsmpi2$MPI_time <- rankvsmpi2$MPI_time / tot[rankvsmpi2$Rank]
-  
-  g2 <- qplot(Rank, MPI_time, data=rankvsmpi2, fill=Timing, geom="bar", stat="identity") +
-          ylab("Proportion of Run Time (in millisecond)") + 
-          opts(legend.direction="horizontal", 
-            plot.margin=unit(c(1, 0, 0, 0), "cm"), 
-            legend.position=c(0.5, 1.05))
+  if (plot.type == "timing")
+  {
+    # Time by Rank
+    rankvsmpi <- output[[1]]
+    rankvsmpi1 <- data.frame(Rank=rankvsmpi$Task, MPI_time=rankvsmpi$MPITime)
+    
+    rankvsmpi1 <- rankvsmpi1[(rankvsmpi1$Rank != "*"),]
+    ranker <- data.frame(Rank = 0:(NROW(rankvsmpi1) - 1),
+                         MPI_time = sum(rankvsmpi1$MPI_time))
+    rankvsmpi1 <- rbind(ranker, rankvsmpi1)
+    Timing <- factor(c(rep("Serial", length(unique(rankvsmpi1$Rank))), rep("MPI", length(unique(rankvsmpi1$Rank)))))
+    rankvsmpi1 <- cbind(rankvsmpi1, Timing)
+    
+    g1 <- qplot(Rank, MPI_time, data=rankvsmpi1, fill=Timing, geom="bar", stat="identity") +
+            ylab("Run Time (in millisecond)") + 
+            opts(legend.direction="horizontal", 
+              plot.margin=unit(c(1, 0, 0, 0), "cm"), 
+              legend.position=c(0.5, 1.05))
+    
+    # Proportional time by rank
+    tot <- sapply(unique(rankvsmpi1$Rank), function(i) sum(rankvsmpi1$MPI_time[which(rankvsmpi1$Rank==i)]))
+    rankvsmpi2 <- rankvsmpi1
+    rankvsmpi2$MPI_time <- rankvsmpi2$MPI_time / tot[rankvsmpi2$Rank]
+    
+    g2 <- qplot(Rank, MPI_time, data=rankvsmpi2, fill=Timing, geom="bar", stat="identity") +
+            ylab("Proportion of Run Time (in millisecond)") + 
+            opts(legend.direction="horizontal", 
+              plot.margin=unit(c(1, 0, 0, 0), "cm"), 
+              legend.position=c(0.5, 1.05))
 
-  
-  # Run time by function
-  timestat <- output[[3]]
-  timevscallname <- data.frame(Call1 = timestat$Call, Time = timestat$Time)
-  Legends1 <- factor(timevscallname$Call1)
-  
-  g3 <- qplot(Call1, Time, data=timevscallname, geom="bar", stat="identity", fill=Legends1) +
-          xlab("MPI Function") + 
-          ylab("Run Time (in milliseconds)") +
-          theme(legend.position="none") +
-          geom_text(data=timevscallname, aes(label=Time, y=Time), size=3)
-  
-  # Proportion of run time by function
-  timevscallname_per <- data.frame(Call2=timestat$Call, Time_per=timestat$MPI.)
-  Legends2 <- factor(timevscallname_per$Call2)
-  
-  g4 <- qplot(Call2, Time_per, data=timevscallname_per, geom="bar", stat="identity", fill=Legends2) +
-          xlab("MPI Function") + 
-          ylab("Proportion of Run Time") +
-          theme(legend.position="none") +
-          geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3)
-  
-  plots <- list(g1, g2, g3, g4)
-  
-  grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
-  
+    
+    # Run time by function
+    timestat <- output[[3]]
+    timevscallname <- data.frame(Call1 = timestat$Call, Time = timestat$Time)
+    Legends1 <- factor(timevscallname$Call1)
+    
+    g3 <- qplot(Call1, Time, data=timevscallname, geom="bar", stat="identity", fill=Legends1) +
+            xlab("MPI Function") + 
+            ylab("Run Time (in milliseconds)") +
+            theme(legend.position="none") +
+            geom_text(data=timevscallname, aes(label=Time, y=Time), size=3) + 
+            theme(axis.text.x=element_text(angle=-30, vjust=0.5))
+    
+    # Proportion of run time by function
+    timevscallname_per <- data.frame(Call2=timestat$Call, Time_per=timestat$MPI.)
+    Legends2 <- factor(timevscallname_per$Call2)
+    
+    g4 <- qplot(Call2, Time_per, data=timevscallname_per, geom="bar", stat="identity", fill=Legends2) +
+            xlab("MPI Function") + 
+            ylab("Proportion of Run Time") +
+            theme(legend.position="none") +
+            geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3) + 
+            theme(axis.text.x=element_text(angle=-30, vjust=0.5))
+    
+    if (missing(label))
+      label <- "Simple Timing Results"
+  }
   
   # --------------------------------------------------------
   # Data transmission plots
@@ -170,87 +175,103 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 ###         geom_text(data=sentvscallname_per, aes(label=Message_size_per, y=Message_size_per), size=3)
   
   # --------------------------------------------------------
-  # 
+  # Timing statistics
   # --------------------------------------------------------
   
-  #grid plot2 summary 
-  #with facet introduced.
-  #**Timing stats  (5)
   timing <- output[[5]]
-  timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-                            Count = timing$Count)
+  timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
   timingcount <- timingcount[(timingcount$Rank != "*"),]
-  #remove * from Rank
-  plot1a <- qplot(Rank, Count, data = timingcount, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") +
-            ylab("Count") +
-            geom_text(data = timingcount, aes(label = Count, y = Count),
-                      size = 3) +
-            theme(legend.position = "none") +
-            facet_wrap(facets =~ Call_Name, scales = "free_x")
   
-  plot1b <- qplot(Rank, Count, data = timingcount, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") + ylab("Count") +
-            geom_text(data = timingcount, aes(label = Count, y = Count), size = 3)
+  timingmin <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Min_time = timing$Min)
+  timingmin <- timingmin[(timingmin$Rank != "*"),]
   
-  ###second part
-  timingmean <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-                           Mean_time = timing$Mean)
+  timingmean <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mean_time = timing$Mean)
   timingmean <- timingmean[(timingmean$Rank != "*"),]
-  #remove * from Rank
-  plot2a <- qplot(Rank, Mean_time, data = timingmean, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") +
-            ylab("Mean Time(in milliseconds)") +
-            geom_text(data = timingmean, aes(label = Mean_time, y = Mean_time),
-                      size = 3) +
-            theme(legend.position = "none") +
-            facet_wrap(facets =~ Call_Name, scales = "free_x")
-
-  plot2b <- qplot(Rank, Mean_time, data = timingmean, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") +
-            ylab("Mean Time(in milliseconds)") +
-            geom_text(data = timingmean, aes(label = Mean_time, y = Mean_time),
-                      size = 3)
   
-  ###third part
-  timingmax <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-                          Max_time = timing$Max)
+  timingmax <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Max_time = timing$Max)
   timingmax <- timingmax[(timingmax$Rank != "*"),]
-  #remove * from Rank
-  plot3a <- qplot(Rank, Max_time, data = timingmax, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") +
-            ylab("Max Time(in milliseconds)") +
-            geom_text(data = timingmax, aes(label = Max_time, y = Max_time),
-                      size = 3) +
-            theme(legend.position = "none") +
-            facet_wrap(facets =~ Call_Name, scales = "free_x")
   
-  plot3b <- qplot(Rank, Max_time, data = timingmax, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") +
-            ylab("Max Time(in milliseconds)") +
-            geom_text(data = timingmax, aes(label = Max_time, y = Max_time),
-                      size = 3)
-  
-  ###fourth part
-  timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-                          Mpi_per = timing$MPI.)
+  timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mpi_per = timing$MPI.)
   timingmpi <- timingmpi[(timingmpi$Rank != "*"),]
-  #remove * from Rank
-  plot4a <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") +
-            ylab("MPI (in percent)") +
-            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
-                      size = 3) +
-            theme(legend.position = "none") +
-            facet_wrap(facets =~ Call_Name, scales = "free_x")
   
-  plot4b <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
-                  geom = "bar", stat = "identity") + ylab("MPI (in percent)") +
-            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
-                      size = 3)
+  if (plot.type == "statistics")
+  {
+    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
+                ylab("Number of Function Calls") +
+                geom_text(data = timingcount, aes(label = Count, y = Count), size = 3) +
+                theme(legend.position = "none") +
+                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    
+    g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
+                ylab("Mean Time(in milliseconds)") +
+                geom_text(data=timingmean, aes(label=Mean_time, y=Mean_time), size=3) +
+                theme(legend.position = "none") +
+                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    
+    g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
+                ylab("Max Time(in milliseconds)") +
+                geom_text(data = timingmax, aes(label=Max_time, y=Max_time), size=3) +
+                theme(legend.position = "none") +
+                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    
+    g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") +
+                ylab("MPI (in percent)") +
+                geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size=3) +
+                theme(legend.position = "none") +
+                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    
+    if (missing(label))
+      label <- "Timing Statistics by Function"
+  }
   
-  grid.arrange(plot1a, plot2a, plot3a, plot4a, nrow = 2, ncol = 2)
-  grid.arrange(plot1b, plot2b, plot3b, plot4b, nrow = 2, ncol = 2)
+  else if (plot.type == "other")
+  {
+#    # (function call) count by rank
+#    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") + 
+#                ylab("Number of Function Calls") +
+#                scale_fill_discrete(name="MPI Function") + 
+#                geom_text(data=timingcount, aes(label=Count, y=Count), size=3)
+    
+    # Min run time by rank
+    g1 <- qplot(Rank, Min_time, data=timingmin, fill=factor(Call_Name), geom="bar", stat="identity") +
+            ylab("Min Run Time (in milliseconds)") +
+            scale_fill_discrete(name="MPI Function") + 
+            geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+    
+    # Mean run time by rank
+    g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
+                ylab("Mean Run Time (in milliseconds)") +
+                scale_fill_discrete(name="MPI Function") + 
+                opts(legend.position = "none") + 
+                geom_text(data = timingmean, aes(label=Mean_time, y=Mean_time), size = 3)
+    
+    # Max run time by rank
+    g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
+                ylab("Max Run Time (in milliseconds)") +
+                scale_fill_discrete(name="MPI Function") + 
+                opts(legend.position = "none") + 
+                geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+    
+    # 
+    g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") + 
+                ylab("MPI (in percent)") +
+                scale_fill_discrete(name="MPI Function") + 
+                opts(legend.position = "none") + 
+                geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size = 3)
+    
+    # Plot a single legend
+    tmp <- ggplot_gtable(ggplot_build(g1))
+    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+    legend <- tmp$grobs[[leg]]
+    
+    g1 <- g1 + opts(legend.position = "none")
+    
+    add.legend <- TRUE
+    
+    if (missing(label))
+      label <- "Timing Statistics by"
+  }
+  
   #=======================================================================================
 #  
 #  ##third plot3 summary
@@ -337,6 +358,13 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 #  plot8b
   
   
+  ### Plot everything
+  plots <- list(g1, g2, g3, g4)
+  
+  if (add.legend)
+    grid_plotter(plots=plots, which=which, label=label, show.title=show.title, legend=legend)
+  else
+    grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
   
   invisible()
 }

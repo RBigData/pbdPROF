@@ -1,6 +1,8 @@
-grid_plotter <- function(plots, which, label, show.title=TRUE)
+grid_plotter_asdfasdf <- function(plots, which, label, show.title=TRUE, legend)
 {
   grid.newpage()
+  
+  add.legend <- !missing(legend)
   
   # Error checking
   if(length(which) > 4 || length(which) < 1 || any(which < 0) ||
@@ -12,7 +14,10 @@ grid_plotter <- function(plots, which, label, show.title=TRUE)
     grid <- c(2, 2)
     
     if(show.title)
-      pushViewport(viewport(layout = grid.layout(3, 2, heights = c(1, 10, 10))))
+      if (add.legend)
+        pushViewport(viewport(layout = grid.layout(3, 3, heights=c(1, 10, 10), widths=c(10, 10, 1))))
+      else
+        pushViewport(viewport(layout = grid.layout(3, 2, heights = c(1, 10, 10))))
     else
       pushViewport(viewport(layout = grid.layout(2, 2)))
   } 
@@ -44,13 +49,15 @@ grid_plotter <- function(plots, which, label, show.title=TRUE)
   else
     adj <- 0L
   
+  if (add.legend)
+     print(legend, vp=viewport(layout.pos.row=2, layout.pos.col=2))
+  
   for(i in 1L:grid[1L] + adj){
     for(j in 1L:grid[2L]){
       if(k == length(which) && k < prod(grid))
         j <- j:(j + 1L)
         
-      print(plots[[k]],
-            vp = viewport(layout.pos.row = i, layout.pos.col = j))
+      print(plots[[k]], vp=viewport(layout.pos.row = i, layout.pos.col = j))
       k <- k + 1L
       
       if(k > length(which))
