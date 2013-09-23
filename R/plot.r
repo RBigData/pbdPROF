@@ -81,7 +81,7 @@ plot_fpmpi <- function(x, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profil
 ### mpip
 plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", label)
 {
-  plot.type <- match.arg(tolower(plot.type), c("timing", "data", "statistics", "other"))
+  plot.type <- match.arg(tolower(plot.type), c("timing", "data", "statistics", "other", "message", "message2"))
   
   add.legend <- FALSE
   
@@ -178,93 +178,97 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   # Timing statistics
   # --------------------------------------------------------
   
-  timing <- output[[5]]
-  timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
-  timingcount <- timingcount[(timingcount$Rank != "*"),]
-  
-  timingmin <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Min_time = timing$Min)
-  timingmin <- timingmin[(timingmin$Rank != "*"),]
-  
-  timingmean <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mean_time = timing$Mean)
-  timingmean <- timingmean[(timingmean$Rank != "*"),]
-  
-  timingmax <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Max_time = timing$Max)
-  timingmax <- timingmax[(timingmax$Rank != "*"),]
-  
-  timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mpi_per = timing$MPI.)
-  timingmpi <- timingmpi[(timingmpi$Rank != "*"),]
-  
-  if (plot.type == "statistics")
+  else if (plot.type == "statistics" || plot.type == "other")
   {
-    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
-                ylab("Number of Function Calls") +
-                geom_text(data = timingcount, aes(label = Count, y = Count), size = 3) +
-                theme(legend.position = "none") +
-                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    timing <- output[[5]]
+    timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
+    timingcount <- timingcount[(timingcount$Rank != "*"),]
     
-    g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
-                ylab("Mean Time(in milliseconds)") +
-                geom_text(data=timingmean, aes(label=Mean_time, y=Mean_time), size=3) +
-                theme(legend.position = "none") +
-                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    timingmin <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Min_time = timing$Min)
+    timingmin <- timingmin[(timingmin$Rank != "*"),]
     
-    g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
-                ylab("Max Time(in milliseconds)") +
-                geom_text(data = timingmax, aes(label=Max_time, y=Max_time), size=3) +
-                theme(legend.position = "none") +
-                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    timingmean <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mean_time = timing$Mean)
+    timingmean <- timingmean[(timingmean$Rank != "*"),]
     
-    g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") +
-                ylab("MPI (in percent)") +
-                geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size=3) +
-                theme(legend.position = "none") +
-                facet_wrap(facets =~ Call_Name, scales = "free_x")
+    timingmax <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Max_time = timing$Max)
+    timingmax <- timingmax[(timingmax$Rank != "*"),]
     
-    if (missing(label))
-      label <- "Timing Statistics by Function"
-  }
-  
-  else if (plot.type == "other")
-  {
-#    # (function call) count by rank
-#    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") + 
-#                ylab("Number of Function Calls") +
-#                scale_fill_discrete(name="MPI Function") + 
-#                geom_text(data=timingcount, aes(label=Count, y=Count), size=3)
+    timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mpi_per = timing$MPI.)
+    timingmpi <- timingmpi[(timingmpi$Rank != "*"),]
     
-    # Min run time by rank
-    g1 <- qplot(Rank, Min_time, data=timingmin, fill=factor(Call_Name), geom="bar", stat="identity") +
-            ylab("Min Run Time (in milliseconds)") +
-            scale_fill_discrete(name="MPI Function") + 
-            geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+    if (plot.type == "statistics")
+    {
+      g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
+                  ylab("Number of Function Calls") +
+                  geom_text(data = timingcount, aes(label = Count, y = Count), size = 3) +
+                  theme(legend.position = "none") +
+                  facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
+                  ylab("Mean Time(in milliseconds)") +
+                  geom_text(data=timingmean, aes(label=Mean_time, y=Mean_time), size=3) +
+                  theme(legend.position = "none") +
+                  facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
+                  ylab("Max Time(in milliseconds)") +
+                  geom_text(data = timingmax, aes(label=Max_time, y=Max_time), size=3) +
+                  theme(legend.position = "none") +
+                  facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") +
+                  ylab("MPI (in percent)") +
+                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size=3) +
+                  theme(legend.position = "none") +
+                  facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      if (missing(label))
+        label <- "Timing Statistics by Function"
+    }
     
-    # Mean run time by rank
-    g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
-                ylab("Mean Run Time (in milliseconds)") +
-                scale_fill_discrete(name="MPI Function") + 
-                opts(legend.position = "none") + 
-                geom_text(data = timingmean, aes(label=Mean_time, y=Mean_time), size = 3)
-    
-    # Max run time by rank
-    g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
-                ylab("Max Run Time (in milliseconds)") +
-                scale_fill_discrete(name="MPI Function") + 
-                opts(legend.position = "none") + 
-                geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
-    
-    # 
-    g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") + 
-                ylab("MPI (in percent)") +
-                scale_fill_discrete(name="MPI Function") + 
-                opts(legend.position = "none") + 
-                geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size = 3)
-    
-    # Plot a single legend
-    tmp <- ggplot_gtable(ggplot_build(g1))
-    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-    legend <- tmp$grobs[[leg]]
-    
-    g1 <- g1 + opts(legend.position = "none")
+    else if (plot.type == "other")
+    {
+  #    # (function call) count by rank
+  #    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") + 
+  #                ylab("Number of Function Calls") +
+  #                scale_fill_discrete(name="MPI Function") + 
+  #                geom_text(data=timingcount, aes(label=Count, y=Count), size=3)
+      
+      # Min run time by rank
+      g1 <- qplot(Rank, Min_time, data=timingmin, fill=factor(Call_Name), geom="bar", stat="identity") +
+              ylab("Min Run Time (in milliseconds)") +
+              scale_fill_discrete(name="MPI Function") + 
+              geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+      
+      # Mean run time by rank
+      g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
+                  ylab("Mean Run Time (in milliseconds)") +
+                  scale_fill_discrete(name="MPI Function") + 
+                  opts(legend.position = "none") + 
+                  geom_text(data = timingmean, aes(label=Mean_time, y=Mean_time), size = 3)
+      
+      # Max run time by rank
+      g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
+                  ylab("Max Run Time (in milliseconds)") +
+                  scale_fill_discrete(name="MPI Function") + 
+                  opts(legend.position = "none") + 
+                  geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+      
+      # 
+      g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") + 
+                  ylab("MPI (in percent)") +
+                  scale_fill_discrete(name="MPI Function") + 
+                  opts(legend.position = "none") + 
+                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size = 3)
+      
+      # Plot a single legend
+      tmp <- ggplot_gtable(ggplot_build(g1))
+      leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+      legend <- tmp$grobs[[leg]]
+      
+      g1 <- g1 + opts(legend.position = "none")
+      
+    }
     
     add.legend <- TRUE
     
@@ -272,93 +276,108 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       label <- "Timing Statistics by"
   }
   
-  #=======================================================================================
-#  
-#  ##third plot3 summary
-#  ##may be using facet
-#  message <- output[[6]]
-#  messagecount <- data.frame(Call_Name = message$Name, Rank = message$Rank,
-#                             Count = message$Count)
-#  #remove * from Rank
-#  messagecount <- messagecount[(messagecount$Rank != "*"),]
-#  
-#  plot5a <- qplot(Rank, Count, data = messagecount, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") + ylab("Message Count") +
-#            geom_text(data = messagecount, aes(label = Count, y = Count),
-#                      size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot5b <- qplot(Rank, Count, data = messagecount, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") + ylab("Message Count") +
-#            geom_text(data = messagecount, aes(label = Count, y = Count),
-#                      size = 3)
-#  
-#  plot5b
-#  
-#  ##second part
-#  messagemean <- data.frame(Call_Name = message$Name, Rank = message$Rank,
-#                            Mean = message$Mean)
-#  #remove * from Rank
-#  messagemean <- messagemean[(messagemean$Rank !=  "*"),]
-#  
-#  plot6a <- qplot(Rank, Mean, data = messagemean, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Message mean size(in bytes)") +
-#            geom_text(data = messagemean, aes(label = Mean, y = Mean), size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot6b <- qplot(Rank, Mean, data = messagemean, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Message mean size(in bytes)")
-#  
-#  plot6a
-#  plot6b
-#  
-#  ##third part
-#  messagemax <- data.frame(Call_Name = message$Name, Rank = message$Rank,
-#                           Max = message$Max)
-#  #remove * from Rank
-#  messagemax <- messagemax[(messagemax$Rank !=  "*"),]
-#  
-#  plot7a <- qplot(Rank, Max, data = messagemax, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Message max size(in bytes)") +
-#            geom_text(data = messagemax, aes(label = Max, y = Max), size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot7b <- qplot(Rank, Max, data = messagemax, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Message max size(in bytes)")
-#  
-#  plot7a
-#  plot7b
-#  
-#  ##fourth part sum
-#  ##Might have to include the * rank since the sum is in consideration
-#  messagesum <- data.frame(Call_Name = message$Name, Rank = message$Rank,
-#                           Sum = message$Sum)
-#  #remove * from Rank
-#  messagesum <- messagesum[(messagesum$Rank !=  "*"),]
-#  
-#  plot8a <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Message sum size(in bytes)") +
-#            geom_text(data = messagesum, aes(label = Sum, y = Sum), size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot8b <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Message max size(in bytes)")
-#  
-#  plot8a
-#  plot8b
+  # --------------------------------------------------------
+  # Message statistics
+  # --------------------------------------------------------
   
+  else if (plot.type == "message" || plot.type == "message2")
+  {
+    message <- output[[6]]
+    messagecount <- data.frame(Call_Name=message$Name, Rank=message$Rank, Count=message$Count)
+    messagecount <- messagecount[(messagecount$Rank != "*"),]
+    
+    messagemin <- data.frame(Call_Name = message$Name, Rank = message$Rank, Min = message$Min)
+    messagemin <- messagemin[(messagemin$Rank !=  "*"),]
+    
+    messagemean <- data.frame(Call_Name = message$Name, Rank = message$Rank, Mean = message$Mean)
+    messagemean <- messagemean[(messagemean$Rank !=  "*"),]
+    
+    messagemax <- data.frame(Call_Name = message$Name, Rank = message$Rank, Max = message$Max)
+    messagemax <- messagemax[(messagemax$Rank !=  "*"),]
+    
+    messagesum <- data.frame(Call_Name = message$Name, Rank = message$Rank, Sum = message$Sum)
+    messagesum <- messagesum[(messagesum$Rank !=  "*"),]
+    
+    
+    if (plot.type == "message")
+    {
+#      g1 <- qplot(Rank, Count, data = messagecount, fill = factor(Call_Name), geom = "bar", stat = "identity") + ylab("Message Count") +
+#              geom_text(data = messagecount, aes(label = Count, y = Count), size = 3) +
+#              theme(legend.position = "none") +
+#              facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      # Min message size by rank
+      g1 <- qplot(Rank, Min, data = messagemin, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Min Message Size (in bytes)") +
+              geom_text(data = messagemin, aes(label = Min, y = Min), size = 3) +
+              theme(legend.position = "none") +
+              facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      # Mean message size by rank
+      g2 <- qplot(Rank, Mean, data = messagemean, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Mean Message Size (in bytes)") +
+              geom_text(data = messagemean, aes(label = Mean, y = Mean), size = 3) +
+              theme(legend.position = "none") +
+              facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      # Max message size by rank
+      g3 <- qplot(Rank, Max, data = messagemax, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Max Message Size (in bytes)") +
+              geom_text(data = messagemax, aes(label = Max, y = Max), size = 3) +
+              theme(legend.position = "none") +
+              facet_wrap(facets =~ Call_Name, scales = "free_x")
+      
+      # Total message size by rank
+      g4 <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Total Message Size (in bytes)") +
+              geom_text(data = messagesum, aes(label = Sum, y = Sum), size = 3) +
+              theme(legend.position = "none") +
+              facet_wrap(facets =~ Call_Name, scales = "free_x")
+    }
+    
+    else if (plot.type == "message2")
+    {
+      # Min message size by rank
+#      g1 <- qplot(Rank, Count, data = messagecount, fill = factor(Call_Name), geom = "bar", stat = "identity") + ylab("Message Count") +
+#              geom_text(data = messagecount, aes(label = Count, y = Count), size = 3)
+      
+      g1 <- qplot(Rank, Min, data = messagemin, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Min Message Size (in bytes)") + 
+              scale_fill_discrete(name="MPI Function")
+      
+      # Mean message size by rank
+      g2 <- qplot(Rank, Mean, data = messagemean, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Message mean size(in bytes)") + 
+              scale_fill_discrete(name="MPI Function") + 
+              opts(legend.position = "none")
+      
+      # Max message size by rank
+      g3 <- qplot(Rank, Max, data = messagemax, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Message max size(in bytes)") + 
+              scale_fill_discrete(name="MPI Function") + 
+              opts(legend.position = "none")
+      
+      # Total message size by rank
+      g4 <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name), geom = "bar", stat = "identity") +
+              ylab("Total Message Size (in bytes)") + 
+              scale_fill_discrete(name="MPI Function") + 
+              opts(legend.position = "none")
+      
+       # Plot a single legend
+      tmp <- ggplot_gtable(ggplot_build(g1))
+      leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+      legend <- tmp$grobs[[leg]]
+      
+      g1 <- g1 + opts(legend.position = "none")
+      
+      add.legend <- TRUE
+    }
+    
+    if (missing(label))
+      label <- "Message Statistics by Function"
+  }
   
-  ### Plot everything
+  ### produce plots
   plots <- list(g1, g2, g3, g4)
   
   if (add.legend)
