@@ -14,6 +14,23 @@ setMethod("plot", signature(x="prof"),
 )
 
 
+
+# autoplot compatibility
+autoplot.prof <- function(object, ..., which=1L:4L, show.title=TRUE, label="FPMPI Profiler Output")
+{
+  if (x@profiler == 'fpmpi')
+    plot_fpmpi(x=object, which=which, show.title=show.title, label=label, ...)
+  else if (x@profiler == 'mpip')
+    plot_mpip(x=object, which=which, show.title=show.title, label=label, ...)
+  else if (x@profiler == 'tau')
+    plot_tau(x=object, which=which, show.title=show.title, label=label, ...)
+  else
+    stop("Unknown profiler")
+}
+
+
+
+
 ### fpmpi
 plot_fpmpi <- function(x, ..., which = 1L:4L, show.title = TRUE,
                        label = "FPMPI Profiler Output")
@@ -156,85 +173,85 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
   # 
   # --------------------------------------------------------
   
-#  #grid plot2 summary 
-#  #with facet introduced.
-#  #**Timing stats  (5)
-#  timing <- output[[5]]
-#  timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-#                            Count = timing$Count)
-#  timingcount <- timingcount[(timingcount$Rank != "*"),]
-#  #remove * from Rank
-#  plot1a <- qplot(Rank, Count, data = timingcount, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Count") +
-#            geom_text(data = timingcount, aes(label = Count, y = Count),
-#                      size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot1b <- qplot(Rank, Count, data = timingcount, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") + ylab("Count") +
-#            geom_text(data = timingcount, aes(label = Count, y = Count), size = 3)
-#  
-#  ###second part
-#  timingmean <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-#                           Mean_time = timing$Mean)
-#  timingmean <- timingmean[(timingmean$Rank != "*"),]
-#  #remove * from Rank
-#  plot2a <- qplot(Rank, Mean_time, data = timingmean, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Mean Time(in milliseconds)") +
-#            geom_text(data = timingmean, aes(label = Mean_time, y = Mean_time),
-#                      size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
+  #grid plot2 summary 
+  #with facet introduced.
+  #**Timing stats  (5)
+  timing <- output[[5]]
+  timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
+                            Count = timing$Count)
+  timingcount <- timingcount[(timingcount$Rank != "*"),]
+  #remove * from Rank
+  plot1a <- qplot(Rank, Count, data = timingcount, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") +
+            ylab("Count") +
+            geom_text(data = timingcount, aes(label = Count, y = Count),
+                      size = 3) +
+            theme(legend.position = "none") +
+            facet_wrap(facets =~ Call_Name, scales = "free_x")
+  
+  plot1b <- qplot(Rank, Count, data = timingcount, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") + ylab("Count") +
+            geom_text(data = timingcount, aes(label = Count, y = Count), size = 3)
+  
+  ###second part
+  timingmean <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
+                           Mean_time = timing$Mean)
+  timingmean <- timingmean[(timingmean$Rank != "*"),]
+  #remove * from Rank
+  plot2a <- qplot(Rank, Mean_time, data = timingmean, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") +
+            ylab("Mean Time(in milliseconds)") +
+            geom_text(data = timingmean, aes(label = Mean_time, y = Mean_time),
+                      size = 3) +
+            theme(legend.position = "none") +
+            facet_wrap(facets =~ Call_Name, scales = "free_x")
 
-#  plot2b <- qplot(Rank, Mean_time, data = timingmean, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Mean Time(in milliseconds)") +
-#            geom_text(data = timingmean, aes(label = Mean_time, y = Mean_time),
-#                      size = 3)
-#  
-#  ###third part
-#  timingmax <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-#                          Max_time = timing$Max)
-#  timingmax <- timingmax[(timingmax$Rank != "*"),]
-#  #remove * from Rank
-#  plot3a <- qplot(Rank, Max_time, data = timingmax, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Max Time(in milliseconds)") +
-#            geom_text(data = timingmax, aes(label = Max_time, y = Max_time),
-#                      size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot3b <- qplot(Rank, Max_time, data = timingmax, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("Max Time(in milliseconds)") +
-#            geom_text(data = timingmax, aes(label = Max_time, y = Max_time),
-#                      size = 3)
-#  
-#  ###fourth part
-#  timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
-#                          Mpi_per = timing$MPI.)
-#  timingmpi <- timingmpi[(timingmpi$Rank != "*"),]
-#  #remove * from Rank
-#  plot4a <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") +
-#            ylab("MPI (in percent)") +
-#            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
-#                      size = 3) +
-#            theme(legend.position = "none") +
-#            facet_wrap(facets =~ Call_Name, scales = "free_x")
-#  
-#  plot4b <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
-#                  geom = "bar", stat = "identity") + ylab("MPI (in percent)") +
-#            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
-#                      size = 3)
-#  
-#  grid.arrange(plot1a, plot2a, plot3a, plot4a, nrow = 2, ncol = 2)
-#  grid.arrange(plot1b, plot2b, plot3b, plot4b, nrow = 2, ncol = 2)
-#  #=======================================================================================
+  plot2b <- qplot(Rank, Mean_time, data = timingmean, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") +
+            ylab("Mean Time(in milliseconds)") +
+            geom_text(data = timingmean, aes(label = Mean_time, y = Mean_time),
+                      size = 3)
+  
+  ###third part
+  timingmax <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
+                          Max_time = timing$Max)
+  timingmax <- timingmax[(timingmax$Rank != "*"),]
+  #remove * from Rank
+  plot3a <- qplot(Rank, Max_time, data = timingmax, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") +
+            ylab("Max Time(in milliseconds)") +
+            geom_text(data = timingmax, aes(label = Max_time, y = Max_time),
+                      size = 3) +
+            theme(legend.position = "none") +
+            facet_wrap(facets =~ Call_Name, scales = "free_x")
+  
+  plot3b <- qplot(Rank, Max_time, data = timingmax, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") +
+            ylab("Max Time(in milliseconds)") +
+            geom_text(data = timingmax, aes(label = Max_time, y = Max_time),
+                      size = 3)
+  
+  ###fourth part
+  timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank,
+                          Mpi_per = timing$MPI.)
+  timingmpi <- timingmpi[(timingmpi$Rank != "*"),]
+  #remove * from Rank
+  plot4a <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") +
+            ylab("MPI (in percent)") +
+            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
+                      size = 3) +
+            theme(legend.position = "none") +
+            facet_wrap(facets =~ Call_Name, scales = "free_x")
+  
+  plot4b <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") + ylab("MPI (in percent)") +
+            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
+                      size = 3)
+  
+  grid.arrange(plot1a, plot2a, plot3a, plot4a, nrow = 2, ncol = 2)
+  grid.arrange(plot1b, plot2b, plot3b, plot4b, nrow = 2, ncol = 2)
+  #=======================================================================================
 #  
 #  ##third plot3 summary
 #  ##may be using facet
@@ -326,6 +343,8 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 
 
 plot_tau <- function(x, ..., which = 1L:4L, show.title = TRUE,
-                       label = "TAU Profiler Output"){
-  stop("plot_tau is not implemented yet.")
+                       label = "TAU Profiler Output")
+{
+  stop("plot() for tau profiled output is not yet implemented.")
 }
+
