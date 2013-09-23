@@ -68,6 +68,10 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 {
   output <- x@parsed
   
+  # --------------------------------------------------------
+  # Timing plots
+  # --------------------------------------------------------
+  
   # Time by Rank
   rankvsmpi <- output[[1]]
   rankvsmpi1 <- data.frame(Rank=rankvsmpi$Task, MPI_time=rankvsmpi$MPITime)
@@ -118,6 +122,15 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
           theme(legend.position="none") +
           geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3)
   
+  plots <- list(g1, g2, g3, g4)
+  
+  grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
+  
+  
+  # --------------------------------------------------------
+  # Data transmission plots
+  # --------------------------------------------------------
+  
 ###  # Data sent/received by function
 ###  sentstat <- output[[4]]
 ###  sentvscallname <- data.frame(Call3=sentstat$Call, Message_size=sentstat$Total)
@@ -139,11 +152,9 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 ###         theme(legend.position="none") +
 ###         geom_text(data=sentvscallname_per, aes(label=Message_size_per, y=Message_size_per), size=3)
   
-  plots <- list(g1, g2, g3, g4)
-  
-  grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
-#  
-  #=========================================================================
+  # --------------------------------------------------------
+  # 
+  # --------------------------------------------------------
   
 #  #grid plot2 summary 
 #  #with facet introduced.

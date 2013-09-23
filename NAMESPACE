@@ -1,5 +1,5 @@
 ### All functions
-exportPattern("^[[:alpha:]]+")
+#exportPattern("^[[:alpha:]]+")
 
 ### S4 classes and methods
 exportClasses("prof")
