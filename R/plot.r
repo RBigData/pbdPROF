@@ -110,13 +110,13 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
               plot.margin=unit(c(1, 0, 0, 0), "cm"), 
               legend.position=c(0.5, 1.05))
     
-    # Proportional time by rank
+    # Percentage time by rank
     tot <- sapply(unique(rankvsmpi1$Rank), function(i) sum(rankvsmpi1$MPI_time[which(rankvsmpi1$Rank==i)]))
     rankvsmpi2 <- rankvsmpi1
-    rankvsmpi2$MPI_time <- rankvsmpi2$MPI_time / tot[rankvsmpi2$Rank]
+    rankvsmpi2$MPI_time <- rankvsmpi2$MPI_time / tot[rankvsmpi2$Rank] * 100
     
     g2 <- qplot(Rank, MPI_time, data=rankvsmpi2, fill=Timing, geom="bar", stat="identity") +
-            ylab("Proportion of Run Time (in millisecond)") + 
+            ylab("Percent of Run Time (in millisecond)") + 
             opts(legend.direction="horizontal", 
               plot.margin=unit(c(1, 0, 0, 0), "cm"), 
               legend.position=c(0.5, 1.05))
@@ -134,13 +134,13 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
             geom_text(data=timevscallname, aes(label=Time, y=Time), size=3) + 
             theme(axis.text.x=element_text(angle=-30, vjust=0.5))
     
-    # Proportion of run time by function
+    # Percentage of run time by function
     timevscallname_per <- data.frame(Call2=timestat$Call, Time_per=timestat$MPI.)
     Legends2 <- factor(timevscallname_per$Call2)
     
     g4 <- qplot(Call2, Time_per, data=timevscallname_per, geom="bar", stat="identity", fill=Legends2) +
             xlab("MPI Function") + 
-            ylab("Proportion of Run Time") +
+            ylab("Percentage of Run Time") +
             theme(legend.position="none") +
             geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3) + 
             theme(axis.text.x=element_text(angle=-30, vjust=0.5))
