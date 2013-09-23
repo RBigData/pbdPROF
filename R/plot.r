@@ -194,6 +194,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   timingmpi <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Mpi_per = timing$MPI.)
   timingmpi <- timingmpi[(timingmpi$Rank != "*"),]
   
+<<<<<<< HEAD
   if (plot.type == "statistics")
   {
     g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
@@ -272,6 +273,16 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       label <- "Timing Statistics by"
   }
   
+=======
+  plot4b <- qplot(Rank, Mpi_per, data = timingmpi, fill = factor(Call_Name),
+                  geom = "bar", stat = "identity") + ylab("MPI (in percent)") +
+            geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
+                      size = 3)
+  #x11() #new plot device
+  grid.arrange(plot1a, plot2a, plot3a, plot4a, nrow = 2, ncol = 2)
+  #x11() #new plot device
+  grid.arrange(plot1b, plot2b, plot3b, plot4b, nrow = 2, ncol = 2)
+>>>>>>> 9fe6ccfbde2e6afa9e6ef9269ba21dc00f4ffcc0
   #=======================================================================================
 #  
 #  ##third plot3 summary
@@ -353,10 +364,12 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
 #  plot8b <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name),
 #                  geom = "bar", stat = "identity") +
 #            ylab("Message max size(in bytes)")
-#  
+# x11() 
 #  plot8a
+#  x11()
 #  plot8b
   
+<<<<<<< HEAD
   
   ### Plot everything
   plots <- list(g1, g2, g3, g4)
@@ -365,6 +378,12 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     grid_plotter(plots=plots, which=which, label=label, show.title=show.title, legend=legend)
   else
     grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
+=======
+  #x11() #for new plot device
+#grid.arrange(plot5a,plot6a,plot7a,plot8a,ncol=2,nrow=2) 
+ # x11() #for new plot device
+  #grid.arrange(plot5b,plot6b,plot7b,plot8b,ncol=2,nrow=2)
+>>>>>>> 9fe6ccfbde2e6afa9e6ef9269ba21dc00f4ffcc0
   
   invisible()
 }
