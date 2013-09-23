@@ -23,7 +23,7 @@ plot_fpmpi <- function(x, ..., which = 1L:4L, show.title = TRUE,
   df$Routine <- factor(df$Routine)
   df$Calls <- factor(df$Calls)
   
-  ### Set up plots
+  # Set up plots
   g1 <- ggplot(df, aes_string(x = 'Routine', y = 'Calls')) + 
           geom_bar(stat = "identity", aes_string(fill = 'Routine')) + 
           xlab("Routine") + 
@@ -52,6 +52,7 @@ plot_fpmpi <- function(x, ..., which = 1L:4L, show.title = TRUE,
           theme(axis.text.x = element_text(angle = 20, hjust = 1)) +
           theme(legend.position = "none")
   
+  # Plot them
   plots <- list(g1, g2, g3, g4)
   
   grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
@@ -67,71 +68,80 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 {
   output <- x@parsed
   
-  ##very first plot
+  # Time by Rank
   rankvsmpi <- output[[1]]
-  rankvsmpi1 <- data.frame(Rank = rankvsmpi$Task, MPI_time = rankvsmpi$MPITime)
+  rankvsmpi1 <- data.frame(Rank=rankvsmpi$Task, MPI_time=rankvsmpi$MPITime)
   
   rankvsmpi1 <- rankvsmpi1[(rankvsmpi1$Rank != "*"),]
-  ##pseduo trick to add total time with every rank
   ranker <- data.frame(Rank = 0:(NROW(rankvsmpi1) - 1),
                        MPI_time = sum(rankvsmpi1$MPI_time))
   rankvsmpi1 <- rbind(ranker, rankvsmpi1)
+  Timing <- factor(c(rep("Serial", length(unique(rankvsmpi1$Rank))), rep("MPI", length(unique(rankvsmpi1$Rank)))))
+  rankvsmpi1 <- cbind(rankvsmpi1, Timing)
   
-  plot_first <- qplot(Rank, MPI_time, data = rankvsmpi1, fill = factor(MPI_time),
-                      geom = "bar", stat = "identity") +
-                ylab("MPI time(in millisecond)") + theme(legend.position = "none")
+  g1 <- qplot(Rank, MPI_time, data=rankvsmpi1, fill=Timing, geom="bar", stat="identity") +
+          ylab("Run Time (in millisecond)") + 
+          opts(legend.direction="horizontal", 
+            plot.margin=unit(c(1, 0, 0, 0), "cm"), 
+            legend.position=c(0.5, 1.05))
+  
+  # Proportional time by rank
+  tot <- sapply(unique(rankvsmpi1$Rank), function(i) sum(rankvsmpi1$MPI_time[which(rankvsmpi1$Rank==i)]))
+  rankvsmpi2 <- rankvsmpi1
+  rankvsmpi2$MPI_time <- rankvsmpi2$MPI_time / tot[rankvsmpi2$Rank]
+  
+  g2 <- qplot(Rank, MPI_time, data=rankvsmpi2, fill=Timing, geom="bar", stat="identity") +
+          ylab("Proportion of Run Time (in millisecond)") + 
+          opts(legend.direction="horizontal", 
+            plot.margin=unit(c(1, 0, 0, 0), "cm"), 
+            legend.position=c(0.5, 1.05))
+
   
   # Run time by function
   timestat <- output[[3]]
   timevscallname <- data.frame(Call1 = timestat$Call, Time = timestat$Time)
   Legends1 <- factor(timevscallname$Call1)
   
-  g1 <- qplot(Call1, Time, data=timevscallname, geom="bar", stat="identity", fill=Legends1) +
-         xlab("MPI Function") + 
-         ylab("Run Time (in milliseconds)") +
-         theme(legend.position="none") +
-         geom_text(data=timevscallname, aes(label=Time, y=Time), size=3)
+  g3 <- qplot(Call1, Time, data=timevscallname, geom="bar", stat="identity", fill=Legends1) +
+          xlab("MPI Function") + 
+          ylab("Run Time (in milliseconds)") +
+          theme(legend.position="none") +
+          geom_text(data=timevscallname, aes(label=Time, y=Time), size=3)
   
   # Proportion of run time by function
   timevscallname_per <- data.frame(Call2=timestat$Call, Time_per=timestat$MPI.)
   Legends2 <- factor(timevscallname_per$Call2)
   
-  g2 <- qplot(Call2, Time_per, data=timevscallname_per, geom="bar", stat="identity", fill=Legends2) +
-         xlab("MPI Function") + 
-         ylab("Proportion of Run Time") +
-         theme(legend.position="none") +
-         geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3)
+  g4 <- qplot(Call2, Time_per, data=timevscallname_per, geom="bar", stat="identity", fill=Legends2) +
+          xlab("MPI Function") + 
+          ylab("Proportion of Run Time") +
+          theme(legend.position="none") +
+          geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3)
   
-  # Data sent/received by function
-  sentstat <- output[[4]]
-  sentvscallname <- data.frame(Call3=sentstat$Call, Message_size=sentstat$Total)
-  Legends3 <- factor(sentvscallname$Call3)
-  
-  g3 <- qplot(Call3, Message_size, data=sentvscallname, geom="bar", stat="identity", fill=Legends3) +
-       xlab("MPI Function") + 
-       ylab("Message Size (in bytes)") +
-       theme(legend.position="none") +
-       geom_text(data=sentvscallname, aes(label=Message_size, y=Message_size), size=3)
-  
-  # Proportion of data sent/received by function
-  sentvscallname_per <- data.frame(Call3=sentstat$Call, Message_size_per=sentstat$Sent.)
-  Legends4 <- factor(sentvscallname_per$Call3)
-  
-  g4 <- qplot(Call3, Message_size_per, data=sentvscallname_per, geom="bar", stat="identity", fill=Legends4) +
-         xlab("MPI Function") + 
-         ylab("Proportion of Message Size") +
-         theme(legend.position="none") +
-         geom_text(data=sentvscallname_per, aes(label=Message_size_per, y=Message_size_per), size=3)
+###  # Data sent/received by function
+###  sentstat <- output[[4]]
+###  sentvscallname <- data.frame(Call3=sentstat$Call, Message_size=sentstat$Total)
+###  Legends3 <- factor(sentvscallname$Call3)
+###  
+###  g3 <- qplot(Call3, Message_size, data=sentvscallname, geom="bar", stat="identity", fill=Legends3) +
+###       xlab("MPI Function") + 
+###       ylab("Message Size (in bytes)") +
+###       theme(legend.position="none") +
+###       geom_text(data=sentvscallname, aes(label=Message_size, y=Message_size), size=3)
+###  
+###  # Proportion of data sent/received by function
+###  sentvscallname_per <- data.frame(Call3=sentstat$Call, Message_size_per=sentstat$Sent.)
+###  Legends4 <- factor(sentvscallname_per$Call3)
+###  
+###  g4 <- qplot(Call3, Message_size_per, data=sentvscallname_per, geom="bar", stat="identity", fill=Legends4) +
+###         xlab("MPI Function") + 
+###         ylab("Proportion of Message Size") +
+###         theme(legend.position="none") +
+###         geom_text(data=sentvscallname_per, aes(label=Message_size_per, y=Message_size_per), size=3)
   
   plots <- list(g1, g2, g3, g4)
   
   grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
-#  grid.newpage()
-#  pushViewport(viewport(layout = grid.layout(2, 2)))
-#  print(a, vp=viewport(layout.pos.row=1, layout.pos.col = 1))
-#  print(b, vp=viewport(layout.pos.row=1, layout.pos.col = 2))
-#  print(c, vp=viewport(layout.pos.row=2, layout.pos.col = 1))
-#  print(d, vp=viewport(layout.pos.row=2, layout.pos.col = 2))
 #  
   #=========================================================================
   
