@@ -127,6 +127,14 @@ or
 R CMD INSTALL pbdPROF_0.1-0.tar.gz \
   --configure-args="--with-fpmpi='-L/path_to_fpmpi/lib -lfpmpi'"
 \end{Command}
+Or the conventional method in R console
+\begin{Command}
+install.packages("pbdPROF", configure.args=c("--with-fpmpi=/path/to/your/fpmpi/lib/libfpmpi.a"))
+\end{Command}
+Or
+\begin{Command}
+install.packages("pbdPROF", configure.args=c("--with-fpmpi=-L/path/to/your/fpmpi/lib -lfpmpi"))
+\end{Command}
 Since \pkg{fpmpi} only builds a static library \code{libfpmpi.a}, there is
 no difference between these two installations of \pkg{pbdPROF}.
 This only provides the linking arguments, either
@@ -255,7 +263,7 @@ appropriate linking flag \code{PROF_LDFLAGS} based on preset flags in
 \code{pbdPROF/etc/Makeconf}.
 
 if your pbdMPI is correctly installed with all correct linking you will the screenshot just similar to below output 
-during installation of \pkg{pbdMPI}
+during installation of \pkg{pbdMPI} or else you might get error 
 \begin{Output}
 ******************* Results of pbdMPI package configure *****************
  
@@ -283,3 +291,41 @@ exported to other \proglang{pbdR} packages at installation via the flag
 \code{SPMD_LDFLAGS}.  Therefore there is no need for additional flags in
 \code{R CMD INSTALL} when reinstalling packages for profiling.
 
+
+\subsubsection{Reinstall \pkg{pbdBASE}}
+\label{sec:pbdBASE}
+
+For further profiling, such as \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}, one may
+reinstall the package, via
+\begin{Command}
+R CMD INSTALL pbdBASE_0.2-2.tar.gz
+\end{Command}
+There is no need to provide any flag since \pkg{pbdMPI/etc/Makefile} has the
+information and installation of \pkg{pbdBASE} already considers it.
+Note that since both packages (\pkg{pbdMPI} and \pkg{pbdBASE})
+have MPI-using \proglang{C}/\proglang{Fortran} functions involved, it
+is necessary to link with \pkg{pbdPROF} in order to profile communications
+evoked by the package.
+
+
+\subsubsection{Reinstall \pkg{Rmpi}}
+\label{sec:Rmpi}
+
+Reinstall \pkg{Rmpi} via
+\begin{Command}
+wget https://github.com/snoweye/Rmpi_PROF/archive/master.zip
+unzip master.zip
+mv Rmpi_PROF-master Rmpi
+find ./Rmpi -type f -perm 777 -print -exec chmod 644 {} \;
+find ./Rmpi -type d -perm 777 -print -exec chmod 755 {} \;
+chmod 755 ./Rmpi/configure
+chmod 755 ./Rmpi/cleanup
+chmod 755 ./Rmpi/inst/*.sh
+R CMD build --no-resave-data Rmpi
+R CMD INSTALL Rmpi_0.6-4.tar.gz --configure-args="--enable-pbdPROF'"
+\end{Command}
+Note that {\color{red} 0.6-4} is not an official release of \pkg{Rmpi}.
+It is a modified version of 0.6-3 and it is currently available at
+\url{https://github.com/snoweye/Rmpi_PROF}.  The authors of \pkg{Rmpi} have plans 
+to eventually incorporate these changes, but this can be used as a temporary 
+measure.
