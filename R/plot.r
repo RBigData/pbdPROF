@@ -105,7 +105,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     rankvsmpi1 <- cbind(rankvsmpi1, Timing)
     
     g1 <- qplot(Rank, MPI_time, data=rankvsmpi1, fill=Timing, geom="bar", stat="identity") +
-            ylab("Run Time (in millisecond)") + 
+            ylab("Run Time (in milliseconds)") + 
             opts(legend.direction="horizontal", 
               plot.margin=unit(c(1, 0, 0, 0), "cm"), 
               legend.position=c(0.5, 1.05))
@@ -116,7 +116,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     rankvsmpi2$MPI_time <- rankvsmpi2$MPI_time / tot[rankvsmpi2$Rank] * 100
     
     g2 <- qplot(Rank, MPI_time, data=rankvsmpi2, fill=Timing, geom="bar", stat="identity") +
-            ylab("Percent of Run Time (in millisecond)") + 
+            ylab("Percent of Run Time (in milliseconds)") + 
             opts(legend.direction="horizontal", 
               plot.margin=unit(c(1, 0, 0, 0), "cm"), 
               legend.position=c(0.5, 1.05))
@@ -131,7 +131,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
             xlab("MPI Function") + 
             ylab("Run Time (in milliseconds)") +
             theme(legend.position="none") +
-            geom_text(data=timevscallname, aes(label=Time, y=Time), size=3) + 
+#            geom_text(data=timevscallname, aes(label=Time, y=Time), size=3) + 
             theme(axis.text.x=element_text(angle=-30, vjust=0.5))
     
     # Percentage of run time by function
@@ -142,7 +142,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
             xlab("MPI Function") + 
             ylab("Percentage of Run Time") +
             theme(legend.position="none") +
-            geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3) + 
+#            geom_text(data=timevscallname_per, aes(label=Time_per, y=Time_per), size=3) + 
             theme(axis.text.x=element_text(angle=-30, vjust=0.5))
     
     if (missing(label))
@@ -200,25 +200,25 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     {
       g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Number of Function Calls") +
-                  geom_text(data = timingcount, aes(label = Count, y = Count), size = 3) +
+#                  geom_text(data = timingcount, aes(label = Count, y = Count), size = 3) +
                   theme(legend.position = "none") +
                   facet_wrap(facets =~ Call_Name, scales = "free_x")
       
       g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Mean Time(in milliseconds)") +
-                  geom_text(data=timingmean, aes(label=Mean_time, y=Mean_time), size=3) +
+#                  geom_text(data=timingmean, aes(label=Mean_time, y=Mean_time), size=3) +
                   theme(legend.position = "none") +
                   facet_wrap(facets =~ Call_Name, scales = "free_x")
       
       g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Max Time(in milliseconds)") +
-                  geom_text(data = timingmax, aes(label=Max_time, y=Max_time), size=3) +
+#                  geom_text(data = timingmax, aes(label=Max_time, y=Max_time), size=3) +
                   theme(legend.position = "none") +
                   facet_wrap(facets =~ Call_Name, scales = "free_x")
       
       g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("MPI (in percent)") +
-                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size=3) +
+#                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size=3) +
                   theme(legend.position = "none") +
                   facet_wrap(facets =~ Call_Name, scales = "free_x")
       
@@ -237,29 +237,29 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       # Min run time by rank
       g1 <- qplot(Rank, Min_time, data=timingmin, fill=factor(Call_Name), geom="bar", stat="identity") +
               ylab("Min Run Time (in milliseconds)") +
-              scale_fill_discrete(name="MPI Function") + 
-              geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+#              geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3) + 
+              scale_fill_discrete(name="MPI Function")
       
       # Mean run time by rank
       g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Mean Run Time (in milliseconds)") +
-                  scale_fill_discrete(name="MPI Function") + 
                   opts(legend.position = "none") + 
-                  geom_text(data = timingmean, aes(label=Mean_time, y=Mean_time), size = 3)
+#                  geom_text(data = timingmean, aes(label=Mean_time, y=Mean_time), size = 3) + 
+                  scale_fill_discrete(name="MPI Function")
       
       # Max run time by rank
       g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Max Run Time (in milliseconds)") +
-                  scale_fill_discrete(name="MPI Function") + 
                   opts(legend.position = "none") + 
-                  geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
+#                  geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3) + 
+                  scale_fill_discrete(name="MPI Function")
       
       # 
       g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") + 
                   ylab("MPI (in percent)") +
-                  scale_fill_discrete(name="MPI Function") + 
                   opts(legend.position = "none") + 
-                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size = 3)
+#                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size = 3) + 
+                  scale_fill_discrete(name="MPI Function")
       
       # Plot a single legend
       tmp <- ggplot_gtable(ggplot_build(g1))
@@ -268,12 +268,11 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       
       g1 <- g1 + opts(legend.position = "none")
       
+      add.legend <- TRUE
+    
+      if (missing(label))
+        label <- "Timing Statistics by"
     }
-    
-    add.legend <- TRUE
-    
-    if (missing(label))
-      label <- "Timing Statistics by"
   }
   
   # --------------------------------------------------------
