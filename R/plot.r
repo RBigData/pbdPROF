@@ -248,8 +248,9 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
                   geom = "bar", stat = "identity") + ylab("MPI (in percent)") +
             geom_text(data = timingmpi, aes(label = Mpi_per, y = Mpi_per),
                       size = 3)
-  
+  #x11() #new plot device
   grid.arrange(plot1a, plot2a, plot3a, plot4a, nrow = 2, ncol = 2)
+  #x11() #new plot device
   grid.arrange(plot1b, plot2b, plot3b, plot4b, nrow = 2, ncol = 2)
   #=======================================================================================
 #  
@@ -332,11 +333,15 @@ plot_mpip <- function(x, ..., which = 1L:4L, show.title = TRUE,
 #  plot8b <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name),
 #                  geom = "bar", stat = "identity") +
 #            ylab("Message max size(in bytes)")
-#  
+# x11() 
 #  plot8a
+#  x11()
 #  plot8b
   
-  
+  #x11() #for new plot device
+#grid.arrange(plot5a,plot6a,plot7a,plot8a,ncol=2,nrow=2) 
+ # x11() #for new plot device
+  #grid.arrange(plot5b,plot6b,plot7b,plot8b,ncol=2,nrow=2)
   
   invisible()
 }
