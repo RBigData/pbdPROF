@@ -342,18 +342,18 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
 #              geom_text(data = messagecount, aes(label = Count, y = Count), size = 3)
       
       g1 <- qplot(Rank, Min, data = messagemin, fill = factor(Call_Name), geom = "bar", stat = "identity") +
-              ylab("Min Message Size (in bytes)") + 
+              ylab("Min Message Size (in bytes)") +
               scale_fill_discrete(name="MPI Function")
       
       # Mean message size by rank
       g2 <- qplot(Rank, Mean, data = messagemean, fill = factor(Call_Name), geom = "bar", stat = "identity") +
-              ylab("Message mean size(in bytes)") + 
+              ylab("Mean Message Size (in bytes)") + 
               scale_fill_discrete(name="MPI Function") + 
               opts(legend.position = "none")
       
       # Max message size by rank
       g3 <- qplot(Rank, Max, data = messagemax, fill = factor(Call_Name), geom = "bar", stat = "identity") +
-              ylab("Message max size(in bytes)") + 
+              ylab("Max Message Size (in bytes)") + 
               scale_fill_discrete(name="MPI Function") + 
               opts(legend.position = "none")
       
