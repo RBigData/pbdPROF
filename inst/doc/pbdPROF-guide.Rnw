@@ -10,6 +10,9 @@
 \input{./include/style}
 
 
+\newcommand{\profversion}{0.2-0}
+
+
 \author{
 \begin{minipage}{6in}
 \centering
