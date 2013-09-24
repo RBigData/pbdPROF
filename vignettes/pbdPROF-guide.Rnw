@@ -59,7 +59,7 @@ Uttar Pradesh, India\\
 \input{./include/02-installation}
 \input{./include/03-testing}
 \input{./include/04-example}
-%\input{./include/05-profiling}
+\input{./include/05-profiling}
 \input{./include/06-debugging}
 
 \bibliographystyle{./include/jss}
