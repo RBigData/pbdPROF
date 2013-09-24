@@ -171,6 +171,9 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   {
     timing <- output[[5]]
     
+    timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
+#   timingcount <- timingcount[(timingcount$Rank != "*"),]
+    
     timingmin <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Min_time = timing$Min)
     timingmin <- timingmin[(timingmin$Rank != "*"),]
     
@@ -252,7 +255,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       add.legend <- TRUE
     
       if (missing(label))
-        label <- "Timing Statistics by"
+        label <- "Timing Statistics by Rank"
     }
   }
   
@@ -347,71 +350,72 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     }
     
     if (missing(label))
-      label <- "Message Statistics by Function"
+      label <- "Message Statistics by Rank"
   }
   
   # --------------------------------------------------------
   # Count statistics
   # --------------------------------------------------------
   
-  else if (plot.type == "counts")
-  {
-    timing <- output[[5]]
-    timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
-    timingcount <- timingcount[(timingcount$Rank != "*"),]
-    
-    message <- output[[6]]
-    messagecount <- data.frame(Call_Name=message$Name, Rank=message$Rank, Count=message$Count)
-    messagecount <- messagecount[(messagecount$Rank != "*"),]
-    
-    # (function call) count by rank
-    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") + 
-            ylab("Number of Function Calls") +
-#            geom_text(data=timingcount, aes(label=Count, y=Count), size=3) + 
-            scale_fill_discrete(name="MPI Function") 
-    
-    g2 <- qplot(Rank, Count, data = messagecount, fill = factor(Call_Name), geom = "bar", stat = "identity") + ylab("Message Count") +
-            geom_text(data = messagecount, aes(label = Count, y = Count), size = 3) +
-            theme(legend.position = "none") +
-            facet_wrap(facets =~ Call_Name, scales = "free_x")
-    
-    # Data sent/received by function
-    sentstat <- output[[4]]
-    sentvscallname <- data.frame(Call3=sentstat$Call, Message_size=sentstat$Total)
-    Legends3 <- factor(sentvscallname$Call3)
-    
-    g3 <- qplot(Call3, Message_size, data=sentvscallname, geom="bar", stat="identity", fill=Legends3) +
-            xlab("MPI Function") + 
-            ylab("Message Size (in bytes)") +
-            theme(legend.position="none") +
-            geom_text(data=sentvscallname, aes(label=Message_size, y=Message_size), size=3) + 
-            theme(axis.text.x=element_text(angle=-30, vjust=0.5))
-    
-    # Proportion of data sent/received by function
-    sentvscallname_per <- data.frame(Call3=sentstat$Call, Message_size_per=sentstat$Sent.)
-    Legends4 <- factor(sentvscallname_per$Call3)
-    
-    g4 <- qplot(Call3, Message_size_per, data=sentvscallname_per, geom="bar", stat="identity", fill=Legends4) +
-            xlab("MPI Function") + 
-            ylab("Proportion of Message Size") +
-            theme(legend.position="none") +
-            geom_text(data=sentvscallname_per, aes(label=Message_size_per, y=Message_size_per), size=3) + 
-            theme(axis.text.x=element_text(angle=-30, vjust=0.5))
-    
-    # Plot a single legend
-    tmp <- ggplot_gtable(ggplot_build(g1))
-    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
-    legend <- tmp$grobs[[leg]]
-    
-    g1 <- g1 + opts(legend.position = "none")
-    
-    if (1 %in% which)
-      add.legend <- TRUE
-    
-    
-    if (missing(label))
-        label <- "Data"
-  }
+  #FIXME currently disabled; make these plots better
+#  else if (plot.type == "counts")
+#  {
+#    timing <- output[[5]]
+#    timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
+#    timingcount <- timingcount[(timingcount$Rank != "*"),]
+#    
+#    message <- output[[6]]
+#    messagecount <- data.frame(Call_Name=message$Name, Rank=message$Rank, Count=message$Count)
+#    messagecount <- messagecount[(messagecount$Rank != "*"),]
+#    
+#    # (function call) count by rank
+#    g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") + 
+#            ylab("Number of Function Calls") +
+##            geom_text(data=timingcount, aes(label=Count, y=Count), size=3) + 
+#            scale_fill_discrete(name="MPI Function") 
+#    
+#    g2 <- qplot(Rank, Count, data = messagecount, fill = factor(Call_Name), geom = "bar", stat = "identity") + ylab("Message Count") +
+#            geom_text(data = messagecount, aes(label = Count, y = Count), size = 3) +
+#            theme(legend.position = "none") +
+#            facet_wrap(facets =~ Call_Name, scales = "free_x")
+#    
+#    # Data sent/received by function
+#    sentstat <- output[[4]]
+#    sentvscallname <- data.frame(Call3=sentstat$Call, Message_size=sentstat$Total)
+#    Legends3 <- factor(sentvscallname$Call3)
+#    
+#    g3 <- qplot(Call3, Message_size, data=sentvscallname, geom="bar", stat="identity", fill=Legends3) +
+#            xlab("MPI Function") + 
+#            ylab("Message Size (in bytes)") +
+#            theme(legend.position="none") +
+#            geom_text(data=sentvscallname, aes(label=Message_size, y=Message_size), size=3) + 
+#            theme(axis.text.x=element_text(angle=-30, vjust=0.5))
+#    
+#    # Proportion of data sent/received by function
+#    sentvscallname_per <- data.frame(Call3=sentstat$Call, Message_size_per=sentstat$Sent.)
+#    Legends4 <- factor(sentvscallname_per$Call3)
+#    
+#    g4 <- qplot(Call3, Message_size_per, data=sentvscallname_per, geom="bar", stat="identity", fill=Legends4) +
+#            xlab("MPI Function") + 
+#            ylab("Proportion of Message Size") +
+#            theme(legend.position="none") +
+#            geom_text(data=sentvscallname_per, aes(label=Message_size_per, y=Message_size_per), size=3) + 
+#            theme(axis.text.x=element_text(angle=-30, vjust=0.5))
+#    
+#    # Plot a single legend
+#    tmp <- ggplot_gtable(ggplot_build(g1))
+#    leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+#    legend <- tmp$grobs[[leg]]
+#    
+#    g1 <- g1 + opts(legend.position = "none")
+#    
+#    if (1 %in% which)
+#      add.legend <- TRUE
+#    
+#    
+#    if (missing(label))
+#        label <- "Data"
+#  }
   
   
   # --------------------------------------------------------

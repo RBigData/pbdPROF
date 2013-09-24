@@ -1,7 +1,5 @@
 grid_plotter <- function(plots, which, label, show.title=TRUE, legend)
 {
-  grid.newpage()
-  
   add.legend <- !missing(legend)
   
   # Error checking
