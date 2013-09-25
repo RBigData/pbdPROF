@@ -114,7 +114,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     g1 <- qplot(Rank, MPI_time, data=rankvsmpi1, fill=Timing, geom="bar", stat="identity") +
             ylab("Application Run Time (seconds)") + 
             geom_text(data=runtime, aes(label=MPI_time, y=MPI_time), size=3) + 
-            opts(legend.direction="horizontal", 
+            theme(legend.direction="horizontal", 
               plot.margin=unit(c(1, 0, 0, 0), "cm"), 
               legend.position=c(0.5, 1.05))
     
@@ -131,7 +131,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     g2 <- qplot(Rank, MPI_time, data=rankvsmpi2, fill=Timing, geom="bar", stat="identity") +
             ylab("% Application Run Time") + 
             geom_text(data=pctruntime, aes(label=MPI_time, y=Tot), size=3) + 
-            opts(legend.direction="horizontal", 
+            theme(legend.direction="horizontal", 
               plot.margin=unit(c(1, 0, 0, 0), "cm"), 
               legend.position=c(0.5, 1.05))
     
@@ -227,21 +227,21 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       # Mean run time by rank
       g2 <- qplot(Rank, Mean_time, data=timingmean, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Mean Run Time (in milliseconds)") +
-                  opts(legend.position = "none") + 
+                  theme(legend.position = "none") + 
 #                  geom_text(data = timingmean, aes(label=Mean_time, y=Mean_time), size = 3) + 
                   scale_fill_discrete(name="MPI Function")
       
       # Max run time by rank
       g3 <- qplot(Rank, Max_time, data=timingmax, fill=factor(Call_Name), geom="bar", stat="identity") +
                   ylab("Max Run Time (in milliseconds)") +
-                  opts(legend.position = "none") + 
+                  theme(legend.position = "none") + 
 #                  geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3) + 
                   scale_fill_discrete(name="MPI Function")
       
       # 
       g4 <- qplot(Rank, Mpi_per, data=timingmpi, fill=factor(Call_Name), geom="bar", stat="identity") + 
                   ylab("MPI (in percent)") +
-                  opts(legend.position = "none") + 
+                  theme(legend.position = "none") + 
 #                  geom_text(data=timingmpi, aes(label=Mpi_per, y=Mpi_per), size = 3) + 
                   scale_fill_discrete(name="MPI Function")
       
@@ -250,7 +250,7 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
       legend <- tmp$grobs[[leg]]
       
-      g1 <- g1 + opts(legend.position = "none")
+      g1 <- g1 + theme(legend.position = "none")
       
       add.legend <- TRUE
     
@@ -325,26 +325,26 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
       g2 <- qplot(Rank, Mean, data = messagemean, fill = factor(Call_Name), geom = "bar", stat = "identity") +
               ylab("Mean Message Size (in bytes)") + 
               scale_fill_discrete(name="MPI Function") + 
-              opts(legend.position = "none")
+              theme(legend.position = "none")
       
       # Max message size by rank
       g3 <- qplot(Rank, Max, data = messagemax, fill = factor(Call_Name), geom = "bar", stat = "identity") +
               ylab("Max Message Size (in bytes)") + 
               scale_fill_discrete(name="MPI Function") + 
-              opts(legend.position = "none")
+              theme(legend.position = "none")
       
       # Total message size by rank
       g4 <- qplot(Rank, Sum, data = messagesum, fill = factor(Call_Name), geom = "bar", stat = "identity") +
               ylab("Total Message Size (in bytes)") + 
               scale_fill_discrete(name="MPI Function") + 
-              opts(legend.position = "none")
+              theme(legend.position = "none")
       
       # Plot a single legend
       tmp <- ggplot_gtable(ggplot_build(g1))
       leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
       legend <- tmp$grobs[[leg]]
       
-      g1 <- g1 + opts(legend.position = "none")
+      g1 <- g1 + theme(legend.position = "none")
       
       add.legend <- TRUE
     }
