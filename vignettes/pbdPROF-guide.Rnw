@@ -55,12 +55,17 @@ Uttar Pradesh, India\\
 \setcounter{page}{1}
 \pagestyle{fancy}
 
+\part{Installation}
 \input{./include/01-introduction}
 \input{./include/02-installation}
 \input{./include/03-testing}
+\part{Profiling}
 \input{./include/04-example}
 \input{./include/05-profiling}
-\input{./include/06-debugging}
+% \input{./include/06-plotting}
+\part{Appendix}
+\appendix
+\input{./include/07-debugging}
 
 \bibliographystyle{./include/jss}
 \bibliography{./include/pbdPROF}
