@@ -29,64 +29,68 @@ longest point-to-point message travelled, by process.
 MPI_Pcontrol may be used to control the collection of data.  Use the values
 defined in fpmpi.h, such as FPMPI_PROF_COLLSYNC, to control what data is 
 collected or reported by FPMPI2.
-Command: waittime
+Command: prof_test
 
-Date:     	Thu Mar 28 10:21:10 2013
-Processes:	2
-Execute time:	0.01026
+Date:     	Thu Sep 26 10:19:15 2013
+Processes:	4
+Execute time:	1.096
 Timing Stats: [seconds]	[min/max]    	[min rank/max rank]
-  wall-clock: 0.01026 sec	0.010171 / 0.010357	1 / 0
-        user: 0.01 sec	0.008000 / 0.012000	1 / 0
-         sys: 0 sec	0.000000 / 0.000000	0 / 0
+  wall-clock: 1.096 sec	1.092916 / 1.099399	3 / 0
+        user: 0.054 sec	0.044000 / 0.064000	2 / 0
+         sys: 0.036 sec	0.028000 / 0.052000	3 / 2
 
-Memory Usage Stats (RSS) [min/max KB]:	5424/5492
+Memory Usage Stats (RSS) [min/max KB]:	5560/7796
 
                   Average of sums over all processes
 Routine                 Calls       Time Msg Length    %Time by message length
                                                     0.........1........1........
                                                               K        M
-MPI_Allreduce       :       1   8.46e-06         40 00000*0000000000000000000000
-MPI_Recv            :       1   4.05e-06         40 00000*0000000000000000000000
-MPI_Send            :       1   1.91e-06         40 00000*0000000000000000000000
-MPI_Barrier         :       2   1.75e-05
+MPI_Gather          :       1    0.00169         80 000000*000000000000000000000
+MPI_Recv            :      99    0.00711   2.97e+03 0000*00000000000000000000000
+MPI_Send            :      99   0.000193   2.97e+03 0000*00000000000000000000000
+MPI_Barrier         :       1    0.00273
 
 Details for each MPI routine
                   Average of sums over all processes
                                                    % by message length
                                 (max over          0.........1........1........
                                  processes [rank])           K        M
-MPI_Allreduce:
-	Calls     :          1            1 [   0] 00000*0000000000000000000000
-	Time      :   8.46e-06     9.06e-06 [   1] 00000*0000000000000000000000
-	Data Sent :         40           40 [   0]
-	SyncTime  :   3.46e-06     3.81e-06 [   1] 00000*0000000000000000000000
-	By bin    : 33-64	[1,1]	[  7.87e-06,  9.06e-06]	[   3.1e-06,  3.81e-06]
+MPI_Gather:
+	Calls     :          1            1 [   0] 000000*000000000000000000000
+	Time      :    0.00169      0.00664 [   0] 000000*000000000000000000000
+	Data Sent :         80           80 [   0]
+	By bin    : 65-128	[1,1]	[   2.5e-05,   0.00664]
 MPI_Recv:
-	Calls     :          1            1 [   0] 00000*0000000000000000000000
-	Time      :   4.05e-06     4.05e-06 [   0] 00000*0000000000000000000000
-	Data Sent :         40           40 [   0]
+	Calls     :         99           99 [   0] 0000*00000000000000000000000
+	Time      :    0.00711      0.00805 [   0] 0000*00000000000000000000000
+	Data Sent :   2.97e+03         2970 [   0]
 	SyncTime  : 0
-	By bin    : 33-64	[1,1]	[  4.05e-06,  4.05e-06]
+	By bin    : 17-32	[99,99]	[   0.00432,   0.00805]
 MPI_Send:
-	Calls     :          1            1 [   0] 00000*0000000000000000000000
-	Time      :   1.91e-06     2.86e-06 [   0] 00000*0000000000000000000000
-	Data Sent :         40           40 [   0]
+	Calls     :         99           99 [   0] 0000*00000000000000000000000
+	Time      :   0.000193     0.000205 [   1] 0000*00000000000000000000000
+	Data Sent :   2.97e+03         2970 [   0]
 	SyncTime  : 0
-	By bin    : 33-64	[1,1]	[  9.54e-07,  2.86e-06]
+	By bin    : 17-32	[99,99]	[  0.000179,  0.000205]
 	Partners  :          1 max 1(at 0) min 1(at 0)
 MPI_Barrier:
-	Calls     :          2
-	Time      :   1.75e-05
+	Calls     :          1
+	Time      :    0.00273
 
 Summary of target processes for point-to-point communication:
 1-norm distance of point-to-point with an assumed 2-d topology
 (Maximum distance for point-to-point communication from each process)
-  1  1
+  1  2
+  1  2
 
 Detailed partner data: source: dest1 dest2 ...
-Size of COMM_WORLD	2
+Size of COMM_WORLD	4
 0:1 
-1:0 
+1:2 
+2:3 
+3:0 
 Data volume for each rank: source<tab>dest<tab>bytes,...
-0	1	40,
-1	0	40,
+0	1	2970,
+1	2	2970,
+2	3	2970,
+3	0	2970,
