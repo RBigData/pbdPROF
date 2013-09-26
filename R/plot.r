@@ -16,14 +16,14 @@ setMethod("plot", signature(x="prof"),
 
 
 # autoplot compatibility
-autoplot.prof <- function(object, ...)
-{
+autoplot.prof <- function(x, ..., which = 1L:4L, show.title = TRUE, label="FPMPI Profiler Output")
+{ 
   if (x@profiler == 'fpmpi')
-    plot_fpmpi(x=object, which=which, show.title=show.title, label=label, ...)
+    plot_fpmpi(x, ..., which=which, show.title=show.title, label=label)
   else if (x@profiler == 'mpip')
-    plot_mpip(x=object, which=which, show.title=show.title, label=label, ...)
+    plot_mpip(x, ..., which=which, show.title=show.title, label=label)
   else if (x@profiler == 'tau')
-    plot_tau(x=object, which=which, show.title=show.title, label=label, ...)
+    plot_tau(x, ..., which=which, show.title=show.title, label=label)
   else
     stop("Unknown profiler")
 }
@@ -87,6 +87,14 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   add.legend <- FALSE
   
   output <- x@parsed
+
+  ### Fool R CMD check
+  Rank <- MPI_time <- Tot <- Call1 <- Time <- Call2 <-
+  Time_per <- Count <- Call_Name <- Mean_time <- Max_time <-
+  Mpi_per <- Min_time <- Min <- Mean <- Max <- Sum <- NULL
+  rm(list = c("Rank", "MPI_time", "Tot", "Call1", "Time", "Call2",
+              "Time_per", "Count", "Call_Name", "Mean_time", "Max_time",
+              "Mpi_per", "Min_time", "Min", "Mean", "Max", "Sum"))
   
   # --------------------------------------------------------
   # Timing plots
