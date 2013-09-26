@@ -5,10 +5,10 @@ pbdPROF is a R package providing profiling to pbdR package.This profiling tool
 helps in parallel R users to profile their code, and use the best analytics and
 visualization toolbox, R, to evaluate the profiling resutls.
 * Currently supported libraries:
-	+fpmpi: http://www.mcs.anl.gov/research/projects/fpmpi/WWW/
-	 +mpiP: http://mpip.sourceforge.net/
+	+ fpmpi: http://www.mcs.anl.gov/research/projects/fpmpi/WWW/
+	 + mpiP: http://mpip.sourceforge.net/
 * To be supported in later versions:
-	 +TAU: http://www.cs.uoregon.edu/research/tau/home.php
+	 + TAU: http://www.cs.uoregon.edu/research/tau/home.php
 
 ##Requirements##
 * pbdPROF requires
