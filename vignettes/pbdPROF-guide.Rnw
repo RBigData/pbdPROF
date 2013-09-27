@@ -12,6 +12,13 @@
 
 \newcommand{\profversion}{0.2-0}
 
+\newcommand{\refsec}[1]{\hyperref[#1]{Section~\ref{#1}}}
+\newcommand{\instdebug}{\hyperref[sec:debug]{Appendix~\ref{sec:debug}}}
+
+\newcounter{problemct}
+\setcounter{problemct}{1}
+\newenvironment{problem}{{\color{red}Problem \arabic{problemct}:}}{\addtocounter{problemct}{1}}
+\newenvironment{solution}{{\color{dkgreen}Solution:}}{\vspace{.8cm}}
 
 \author{
 \begin{minipage}{6in}

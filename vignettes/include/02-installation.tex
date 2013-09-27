@@ -1,6 +1,8 @@
 \section{Installation}
 \label{sec:installation}
 
+In this section, we will describe the various ways that one can build \pkg{pbdPROF} and link it with MPI-using \proglang{R} packages.  For installation troubleshooting, see \instdebug.
+
 
 \subsection[System Requirements]{System Requirements}
 \label{sec:system_requirements}
@@ -124,7 +126,6 @@ This only provides the linking arguments, either
 \code{-L/path_to_fpmpi/lib -lfpmpi},
 which is saved in \code{Makeconf} and installed to
 \code{pbdPROF/etc/} for later use by other packages, such as \pkg{pbdMPI} or \pkg{Rmpi}.
-
 
 
 \subsubsection{Linking \pkg{pbdMPI} with pbdPROF}
