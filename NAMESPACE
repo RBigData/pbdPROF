@@ -11,5 +11,6 @@ exportMethods(
 )
 
 export(
-  read.prof
+  read.prof, 
+  autoplot.prof
 )

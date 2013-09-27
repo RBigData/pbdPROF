@@ -18,8 +18,8 @@
 }
 \usage{
   \S4method{plot}{prof}(x, ...)
-  \S3method{autoplot}{prof}(x, ..., which=1L:4L, show.title=TRUE, 
-                            label="FPMPI Profiler Output")
+  \S3method{autoplot}{prof}(x, ..., which=1L:4L, show.title=TRUE, label, 
+                            plot.type="timing", bar.label=FALSE)
 }
 \arguments{
   \item{x}{\code{prof} class object}
