@@ -17,18 +17,22 @@
 }
 }
 \usage{
-  \S4method{plot}{prof}(x, ...)
-  \S3method{autoplot}{prof}(x, ..., which=1L:4L, show.title=TRUE, label, 
-                            plot.type="timing", bar.label=FALSE)
+  \S4method{plot}{prof}(x, ..., which=1L:4L, show.title=TRUE, 
+                        plot.type="timing", label, bar.label=FALSE)
+  \S3method{autoplot}{prof}(object, ...)
 }
 \arguments{
   \item{x}{\code{prof} class object}
+  \item{object}{\code{prof} class object}
   \item{...}{extra arguments}
   \item{which}{Vector consisting of a subset of the integers 1, 2, 3, 4.
-  Determines which plots will be produced.}
+               Determines which plots will be produced.}
   \item{show.title}{Logical; determines whether or not the plot title
-  will be shown.}
+                    will be shown.}
+  \item{plot.type}{for profiling mpiP including "timing", "stats1", "stat2",
+                   "messages1", "message2", and "counts".}
   \item{label}{The label for the plot title.}
+  \item{bar.label}{show labeled legend.}
 }
 \seealso{
   \code{

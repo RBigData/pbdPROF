@@ -1,5 +1,5 @@
 @ mpiP
-@ Command : /home/snoweye/work-my/local/R-devel/lib/R/bin/exec/R --no-init-file --slave --no-save -f /home/snoweye/work-my/local/R-devel/lib/R/library/Rmpi/demo/masterslavePI.R 
+@ Command :
 @ Version                  : 3.3.0
 @ MPIP Build date          : Sep 21 2013, 14:36:21
 @ Start time               : 2013 09 21 15:11:39

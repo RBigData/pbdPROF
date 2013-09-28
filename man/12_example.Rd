@@ -6,6 +6,8 @@
 \alias{allreduce.mpip}
 \alias{masterslavePI.mpip}
 \alias{svd.mpip}
+\alias{fpmpi_example}
+\alias{mpip_example}
 
 \docType{data}
 \title{Small example datasets}
