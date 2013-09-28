@@ -40,23 +40,41 @@ So why the need to reinstall things?  It boils down to how the profilers
 actually work.  Under normal circumstances, a user writes some \proglang{R} code 
 from an MPI-using package (e.g., \code{allreduce(x)} from \pkg{pbdMPI}, 
 \code{mpi.allreduce(x, type=2)} from \pkg{Rmpi}, etc. \dots).
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale=.4]{include/pics/mpi_normal}
-  \caption{Without a Profiler}
-  \label{fig:normalmpi}
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[scale=.4]{include/pics/mpi_normal}
+%  \caption{Without a Profiler}
+%  \label{fig:normalmpi}
+%\end{figure}
+
+\begin{figure}
+  \hspace{0.2cm}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=0.9\textwidth]{include/pics/mpi_normal}
+    \caption{Without a Profiler}
+    \label{fig:normalmpi}
+  \end{subfigure}
+  \hspace{0.3cm}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=2.0\textwidth]{include/pics/mpi_profiler}
+    \caption{With the Profiler}
+    \label{fig:profmpi}
+  \end{subfigure}
 \end{figure}
+
 This then makes a call to some \proglang{C} or \proglang{Fortran} code which 
 directly interfaces with MPI.  You can see this pictures in 
 Figure~\ref{fig:normalmpi}.  When you use a profiler, you instead hijack the 
 calls to MPI from the \proglang{C}/\proglang{Fortran} code so that some 
 metadata can be stored about MPI usage.
-\begin{figure}[h]
+
+%\begin{figure}[h]
 %   \centering
-  \hspace*{6.1cm}\includegraphics[scale=.4]{include/pics/mpi_profiler}
-  \caption{With the Profiler}
-  \label{fig:profmpi}
-\end{figure}
+%  \hspace*{6.1cm}\includegraphics[scale=.4]{include/pics/mpi_profiler}
+%  \caption{With the Profiler}
+%  \label{fig:profmpi}
+%\end{figure}
+
 This process is represented in Figure~\ref{fig:profmpi}.  Hopefully it should 
 be clear what, and when, something should be reinstalled.  For the sake of 
 completion, we summarize the possibilities below:
@@ -135,9 +153,12 @@ Reinstall \pkg{pbdMPI} via
 \begin{Command}
 R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF"
 \end{Command}
-Package developers who are directly interfacing with MPI (via \proglang{C} or \proglang{Fortran}) 
+Package developers who are directly interfacing with MPI functions
+(via \proglang{C} or \proglang{Fortran}) 
 should note that \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
-used in \code{pbdMPI/configure.ac} or \code{pbdMPI/configure} to determine an
+utilized in \code{pbdMPI/configure.ac}
+(used to generate \code{pbdMPI/configure})
+to determine an
 appropriate linking flag \code{PROF_LDFLAGS} based on preset flags in
 \code{pbdPROF/etc/Makeconf}.
 
@@ -191,9 +212,9 @@ chmod 755 ./Rmpi/configure
 chmod 755 ./Rmpi/cleanup
 chmod 755 ./Rmpi/inst/*.sh
 R CMD build --no-resave-data Rmpi
-R CMD INSTALL Rmpi_0.6-4.tar.gz --configure-args="--enable-pbdPROF"
+R CMD INSTALL Rmpi_0.6-6.tar.gz --configure-args="--enable-pbdPROF"
 \end{Command}
-Note that {\color{red} 0.6-4} is not an official release of \pkg{Rmpi}.
+Note that {\color{red} 0.6-6} is not an official release of \pkg{Rmpi}.
 It is a modified version of 0.6-3 and it is currently available at
 \url{https://github.com/snoweye/Rmpi_PROF}.  The authors of \pkg{Rmpi} have plans 
 to eventually incorporate these changes, but this can be used as a temporary 
@@ -208,7 +229,7 @@ measure.
 \label{sec:mpiP}
 
 We have to install \pkg{mpiP} externally from its source code to use it in
-\pkg{pbdPROF}.We can install \pkg{pbdPROF} using the external \pkg{mpiP} library via
+\pkg{pbdPROF}. We can install \pkg{pbdPROF} using the external \pkg{mpiP} library via
 \begin{Command}
 R CMD INSTALL pbdPROF_0.2-0.tar.gz --configure-args="--with-mpiP='/path/to/your/mpiP/lib/libmpiP.a' "
 \end{Command}
@@ -230,7 +251,7 @@ install.packages("pbdPROF", configure.args=c("--with-mpiP=-L/path/to/your/mpiP/l
 The linking argument is saved in \code{Makeconf} and installed to
 \code{pbdPROF/etc/} for later use by other packages, such as \pkg{pbdMPI} or \pkg{Rmpi}.
 Since \pkg{mpiP} has external dependency \code{libfpmpi.a} on libunwind so while installing 
-\pkg{mpiP} you are suggested to use the below command while configuring \pkg{mpiP}
+\pkg{mpiP} you are suggested to use the below command while configuring \pkg{mpiP}.
 This only provides the linking arguments, either
 \begin{Code}
 ./configure --disable-libunwind CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
@@ -246,13 +267,16 @@ Reinstall \pkg{pbdMPI} via
 \begin{Command}
 R CMD INSTALL pbdMPI_1.0-0.tar.gz --configure-args="--enable-pbdPROF"
 \end{Command}
-Package developers who are directly interfacing with MPI (via \proglang{C} or \proglang{Fortran}) 
+Package developers who are directly interfacing with MPI functions
+(via \proglang{C} or \proglang{Fortran}) 
 should note that \code{pbdMPI/R/get_conf.r} and \code{pbdMPI/R/get_lib.r} are
-used in \code{pbdMPI/configure.ac} or \code{pbdMPI/configure} to determine an
+utilized in \code{pbdMPI/configure.ac}
+(used to generate \code{pbdMPI/configure})
+to determine an
 appropriate linking flag \code{PROF_LDFLAGS} based on preset flags in
 \code{pbdPROF/etc/Makeconf}.
 
-if your pbdMPI is correctly installed with all correct linking you will the screenshot just similar to below output 
+If your pbdMPI is correctly installed with all correct linking you will have the screenshot just similar to below output 
 during installation of \pkg{pbdMPI} or else you might get error 
 \begin{Output}
 ******************* Results of pbdMPI package configure *****************
