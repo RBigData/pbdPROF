@@ -7,8 +7,8 @@ In this part, we will profile some much more substantive examples.  This assumes
 
 \subsection{Demo of \pkg{pbdMPI}}
 
-The \code{allreduce.r} script is originally in \pkg{pbdMPI/demo/} and can be profiled
-by
+The \code{allreduce.r} script is originally in \pkg{pbdMPI/demo/} and can be
+profiled by
 \begin{Code}
 mpiexec -np 2 Rscript -e "demo(allreduce,'pbdMPI',ask=F,echo=F)"
 \end{Code}
@@ -35,7 +35,7 @@ Average of sums over all processes
 (max over          0.........1........1........
  processes [rank])           K        M
 MPI_Allreduce:
-  Calls     :         10           10 [   0] 0510040000000000000000000000
+Calls     :         10           10 [   0] 0510040000000000000000000000
 Time      :   0.000118     0.000119 [   0] 0610030000000000000000000000
 Data Sent :        188          188 [   0]
 SyncTime  :   0.000312     0.000453 [   0] 07.0020000000000000000000000
@@ -43,13 +43,13 @@ By bin    : 1-4 [5,5]   [  7.01e-05,  7.01e-05] [  0.000117,  0.000343]
 : 5-8 [1,1]   [  7.87e-06,  9.06e-06] [  9.06e-06,  9.06e-06]
 : 33-64       [4,4]   [  3.91e-05,  4.03e-05] [  4.51e-05,    0.0001]
 MPI_Barrier:
-  Calls     :         21
+Calls     :         21
 Time      :     0.0054
 \end{Output}
 Two MPI \proglang{C} functions \code{MPI_Allreduce} and \code{MPI_Barrier} are
 evoked inside this \proglang{R} code. The \code{MPI_Allreduce} is called $10$
-  times, span $0.000156$ seconds, and 188 bytes are sent.
-The \code{MPI_Barrier} is called $21$ times and span $0.00608$ seconds.
+times, span $0.000118$ seconds, and $188$ bytes are sent.
+The \code{MPI_Barrier} is called $21$ times and span $0.0054$ seconds.
 
 
 \subsection{Demo of \pkg{pbdDMAT}}
@@ -83,20 +83,20 @@ Average of sums over all processes
 (max over          0.........1........1........
  processes [rank])           K        M
 MPI_Allreduce:
-  Calls     :         12           12 [   0] 0550000000000000000000000000
+Calls     :         12           12 [   0] 0550000000000000000000000000
 Time      :   0.000108     0.000113 [   0] 0640000000000000000000000000
 Data Sent :         72           72 [   0]
 SyncTime  :   0.000143      0.00016 [   1] 0640000000000000000000000000
 By bin    : 1-4	[6,6]	[  5.44e-05,  6.91e-05]	[  6.91e-05,  8.89e-05]
 : 5-8	[6,6]	[  4.36e-05,  4.79e-05]	[  5.72e-05,  7.08e-05]
 MPI_Barrier:
-  Calls     :          8
+Calls     :          8
 Time      :   0.000784
 
 \end{Output}
 Two MPI \proglang{C} functions \code{MPI_Allreduce} and \code{MPI_Barrier} are
 evoked inside this \proglang{R} code. The \code{MPI_Allreduce} is called $12$
-  times, span $0.000108$ seconds, and 72 bytes are sent.
+times, span $0.000108$ seconds, and $72$ bytes are sent.
 The \code{MPI_Barrier} is called $8$ times and span $0.000784$ seconds.
 
 
@@ -130,17 +130,18 @@ Average of sums over all processes
 (max over          0.........1........1........
  processes [rank])           K        M
 MPI_Reduce:
-  Calls     :          1            1 [   0] 00*0000000000000000000000000
+Calls     :          1            1 [   0] 00*0000000000000000000000000
 Time      :   6.51e-05     6.51e-05 [   0] 00*0000000000000000000000000
 Data Sent :          8            8 [   0]
 By bin    : 5-8	[1,1]	[  6.51e-05,  6.51e-05]
 \end{Output}
 One MPI \proglang{C} function \code{MPI_Reduce} is
 evoked inside this \proglang{R} code. The \code{MPI_Reduce} is called only $1$
-  time, span $6.51e-05$ seconds, and 8 bytes are sent.
+time, span $6.51e-05$ seconds, and $8$ bytes are sent.
 Note that there is only one processor (master in \code{comm=0})
 profiled by \pkg{fpmpi}, and the other three processors
 (slaves in \code{comm=1}) are not.
+
 
 
 
@@ -164,16 +165,16 @@ part of file is listed below
 @ MPI Task Assignment      : 1 wolf-vb9
 
 ---------------------------------------------------------------------------
-  @--- MPI Time (seconds) ---------------------------------------------------
-  ---------------------------------------------------------------------------
-  Task    AppTime    MPITime     MPI%
-0      0.153    0.00207     1.35
+@--- MPI Time (seconds) ---------------------------------------------------
+---------------------------------------------------------------------------
+Task   AppTime   MPITime    MPI%
+0      0.153     0.00207    1.35
 1      0.155     0.0284    18.35
 *      0.308     0.0305     9.90
 ---------------------------------------------------------------------------
-  @--- Callsites: 6 ---------------------------------------------------------
-  ---------------------------------------------------------------------------
-  ID Lev File/Address        Line Parent_Funct             MPI_Call
+@--- Callsites: 6 ---------------------------------------------------------
+---------------------------------------------------------------------------
+ID Lev File/Address        Line Parent_Funct             MPI_Call
 1   0 0x7f335d1108c3           [unknown]                Allreduce
 2   0 0x7f335d110acb           [unknown]                Barrier
 3   0 0x7f335d1107f3           [unknown]                Allreduce
@@ -181,9 +182,9 @@ part of file is listed below
 5   0 0x7f2ded6f6acb           [unknown]                Barrier
 6   0 0x7f2ded6f67f3           [unknown]                Allreduce
 ---------------------------------------------------------------------------
-  @--- Aggregate Time (top twenty, descending, milliseconds) ----------------
-  ---------------------------------------------------------------------------
-  Call                 Site       Time    App%    MPI%     COV
+@--- Aggregate Time (top twenty, descending, milliseconds) ----------------
+---------------------------------------------------------------------------
+Call                 Site       Time    App%    MPI%     COV
 Barrier                 5       28.1    9.13   92.21    0.00
 Barrier                 2       1.63    0.53    5.36    0.00
 Allreduce               3      0.322    0.10    1.06    0.00
@@ -191,9 +192,9 @@ Allreduce               6      0.217    0.07    0.71    0.00
 Allreduce               1      0.117    0.04    0.38    0.00
 Allreduce               4      0.083    0.03    0.27    0.00
 ---------------------------------------------------------------------------
-  @--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
-  ---------------------------------------------------------------------------
-  Call                 Site      Count      Total       Avrg  Sent%
+@--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
+---------------------------------------------------------------------------
+Call                 Site      Count      Total       Avrg  Sent%
 Allreduce               1          4        160         40  42.55
 Allreduce               4          4        160         40  42.55
 Allreduce               3          6         28       4.67   7.45
@@ -201,21 +202,51 @@ Allreduce               6          6         28       4.67   7.45
 \end{Output}
 
 
-The above statistics shows various criteria for the program runned the MPI TIME
-shows running time per process while executing the \code{allreduce.r}.There are four
-columns \code{Task} which is Rank of the processor . In the above sample output there is \code{AppTime}which
-is Application level runtime having values $0.153$ and $0.155$ for first and second ranks respectively
-,\code{MPITime} which is MPI level runtime of code having value $0.00207$ for first rank
-and $0.0284$ for second rank and values $1.35$ and 18.35 in \code{MPI\%} which are percentage of MPITime 
-in AppTime for rank $0$ processor and rank $1$ respectively.The \code{*} shows sum of total ranks in respective column.
-Furthermore mpiP library provides deeper analysis of each \code{MPI Calls} like Aggregate Time and 
-Aggregate Sent Message Size . In Aggregate Time division \code{Call} column shows each \code{MPI_Calls} used
-here two are used \code{Barrier} and \code{Allreduce}. The \code{Barrier} calls at Site $5$ ran for $28.1$ milliseconds 
-of which $9.13$ is Application level aggregate time percentage and $92.21$ is MPI level aggregate time percentage.
+The above statistics shows various criteria for the program run. The
+``MPI Time'' shows running time per process while executing the
+\code{allreduce.r}. There are four columns:
+\begin{itemize}
+\item
+\code{Task} which is the rank of the processor,
+\item
+\code{AppTime} which is the application level runtime having
+values $0.153$ and $0.155$ seconds for the first (0) and second (1) ranks,
+respectively,
+\item
+\code{MPITime} which is the MPI level runtime of code having values $0.00207$
+seconds for the first rank and $0.0284$ seconds for the second rank, and
+\item
+\code{MPI\%} which is the percentage of \code{MPITime} in \code{AppTime} having
+values $1.35\%$ and $18.35\%$ for rank $0$ processor and rank $1$, respectively.
+\end{itemize}
+The \code{*} shows the sums of total ranks in respective columns.
 
-Similarly in Aggregate Sent Message Size division per bytes info of each MPI call is elaborated.
-For example, for \code{Allreduce} at Site $1$ has Count value of $4$ while Total Message Size is $160$ bytes ,on average $40$ bytes are there.
-Also Sent percentage is $42.55$ for Allreduce at Site $1$.
+The ``Callsites'' division shows $6$ MPI calls in these two processors are
+evoked. One \code{Barrier} and two types of \code{Allreduce} (one for
+\code{integer} and one for \code{double}) for each processor.
+The general \code{allreduce()} function in \pkg{pbdMPI} is a S4 method which
+checks data type first (\code{matrix},
+\code{array}, \code{integer}, or \code{double}) using \code{MPI_Allreduce},
+then bases on the data type to evoke the corresponding S3 function using the
+other call to \code{MPI_Allreduce}.
+The \code{Barrier} is mainly evoked from \code{comm.cat()} and
+\code{comm.print()} in \pkg{pbdMPI}.
+
+Furthermore, the \pkg{mpiP} library provides deeper analyses of each
+\code{MPI Calls} like ``Aggregate Time'' and ``Aggregate Sent Message Size''.
+In ``Aggregate Time'' division,
+the \code{Call} column shows information of MPI calls,
+\code{Barrier} called twice and \code{Allreduce} called four times.
+Note that for longer runs, only top twenty records are reported.
+The \code{Barrier} calls at the site $5$ (ID $5$ in the ``Callsites'' division)
+ran for $28.1$ milliseconds 
+of which $9.13\%$ is application level aggregate time percentage and
+$92.21\%$ is MPI level aggregate time percentage.
+Similarly, in ``Aggregate Sent Message Size'' division, per bytes information
+of each MPI call is elaborated.
+For example, for \code{Allreduce} at the site $1$ has the count value of
+$4$ while total message size is $160$ bytes, on average $40$ bytes are there.
+Also, the sent percentage is $42.55\%$ for \code{Allreduce} at the site $1$.
 
 
 
@@ -239,16 +270,16 @@ Part of output is listed in the next as
 @ MPI Task Assignment      : 1 wolf-vb9
 
 ---------------------------------------------------------------------------
-  @--- MPI Time (seconds) ---------------------------------------------------
-  ---------------------------------------------------------------------------
-  Task    AppTime    MPITime     MPI%
+@--- MPI Time (seconds) ---------------------------------------------------
+---------------------------------------------------------------------------
+Task   AppTime  MPITime     MPI%
 0      0.768   0.000527     0.07
 1      0.784    0.00195     0.25
 *       1.55    0.00248     0.16
 ---------------------------------------------------------------------------
-  @--- Callsites: 6 ---------------------------------------------------------
-  ---------------------------------------------------------------------------
-  ID Lev File/Address        Line Parent_Funct             MPI_Call
+@--- Callsites: 6 ---------------------------------------------------------
+---------------------------------------------------------------------------
+ID Lev File/Address        Line Parent_Funct             MPI_Call
 1   0 0x7f676ef298c3           [unknown]                Allreduce
 2   0 0x7f676ef29acb           [unknown]                Barrier
 3   0 0x7f676ef297f3           [unknown]                Allreduce
@@ -256,9 +287,9 @@ Part of output is listed in the next as
 5   0 0x7fa461cafacb           [unknown]                Barrier
 6   0 0x7fa461caf7f3           [unknown]                Allreduce
 ---------------------------------------------------------------------------
-  @--- Aggregate Time (top twenty, descending, milliseconds) ----------------
-  ---------------------------------------------------------------------------
-  Call                 Site       Time    App%    MPI%     COV
+@--- Aggregate Time (top twenty, descending, milliseconds) ----------------
+---------------------------------------------------------------------------
+Call                 Site       Time    App%    MPI%     COV
 Barrier                 5       1.55    0.10   62.40    0.00
 Allreduce               6      0.295    0.02   11.90    0.00
 Barrier                 2      0.256    0.02   10.33    0.00
@@ -266,31 +297,22 @@ Allreduce               3      0.177    0.01    7.14    0.00
 Allreduce               4       0.11    0.01    4.44    0.00
 Allreduce               1      0.094    0.01    3.79    0.00
 ---------------------------------------------------------------------------
-  @--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
-  ---------------------------------------------------------------------------
-  Call                 Site      Count      Total       Avrg  Sent%
+@--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
+---------------------------------------------------------------------------
+Call                 Site      Count      Total       Avrg  Sent%
 Allreduce               1          6         48          8  33.33
 Allreduce               4          6         48          8  33.33
 Allreduce               3          6         24          4  16.67
 Allreduce               6          6         24          4  16.67
-
 \end{Output}
 
-The above statistics shows various criteria the code has been profiled for the program 
-runned the MPI TIME shows running time per process while executing the \code{allreduce.r}.There are four
-columns \code{Task} which is Rank of the each processor .In the above sample output there is \code{AppTime}which
-is Application level runtime having values $0.768$ and $0.784$ for first and second ranks respectively
-,\code{MPITime} which is MPI level runtime of code having value $0.000527$ for first rank
-and $0.00195$ for second rank and values $0.7$  and  $0.25$ \code{MPI\%} which are percentage of MPITime in AppTime
-for rank $0$ processor and rank $1$ respectively.The \code{*} shows sum of total ranks in respective column.
-Furthermore mpiP library provides deeper analysis of each \code{MPI Calls} like Aggregate Time and 
-Aggregate Sent Message Size . In Aggregate Time division \code{Call} column shows each \code{MPI_Calls} used
-here two are used \code{Barrier} and \code{Allreduce}. The \code{Barrier} calls at Site $5$ ran for $1.5$ milliseconds 
-of which $0.10$ is Application level aggregate time percentage and $62.40$ is MPI level aggregate time percentage.
+The above statistics shows various criteria the code has been profiled for the
+program \code{svd.r}. The interpretation is similar to that of
+\code{allreduce.r} above. However, these \code{MPI_Allreduce} functions are
+mainly called by functions of \pkg{ScaLAPACK}~\citep{slug}
+via \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}
+and \pkg{pbdSLAP}~\citep{Chen2012pbdSLAPpackage}.
 
-Similarly in Aggregate Sent Message Size division per bytes info of each MPI call is elaborated.
-For example, for \code{Allreduce} at Site $1$ has Count value of $6$ while Total Message Size is $48$ bytes ,on average $8$ bytes are there.
-Also Sent percentage of total bytes is $33.3$ for Allreduce at Site $1$.
 
 
 
@@ -311,37 +333,37 @@ Part of output is listed in the next as
 @ MPI Task Assignment      : 0 wolf-vb9
 
 ---------------------------------------------------------------------------
-  @--- MPI Time (seconds) ---------------------------------------------------
-  ---------------------------------------------------------------------------
-  Task    AppTime    MPITime     MPI%
+@--- MPI Time (seconds) ---------------------------------------------------
+---------------------------------------------------------------------------
+Task  AppTime   MPITime     MPI%
 0     0.0303    0.00125     4.12
 *     0.0303    0.00125     4.12
 ---------------------------------------------------------------------------
-  @--- Callsites: 4 ---------------------------------------------------------
-  ---------------------------------------------------------------------------
-  ID Lev File/Address        Line Parent_Funct             MPI_Call
+@--- Callsites: 4 ---------------------------------------------------------
+---------------------------------------------------------------------------
+ID Lev File/Address        Line Parent_Funct             MPI_Call
 1   0 0x7f8cdbc03628           [unknown]                Comm_free
 2   0 0x7f8cdbc03a2e           [unknown]                Intercomm_merge
 3   0 0x7f8cdbc02ce6           [unknown]                Reduce
 4   0 0x7f8cdbc0398b           [unknown]                Comm_free
 ---------------------------------------------------------------------------
-  @--- Aggregate Time (top twenty, descending, milliseconds) ----------------
-  ---------------------------------------------------------------------------
-  Call                 Site       Time    App%    MPI%     COV
+@--- Aggregate Time (top twenty, descending, milliseconds) ----------------
+---------------------------------------------------------------------------
+Call                 Site       Time    App%    MPI%     COV
 Intercomm_merge         2       1.06    3.52   85.47    0.00
 Reduce                  3      0.102    0.34    8.19    0.00
 Comm_free               4      0.053    0.18    4.25    0.00
 Comm_free               1      0.026    0.09    2.09    0.00
 ---------------------------------------------------------------------------
-  @--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
-  ---------------------------------------------------------------------------
-  Call                 Site      Count      Total       Avrg  Sent%
+@--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
+---------------------------------------------------------------------------
+Call                 Site      Count      Total       Avrg  Sent%
 Reduce                  3          1          8          8 100.00
 ---------------------------------------------------------------------------
-  @--- Callsite Time statistics (all, milliseconds): 4 ----------------------
-  ---------------------------------------------------------------------------
-  Name              Site Rank  Count      Max     Mean      Min   App%   MPI%
-  Comm_free            1    0      1    0.026    0.026    0.026   0.09   2.09
+@--- Callsite Time statistics (all, milliseconds): 4 ----------------------
+---------------------------------------------------------------------------
+Name              Site Rank  Count      Max     Mean      Min   App%   MPI%
+Comm_free            1    0      1    0.026    0.026    0.026   0.09   2.09
 Comm_free            1    *      1    0.026    0.026    0.026   0.09   2.09
 
 Comm_free            4    0      1    0.053    0.053    0.053   0.18   4.25
@@ -353,31 +375,15 @@ Intercomm_merge      2    *      1     1.06     1.06     1.06   3.52  85.47
 Reduce               3    0      1    0.102    0.102    0.102   0.34   8.19
 Reduce               3    *      1    0.102    0.102    0.102   0.34   8.19
 ---------------------------------------------------------------------------
-  @--- Callsite Message Sent statistics (all, sent bytes) -------------------
-  ---------------------------------------------------------------------------
-  Name              Site Rank   Count       Max      Mean       Min       Sum
+@--- Callsite Message Sent statistics (all, sent bytes) -------------------
+---------------------------------------------------------------------------
+Name              Site Rank   Count       Max      Mean       Min       Sum
 Reduce               3    0       1         8         8         8         8
 Reduce               3    *       1         8         8         8         8
 \end{Output}
 
-The above statistics shows various criteria the code has been profiled for the program 
-runned the MPI TIME shows running time per process while executing the \code{masterSlaveMPI.r}.There are four
-columns \code{Task} which is Rank of the each processor. In the above sample output there is \code{AppTime}which
-is Application level runtime having values $0.0303$ and $0.0303$ for first and second ranks respectively
-,\code{MPITime} which is MPI level runtime of code having value $0.00125$ for first rank
-and $0.00125$ for second rank and $4.12$ \code{MPI\%}  and $4.12$ which is percentage of MPITime in AppTime for rank $0$ processor and rank $1$ processor respectively.
-The \code{*} shows sum of total ranks in respective column.
-
-Furthermore mpiP library provides deeper analysis of each \code{MPI Calls} like Aggregate Time and 
-Aggregate Sent Message Size . In Aggregate Time division \code{Call} column shows each \code{MPI_Calls} used
-here two are used \code{Barrier} and \code{Allreduce}. The \code{Barrier} calls at Site $5$ ran for $1.5$ milliseconds 
-of which $0.10$ is Application level aggregate time percentage and $62.40$ is MPI level aggregate time percentage.
-
-Similarly in Aggregate Sent Message Size division per bytes info of each MPI call is elaborated.
-For example, for \code{Allreduce} at Site $1$ has Count value of $6$ while Total Message Size is $48$ bytes ,on average $8$ bytes are there.
-Also Sent percentage of total bytes is $33.3$ for Allreduce at Site $1$.
-
-In Callsite Time statistics division further explanation per \code{MPI_Call} has been described by factor of Max,Min and Mean.
-For example the \code{Comm_free} Call at Site $1$ of Rank $0$ has Count value of $1$ while \code{Max} of various time values is $0.26$ and \code{Mean} has value of $0.26$ and \code{Min} also has value of $0.26$ since only one processor Rank  is used.
-
+The above statistics shows various criteria the code has been profiled for the
+program \code{masterSlavePI.r}. Three main MPI calls are used in this program:
+\code{MPI_Intercomm_merge}, \code{MPI_Reduce} and \code{MPI_Comm_free}
+since \pkg{Rmpi} uses the master/workers framework.
 

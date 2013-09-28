@@ -23,7 +23,7 @@
 \author{
 \begin{minipage}{6in}
 \centering
-Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^2$, and George Ostrouchov$^{1,2}$\\
+Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^2$, George Ostrouchov$^{1,2}$\\
 \end{minipage}
 \\
 \\
@@ -41,8 +41,7 @@ Uttar Pradesh, India\\
 %\\
 %\today
 }
-\title{Guide to the \pkg{pbdPROF} Package\\[.4cm]}
-
+\title{A Quick Guide for the \pkg{pbdPROF} Package {\small (Ver. \profversion)}}
 
 
 \begin{document}

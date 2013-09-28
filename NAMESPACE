@@ -1,3 +1,5 @@
+import(methods, graphics, grid, ggplot2, gridExtra)
+
 ### All functions
 #exportPattern("^[[:alpha:]]+")
 
@@ -14,3 +16,6 @@ export(
   read.prof, 
   autoplot.prof
 )
+
+### S3 methods.
+S3method(autoplot, prof)
