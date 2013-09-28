@@ -8,11 +8,14 @@ setMethod("plot", signature(x="prof"),
       show.title <- FALSE
     
     if (x@profiler == 'fpmpi')
-      plot_fpmpi(x, ...)
+      plot_fpmpi(x, ..., which = which, show.title = show.title,
+                 plot.type = plot.type, label = label, bar.label = bar.label)
     else if (x@profiler == 'mpip')
-      plot_mpip(x, ...)
+      plot_mpip(x, ..., which = which, show.title = show.title,
+                plot.type = plot.type, label = label, bar.label = bar.label)
     else if (x@profiler == 'tau')
-      plot_tau(x, ...)
+      plot_tau(x, ..., which = which, show.title = show.title,
+               plot.type = plot.type, label = label, bar.label = bar.label)
     else
       stop("Unknown profiler")
   }
