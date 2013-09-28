@@ -1,6 +1,8 @@
 \section{Installation}
 \label{sec:installation}
 
+In this section, we will describe the various ways that one can build \pkg{pbdPROF} and link it with MPI-using \proglang{R} packages.  For installation troubleshooting, see \instdebug.
+
 
 \subsection[System Requirements]{System Requirements}
 \label{sec:system_requirements}
@@ -75,33 +77,15 @@ and this time \emph{do not} link with \pkg{pbdPROF}
 
 
 
-\subsection{Choice of Profiler}
-
-The \pkg{pbdPROF} package currently uses the \pkg{fpmpi} library by default.  
-More explicitly, a source copy of \pkg{fpmpi} is located at 
-\code{pbdPROF/src/fpmpi} of the \pkg{pbdPROF} source.  If this profiler is used, 
-static library will be built and placed in \code{pbdPROF/lib/libfpmpi.a}
-of the \pkg{pbdPROF} install directory.  However, external profiling 
-libraries such as \pkg{mpiP}, \pkg{TAU}, or even  \pkg{fpmpi} can be also 
-linked with \pkg{pbdPROF} by passing a suitable \code{--configure-args} 
-argument during an installation via \code{R CMD INSTALL}. We will explain this 
-procedure in depth in Section~\ref{sec:fpmpi} using an external \pkg{fpmpi} and \pkg{mpiP}
-as an example, \pkg{TAU} will be added in next release.
-for future Sections.
-% ~\ref{sec:mpiP} and~\ref{sec:TAU}.
-
-%%% FIXME remove this clause for the final package
-While it is possible to link with other profiling libraries, at the time of 
-writing (for version \profversion), we currently support \pkg{fpmpi} and \pkg{mpiP}.  We anticipate full 
-of \pkg{TAU} for the next version of this package.
-
-{\color{red}
-Regardless of whether \pkg{fpmpi}, \pkg{mpiP}, or \pkg{TAU} is used, we 
-strongly recommend adding \code{CPPFLAGS="-fPIC"} at the \code{configure} step.
-}
+% \subsection{Choice of Profiler}
+% 
+% {\color{red}
+% Regardless of whether \pkg{fpmpi}, \pkg{mpiP}, or \pkg{TAU} is used, we 
+% strongly recommend adding \code{CPPFLAGS="-fPIC"} at the \code{configure} step.
+% }
 
 
-\subsection{fpmpi}
+\subsection{Installing pbdPROF with fpmpi}
 \label{sec:fpmpi}
 
 We can install \pkg{pbdPROF} using the internal \pkg{fpmpi} library via
@@ -144,7 +128,7 @@ which is saved in \code{Makeconf} and installed to
 \code{pbdPROF/etc/} for later use by other packages, such as \pkg{pbdMPI} or \pkg{Rmpi}.
 
 
-\subsubsection{Reinstall \pkg{pbdMPI}}
+\subsubsection{Linking \pkg{pbdMPI} with pbdPROF}
 \label{sec:pbdMPI}
 
 Reinstall \pkg{pbdMPI} via
@@ -174,7 +158,9 @@ exported to other \proglang{pbdR} packages at installation via the flag
 \code{SPMD_LDFLAGS}.  Therefore there is no need for additional flags in
 \code{R CMD INSTALL} when reinstalling packages for profiling.
 
-\subsubsection{Reinstall \pkg{pbdBASE}}
+
+
+\subsubsection{Linking \pkg{pbdBASE} with pbdPROF}
 \label{sec:pbdBASE}
 
 For further profiling, such as \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}, one may
@@ -190,7 +176,8 @@ is necessary to link with \pkg{pbdPROF} in order to profile communications
 evoked by the package.
 
 
-\subsubsection{Reinstall \pkg{Rmpi}}
+
+\subsubsection{Linking \pkg{Rmpi} with pbdPROF}
 \label{sec:Rmpi}
 
 Reinstall \pkg{Rmpi} via
@@ -214,7 +201,10 @@ measure.
 
 
 
-\subsection{mpiP}
+
+
+
+\subsection{Installing pbdPROF with mpiP}
 \label{sec:mpiP}
 
 We have to install \pkg{mpiP} externally from its source code to use it in
@@ -249,7 +239,7 @@ since one has changed the linking so need to reinstall packages depend on \pkg{C
 
 
 
-\subsubsection{Reinstall \pkg{pbdMPI}}
+\subsubsection{Linking \pkg{pbdMPI} with pbdPROF}
 \label{sec:pbdMPI}
 
 Reinstall \pkg{pbdMPI} via
@@ -292,7 +282,7 @@ exported to other \proglang{pbdR} packages at installation via the flag
 \code{R CMD INSTALL} when reinstalling packages for profiling.
 
 
-\subsubsection{Reinstall \pkg{pbdBASE}}
+\subsubsection{Linking \pkg{pbdBASE} with pbdPROF}
 \label{sec:pbdBASE}
 
 For further profiling, such as \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}, one may
@@ -308,7 +298,7 @@ is necessary to link with \pkg{pbdPROF} in order to profile communications
 evoked by the package.
 
 
-\subsubsection{Reinstall \pkg{Rmpi}}
+\subsubsection{Linking \pkg{Rmpi} with pbdPROF}
 \label{sec:Rmpi}
 
 Reinstall \pkg{Rmpi} via

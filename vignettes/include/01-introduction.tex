@@ -1,9 +1,3 @@
-{\color{red} \bf Warning:}
-The findings and conclusions in this article have not been
-formally disseminated by the U.S. Department of Energy
-and should not be construed to represent any determination or
-policy of University, Agency, and National Laboratory.
-
 This document is written to explain the main
 functions of \pkg{pbdPROF}~\citep{Chen2013pbdPROFpackage}, version 0.1-0.
 Every effort will be made to ensure future versions are consistent with
@@ -20,23 +14,57 @@ and any changes in future versions can be found on website:
 \section{Introduction}
 \label{sec:introduction}
 
-The goal of \pkg{pbdPROF} is to utilize external MPI profiling libraries,
-such as \pkg{fpmpi}~\citep{fpmpi}, \pkg{mpiP}~\citep{mpiP}, or
-\pkg{TAU}~\citep{TAU},
+The goal of \pkg{pbdPROF} is to utilize external MPI profiling libraries
 to profile parallel \proglang{R} code and understand hidden MPI
 communications between processors. The number of communications,
 sizes of messages, times, and types of functions calls all affect program
 performance, and so having these measurements can greatly aid in debugging and 
-algorithm design. These MPI profiling libraries are able to
+algorithm design. 
+
+An MPI profiling libraries is able to
 hijack calls to MPI functions and then capture the profiling information 
-(as described above), all without disturbing the execution of the original program.
+(such as that described above), all without disturbing the execution of the original program.
 
 The current main features of \pkg{pbdPROF} include:
 \begin{enumerate}
-\item providing linking information to \proglang{pbdR}~\citep{pbdR2012} and other MPI-using \proglang{R} packages
-\item output profiling information associated with MPI calls,
-\item parsing and summarizing profiling information, and
-\item support several MPI profiling libraries.
+  \item the support of several profiling libraries
+  \item provide linking information to \proglang{pbdR}~\citep{pbdR2012} and other MPI-using \proglang{R} packages
+  \item output profiling information associated with MPI calls
+  \item parse and summarize profiling information
 \end{enumerate}
 
 
+
+\subsection{Supported MPI Profilers}
+
+As of version \profversion\ of \pkg{pbdPROF}, the officially supported MPI profilers are
+\begin{itemize}
+  \item \pkg{fpmpi}~\citep{fpmpi}
+  \item \pkg{mpiP}~\citep{mpiP}
+\end{itemize}
+with plans to eventually support additional profilers, including \pkg{TAU}~\citep{TAU}.
+
+
+
+
+\subsection{Choice of Profiler}
+
+The \pkg{pbdPROF} package currently uses the \pkg{fpmpi} library by default.  
+More explicitly, a source copy of \pkg{fpmpi} is located at 
+\code{pbdPROF/src/fpmpi} of the \pkg{pbdPROF} source. Although we bundle \pkg{pbdPROF} with \pkg{fpmpi}, it is not the best MPI profiler (though it may be sufficient for your needs).  The results from other libraries, such as \pkg{mpiP}, are much more thorough and may lead to much deeper insights.  Additionally, \pkg{fpmpi} does not handle profiler output file naming nearly as well as the others (see \refsec{sec:testing}).  However, \pkg{fpmpi} is the easiest to install. 
+
+If \pkg{fpmpi} is used, a
+static library will be built and placed in \code{pbdPROF/lib/libfpmpi.a}
+of the \pkg{pbdPROF} install directory.  However, external profiling 
+libraries such as \pkg{mpiP}, \pkg{TAU}, or even  \pkg{fpmpi} can be also 
+linked with \pkg{pbdPROF} by passing a suitable \code{--configure-args} 
+argument during an installation via \code{R CMD INSTALL}. We will explain this 
+procedure in depth in \refsec{sec:fpmpi} using an external \pkg{fpmpi} and \pkg{mpiP}
+as an example, \pkg{TAU} will be added in next release.
+% for future Sections.
+% \refsec{sec:mpiP} and \refsec{sec:TAU}.
+
+%%% FIXME remove this clause for the final package
+While it is possible to link with other profiling libraries, at the time of 
+writing (for version \profversion), we only support \pkg{fpmpi} and \pkg{mpiP}.  We anticipate full 
+of \pkg{TAU} for the next version of this package.

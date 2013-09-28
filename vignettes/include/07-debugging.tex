@@ -1,45 +1,64 @@
-\section{Problems with \pkg{pbdPROF}}
+\section{\pkg{pbdPROF} Troubleshooting}
 \label{sec:debug}
 
 
 \subsection{Installation}
 
-{\color{red}Problem 1:}  If you have downloaded the package from github and 
+\begin{problem}
+If you have downloaded the package from github and 
 tried to using R CMD INSTALL \pkg{pbdPROF} and you see an error similar to this
 \begin{Output}
 ERROR: 'configure' exists but is not executable -- see the 'R Installation and Administration Manual'
-\end{Output}
-{\color{dkgreen}Solution:}  You have to make the configure executable which 
-means giving it permission , which can done by
-\begin{Code}
-chmod +x configure
-\end{Code}
-after changing the folder to package's main directory.
+\end{Output}  
+\end{problem}
 
-{\color{red}Problem 2:}  If you are using \pkg{fpmpi}~\citep{fpmpi} externally 
+\begin{solution}
+  You have to make the configure executable which 
+means giving it permission , which can done by
+\begin{Output}
+chmod +x configure
+\end{Output}
+after changing the folder to package's main directory.  
+\end{solution}
+
+
+\begin{problem}
+If you are using \pkg{fpmpi}~\citep{fpmpi} externally 
 and during it's installation you get an error similar to this
 \begin{Output}
 error :checking for library containing MPI_Init... (cached) no configure: 
 error: Could not find MPI library
-\end{Output}
-{\color{dkgreen}Solution:} You probably need to specify the path to MPI library using this in command line in the fpmpi main directory
-\begin{Code}
+\end{Output}  
+\end{problem}
+ 
+\begin{solution}
+You probably need to specify the path to MPI library using this in command line in the fpmpi main directory
+\begin{Output}
 ./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
-\end{Code}
+\end{Output}  
+\end{solution}
 
-{\color{red}Problem 3:}  If you are using \pkg{mpiP}~\citep{mpiP} externally
+
+\begin{problem}
+If you are using \pkg{mpiP}~\citep{mpiP} externally
 and during it's installation you get an error similar to this
 \begin{Output}
 libmpiP.a(wrappers.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a shared object; recompile with -fPIC
 libmpiP.a: could not read symbols: Bad value collect2: error: ld returned 1 exit status
-\end{Output}
-{\color{dkgreen}Solution:} You probably need to specify the path to MPI library
-using this in command line when installing \pkg{mpiP}
-\begin{Code}
-./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
-\end{Code}
+\end{Output}  
+\end{problem}
 
-{\color{red}Problem 4:}  If you are using \pkg{mpiP}~\citep{mpiP} externally
+\begin{solution}
+You probably need to specify the path to MPI library
+using this in command line when installing \pkg{mpiP}
+\begin{Output}
+./configure CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
+\end{Output}  
+\end{solution}
+
+
+\begin{problem}
+If you are using \pkg{mpiP}~\citep{mpiP} externally
 and during \pkg{pbdMPI}~\citep{Chen2012pbdMPIpackage}
 installation you get an error similar to this
 \begin{Output}
@@ -48,17 +67,22 @@ Error : .onLoad failed in loadNamespace() for 'pbdMPI', details:
   error: unable to load shared object 'pbdMPI.so':
   pbdMPI/libs/pbdMPI.so: undefined symbol: _Ux86_64_getcontext
 \end{Output}
-{\color{dkgreen}Solution:} You probably need to disable some external library
+\end{problem}
+  
+\begin{solution}
+You probably need to disable some external library
 prerequisite by \pkg{mpiP},
 using this in command line when installing \pkg{mpiP}
 \begin{Code}
 ./configure --disable-libunwind CPPFLAGS="-fPIC -I/usr/lib/openmpi/include" LDFLAGS="-L/usr/lib/openmpi/lib -lmpi"
-\end{Code}
+\end{Code}  
+\end{solution}
 
 
 \subsection{Running}
 
-{\color{red}Problem 1:}  While running \pkg{Rmpi} code for profiling, if you
+\begin{problem}
+ While running \pkg{Rmpi} code for profiling, if you
 encounter the error below:
 \begin{Output}
 error: mpiexec was unable to launch the specified application as it could not access
@@ -66,17 +90,21 @@ or execute an executable:
 Executable: /path/to/R/package_installation_directory/2.15/Rmpi/Rslaves.sh
 Node: "Your_node"
 while attempting to start process rank 0.
-\end{Output}
-{\color{dkgreen}Solution:}  You need to make executable of the shell scripts in 
+\end{Output} 
+\end{problem}
+
+\begin{solution}
+You need to make executable of the shell scripts in 
 the "inst" directory of "Rmpi" main directory using the following command from 
 command line in "inst" directory:
 \begin{Code}
 chmod +x *.sh
-\end{Code}
+\end{Code}  
+\end{solution}
 
 
-
-{\color{red}Problem 2:}  While running \pkg{Rmpi} code for profiling, if you 
+\begin{problem}
+While running \pkg{Rmpi} code for profiling, if you 
 encounter the error below:
 \begin{Output}
 [G:12221] [[39704,0],0] ORTE_ERROR_LOG: Not found in file ../../../../../orte/mca/plm/base/plm_base_launch_support.c at line 758
@@ -84,8 +112,10 @@ encounter the error below:
 mpiexec was unable to start the specified application as it encountered an error.
 More information may be available above.
 --------------------------------------------------------------------------
-\end{Output}
-{\color{dkgreen}Solution:}
+\end{Output}  
+\end{problem}
+
+\begin{solution}
 \begin{enumerate}
 \item You need to check whether your \pkg{Rmpi} is working without the \pkg{pbdPROF}.If yes try running your \pkg{Rmpi} code on single process only.
 \item If above does not help, then you may need .Rprofile in Rmpi/inst/ to run your code from "inst" directory.
@@ -94,7 +124,8 @@ More information may be available above.
 ompi_info
 \end{Output}
 \item If further you came to this far and luck is not with you somehow(pun intended), there might some configuration problem in your machine.
-\end{enumerate}
+\end{enumerate}  
+\end{solution}
 
 
 

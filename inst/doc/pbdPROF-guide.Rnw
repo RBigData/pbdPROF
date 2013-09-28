@@ -12,6 +12,13 @@
 
 \newcommand{\profversion}{0.2-0}
 
+\newcommand{\refsec}[1]{\hyperref[#1]{Section~\ref{#1}}}
+\newcommand{\instdebug}{\hyperref[sec:debug]{Appendix~\ref{sec:debug}}}
+
+\newcounter{problemct}
+\setcounter{problemct}{1}
+\newenvironment{problem}{{\color{red}Problem \arabic{problemct}:}}{\addtocounter{problemct}{1}}
+\newenvironment{solution}{{\color{dkgreen}Solution:}}{\vspace{.8cm}}
 
 \author{
 \begin{minipage}{6in}
@@ -55,12 +62,17 @@ Uttar Pradesh, India\\
 \setcounter{page}{1}
 \pagestyle{fancy}
 
+\part{Installation}
 \input{./include/01-introduction}
 \input{./include/02-installation}
 \input{./include/03-testing}
+\part{Profiling}
 \input{./include/04-example}
 \input{./include/05-profiling}
-\input{./include/06-debugging}
+% \input{./include/06-plotting}
+\part{Appendix}
+\appendix
+\input{./include/07-debugging}
 
 \bibliographystyle{./include/jss}
 \bibliography{./include/pbdPROF}

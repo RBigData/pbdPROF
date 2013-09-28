@@ -1,10 +1,20 @@
-\section{Test Scripts}
+\section{Testing pbdPROF Installation}
+\label{sec:testing}
 
-We provide two short \proglang{R} scripts, one for \pkg{pbdMPI} and one for 
+Here, we provide two simple \proglang{R} scripts, one for \pkg{pbdMPI} and one for 
 \pkg{Rmpi}, to test the installation and profiling capabilities of 
-\pkg{pbdPROF}.  If the installation is correct, then executing these examples 
-codes should produce profiler output.
+\pkg{pbdPROF}.  Assuming all went well, then a profiler output file will be produced (in the directory where you executed the above command).  The name of the file depends on how \pkg{pbdPROF} was built:
 
+\begin{itemize}
+  \item \pkg{fpmpi}: the profiler output file will always be called \code{fpmpi_profile.txt}.  
+  \item \pkg{mpiP}: the profiler output file will be named according to the scheme \code{R.ncores.PID.1.mpiP}, where \code{ncores} is the actual number of cores used, and \code{PID} is the job PID that was used.
+\end{itemize}
+
+Here again, \pkg{mpiP} has several advantages over \pkg{fpmpi}.  For one, \pkg{fpmpi} will always overwrite old profiler output in the same directory.  Additionally, \pkg{fpmpi} profiler outputs give no context to the calling command, whereas \pkg{mpiP} gives the calling command (and whence, which R script was used to generate the profiler output) on the second line of the profiler output.
+
+If you followed the instructions found in \refsec{sec:installation}, but no profiler output is produced, then please see the troubleshooting guide, \instdebug.
+
+For the remainder, we will be using \pkg{fpmpi} in examples.
 
 \subsection{Test with \pkg{pbdMPI}}
 
@@ -25,8 +35,7 @@ and run this code by
 mpiexec -np 2 Rscript prof_pbdMPI.r
 \end{Code}
 
-A successful output of \pkg{fpmpi}
-in the profiling file \code{fpmpi_profile.txt} may contain
+The \pkg{fpmpi} profiling output from the file \code{fpmpi_profile.txt} may contain:
 \begin{Output}
 Details for each MPI routine
                   Average of sums over all processes
@@ -66,8 +75,7 @@ and run this code by
 mpiexec -np 2 Rscript prof_Rmpi.r
 \end{Code}
 
-A successful output of \pkg{fpmpi}
-in the profiling file \code{fpmpi_profile.txt} could be
+The \pkg{fpmpi} profiling output from the file \code{fpmpi_profile.txt} may contain:
 \begin{Output}
 Details for each MPI routine
                   Average of sums over all processes
