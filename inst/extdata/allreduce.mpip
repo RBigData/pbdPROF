@@ -10,8 +10,8 @@
 @ Collector PID            : 16083
 @ Final Output Dir         : .
 @ Report generation        : Single collector task
-@ MPI Task Assignment      : 0 wolf-vb9
-@ MPI Task Assignment      : 1 wolf-vb9
+@ MPI Task Assignment      : 0
+@ MPI Task Assignment      : 1
 
 ---------------------------------------------------------------------------
 @--- MPI Time (seconds) ---------------------------------------------------
