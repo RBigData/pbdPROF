@@ -13,7 +13,7 @@ ERROR: 'configure' exists but is not executable -- see the 'R Installation and A
 \end{problem}
 
 \begin{solution}
-  You have to make the configure executable which 
+You have to make the configure executable which 
 means giving it permission , which can done by
 \begin{Output}
 chmod +x configure
@@ -40,7 +40,7 @@ You probably need to specify the path to MPI library using this in command line 
 
 
 \begin{problem}
-If you are using \pkg{mpiP}~\citep{mpiP} externally
+If you are using \pkg{mpiP} externally
 and during it's installation you get an error similar to this
 \begin{Output}
 libmpiP.a(wrappers.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a shared object; recompile with -fPIC
@@ -58,8 +58,8 @@ using this in command line when installing \pkg{mpiP}
 
 
 \begin{problem}
-If you are using \pkg{mpiP}~\citep{mpiP} externally
-and during \pkg{pbdMPI}~\citep{Chen2012pbdMPIpackage}
+If you are using \pkg{mpiP} externally
+and during \pkg{pbdMPI}
 installation you get an error similar to this
 \begin{Output}
 Error : .onLoad failed in loadNamespace() for 'pbdMPI', details:
@@ -82,7 +82,7 @@ using this in command line when installing \pkg{mpiP}
 \subsection{Running}
 
 \begin{problem}
- While running \pkg{Rmpi} code for profiling, if you
+While running \pkg{Rmpi} code for profiling, if you
 encounter the error below:
 \begin{Output}
 error: mpiexec was unable to launch the specified application as it could not access
@@ -95,8 +95,8 @@ while attempting to start process rank 0.
 
 \begin{solution}
 You need to make executable of the shell scripts in 
-the "inst" directory of "Rmpi" main directory using the following command from 
-command line in "inst" directory:
+the \code{inst/} directory of \pkg{Rmpi} main directory using the following command from 
+command line in \code{inst/} directory:
 \begin{Code}
 chmod +x *.sh
 \end{Code}  
@@ -117,15 +117,13 @@ More information may be available above.
 
 \begin{solution}
 \begin{enumerate}
-\item You need to check whether your \pkg{Rmpi} is working without the \pkg{pbdPROF}.If yes try running your \pkg{Rmpi} code on single process only.
-\item If above does not help, then you may need .Rprofile in Rmpi/inst/ to run your code from "inst" directory.
-\item If still your code does not run ,you need to update your OPENMPI version to the latest one.You can check your openmpi version\url{http://www.open-mpi.org/software/ompi/} through 
+\item You need to check whether your \pkg{Rmpi} is working without the \pkg{pbdPROF}. If yes try running your \pkg{Rmpi} code on single process only.
+\item If above does not help, then you may need \code{.Rprofile} in \code{Rmpi/inst/} to run your code from \code{inst/} directory.
+\item If still your code does not run, you need to update your OpenMPI version to the latest one. You can check your OpenMpi version \url{http://www.open-mpi.org/software/ompi/} through 
 \begin{Output}
 ompi_info
 \end{Output}
-\item If further you came to this far and luck is not with you somehow(pun intended), there might some configuration problem in your machine.
+\item If further you came to this far and luck is not with you somehow (pun intended), there might some configuration problem in your machine.
 \end{enumerate}  
 \end{solution}
-
-
 
