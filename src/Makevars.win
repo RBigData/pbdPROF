@@ -57,6 +57,7 @@ ARCHFLAGS = cr
 
 ### Start making here.
 all: $(SHLIB)
+	@$(CP) ../R/windows/zzz.r ../R/
 
 # all: $(R_FPMPI) $(SHLIB)
 # 	@$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' > $(USER_CONF)
