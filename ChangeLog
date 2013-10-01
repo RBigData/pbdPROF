@@ -1,11 +1,14 @@
-2013-09-21: ver. 0.1-1
+2013-09-30: Ver. 0.2-1
+  * Add examples.
+
+2013-09-21: Ver. 0.2-0
   * Add vignettes.
   * Add mpiP parser and ploting functions.
 
-2013-08-01: ver. 0.1-1
+2013-08-01: Ver. 0.1-1
   * Fix author name.
 
-2013-07-26: ver. 0.1-0
+2013-07-26: Ver. 0.1-0
   * Add vignettes and man.
 
 ======================= Log Before Release =====================================
