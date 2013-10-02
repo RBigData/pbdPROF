@@ -64,7 +64,7 @@ from an MPI-using package (e.g., \code{allreduce(x)} from \pkg{pbdMPI},
 
 This then makes a call to some \proglang{C} or \proglang{Fortran} code which 
 directly interfaces with MPI.  You can see this pictures in 
-Figure~\ref{fig:normalmpi}.  When you use a profiler, you instead hijack the 
+\figref{fig:normalmpi}.  When you use a profiler, you instead hijack the 
 calls to MPI from the \proglang{C}/\proglang{Fortran} code so that some 
 metadata can be stored about MPI usage.
 
@@ -75,7 +75,7 @@ metadata can be stored about MPI usage.
 %  \label{fig:profmpi}
 %\end{figure}
 
-This process is represented in Figure~\ref{fig:profmpi}.  Hopefully it should 
+This process is represented in \figref{fig:profmpi}.  Hopefully it should 
 be clear what, and when, something should be reinstalled.  For the sake of 
 completion, we summarize the possibilities below:
 

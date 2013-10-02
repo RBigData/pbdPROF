@@ -13,6 +13,8 @@
 \newcommand{\profversion}{0.2-0}
 
 \newcommand{\secref}[1]{\hyperref[#1]{Section~\ref{#1}}}
+\newcommand{\figref}[1]{\hyperref[#1]{Figure~\ref{#1}}}
+
 \newcommand{\instdebug}{\hyperref[sec:debug]{Appendix~\ref{sec:debug}}}
 
 \newcounter{problemct}
