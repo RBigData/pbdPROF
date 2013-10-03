@@ -51,7 +51,7 @@ with plans to eventually support additional profilers, including \pkg{TAU}~\cite
 
 The \pkg{pbdPROF} package currently uses the \pkg{fpmpi} library by default.  
 More explicitly, a source copy of \pkg{fpmpi} is located at 
-\code{pbdPROF/src/fpmpi} of the \pkg{pbdPROF} source. Although we bundle \pkg{pbdPROF} with \pkg{fpmpi}, it is not the best MPI profiler (though it may be sufficient for your needs).  The results from other libraries, such as \pkg{mpiP}, are much more thorough and may lead to much deeper insights.  Additionally, \pkg{fpmpi} does not handle profiler output file naming nearly as well as the others (see \refsec{sec:testing}).  However, \pkg{fpmpi} is the easiest to install. 
+\code{pbdPROF/src/fpmpi} of the \pkg{pbdPROF} source. Although we bundle \pkg{pbdPROF} with \pkg{fpmpi}, it is not the best MPI profiler (though it may be sufficient for your needs).  The results from other libraries, such as \pkg{mpiP}, are much more thorough and may lead to much deeper insights.  Additionally, \pkg{fpmpi} does not handle profiler output file naming nearly as well as the others (see \secref{sec:testing}).  However, \pkg{fpmpi} is the easiest to install. 
 
 If \pkg{fpmpi} is used, a
 static library will be built and placed in \code{pbdPROF/lib/libfpmpi.a}
@@ -59,10 +59,10 @@ of the \pkg{pbdPROF} install directory.  However, external profiling
 libraries such as \pkg{mpiP}, \pkg{TAU}, or even  \pkg{fpmpi} can be also 
 linked with \pkg{pbdPROF} by passing a suitable \code{--configure-args} 
 argument during an installation via \code{R CMD INSTALL}. We will explain this 
-procedure in depth in \refsec{sec:fpmpi} using an external \pkg{fpmpi} and \pkg{mpiP}
+procedure in depth in \secref{sec:fpmpi} using an external \pkg{fpmpi} and \pkg{mpiP}
 as an example, \pkg{TAU} will be added in next release.
 % for future Sections.
-% \refsec{sec:mpiP} and \refsec{sec:TAU}.
+% \secref{sec:mpiP} and \secref{sec:TAU}.
 
 %%% FIXME remove this clause for the final package
 While it is possible to link with other profiling libraries, at the time of 

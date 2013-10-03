@@ -82,6 +82,20 @@ using this in command line when installing \pkg{mpiP}
 \subsection{Running}
 
 \begin{problem}
+No profiler output is produced.
+\end{problem}
+
+\begin{solution}
+If no profiler output is produced, then it is almost certainly the case that 
+\pkg{pbdPROF} and/or the MPI-using \proglang{R} package (e.g., \pkg{pbdMPI}, 
+\pkg{Rmpi}, etc.) was/were not set up and installed correctly.  Please refer to 
+\secref{sec:installation} and the relevant package's installation 
+documentation and reinstall.
+\end{solution}
+
+
+
+\begin{problem}
 While running \pkg{Rmpi} code for profiling, if you
 encounter the error below:
 \begin{Output}
