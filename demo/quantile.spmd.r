@@ -24,9 +24,9 @@ quantile.spmd <- function(x.gbd, prob = 0.5){
 
   ### Get information from everyone to everyone.
   N <- allreduce(length(x.gbd), op = "sum")              # global sample size
-  x.max <- allreduce(max(x.gbd), op = "max")             # global rightest data
   x.min <- allreduce(min(x.gbd), op = "min")             # global leftest data
-  # comm.print(c(x.min, x.max), quiet = TRUE)             # debug
+  x.max <- allreduce(max(x.gbd), op = "max")             # global rightest data
+  # comm.print(c(x.min, x.max), quiet = TRUE)              # debug
 
   f.quantile <- function(x, prob = 0.5){
     # comm.print(x, quiet = TRUE)                          # debug
