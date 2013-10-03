@@ -7,3 +7,4 @@ masterslavePI.mpip   pbdPROF    A mpiP example of Rmpi/demo/masterslavePI.r
 
 quantile.spmd        pbdPROF    A SPMD example for computing quantile.
 quantile.mw          pbdPROF    A master/workers example for computing quantile.
+quantile.snow        pbdPROF    A snow example for computing quantile.
