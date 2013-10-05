@@ -51,7 +51,7 @@ quantile.pt <- function(x.gbd, prob = 0.5){
         send(x, rank.dest = i)            # new bisection x
       }
       n <- 0L
-      for(i in 1:(comm.size() - 1)){      # global # less than new x
+      for(i in 1:(comm.size() - 1)){      # global # <= new x
         n <- n + recv(x.buffer = 0L, rank.source = i)
       }
       return(n / N - prob)                # proportion to prob
@@ -81,7 +81,7 @@ quantile.pt <- function(x.gbd, prob = 0.5){
       x <- recv(x.buffer = 0.0,
                 rank.source = 0L)         # get new bisection x
       send(sum(x.gbd <= x),
-           rank.dest = 0L)                # local # less than new x
+           rank.dest = 0L)                # local # <= new x
     }
   }
 
