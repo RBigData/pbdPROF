@@ -23,12 +23,13 @@ quantile.spmd <- function(x.gbd, prob = 0.5){
   }
 
   ### Get information from everyone to everyone.
-  N <- allreduce(length(x.gbd), op = "sum")     # global sample size
-  x.min <- allreduce(min(x.gbd), op = "min")    # global leftest data
-  x.max <- allreduce(max(x.gbd), op = "max")    # global rightest data
+  N <- allreduce(length(x.gbd), op = "sum")   # global sample size
+  x.min <- allreduce(min(x.gbd), op = "min")  # global leftest data
+  x.max <- allreduce(max(x.gbd), op = "max")  # global rightest data
 
-  f.quantile <- function(x, prob = 0.5){        # bisection
-    allreduce(sum(x.gbd <= x), op = "sum") / N - prob
+  f.quantile <- function(x, prob = 0.5){      # bisection
+    n <- allreduce(sum(x.gbd <= x), op = "sum")
+    n / N - prob
   }
   uniroot(f.quantile, c(x.min, x.max), prob = prob[1])$root
 } # End of quantile.spmd().
