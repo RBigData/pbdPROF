@@ -37,7 +37,7 @@ quantile.mw <- function(x.gbd, prob = 0.5){
     f.quantile <- function(x, prob = 0.5){
       bcast(TRUE)                        # keep workers running
       bcast(x)                           # new bisection x
-      n <- reduce(0L)                    # global # less than new x
+      n <- reduce(0L)                    # global # <= new x
       return(n / N - prob)               # proportion to prob
     }
     ret <- uniroot(f.quantile,
@@ -61,7 +61,7 @@ quantile.mw <- function(x.gbd, prob = 0.5){
         break
       }
       x <- bcast(0.0)                    # get new bisection x
-      reduce(sum(x.gbd <= x))            # local # less than new x
+      reduce(sum(x.gbd <= x))            # local # <= new x
     }
   }
 
