@@ -17,7 +17,7 @@ if(comm.rank() != 0){
   comm.set.seed(1234)
   n <- 100
   X <- runif(n * (comm.size() - 1))
-  X <- X[(1:n) + n * (comm.rank() - 1)]               # each owns 100 samples
+  X <- X[(1:n) + n * (comm.rank() - 1)]  # each owns 100 samples
 }
 
 ### Define quantile function in SPMD.
@@ -29,41 +29,39 @@ quantile.mw <- function(x.gbd, prob = 0.5){
   ### The master function.
   master <- function(prob = 0.5){
     ### Get information from workers who own data.
-    N <- reduce(0L, op = "sum")                       # global sample size
-    x.min <- reduce(Inf, op = "min")                  # global leftest data
-    x.max <- reduce(-Inf, op = "max")                 # global rightest data
-    # print(c(x.min, x.max))                            # debug
+    N <- reduce(0L, op = "sum")          # global sample size
+    x.min <- reduce(Inf, op = "min")     # global leftest data
+    x.max <- reduce(-Inf, op = "max")    # global rightest data
 
     ### The master handles optimization.
     f.quantile <- function(x, prob = 0.5){
-      bcast(TRUE)                                     # keep workers running
-      bcast(x)                                        # new bisection x
-      # print(x)                                        # debug
-      n <- reduce(0L)                                 # global # less than new x
-      return(n / N - prob)                            # proportion to prob
+      bcast(TRUE)                        # keep workers running
+      bcast(x)                           # new bisection x
+      n <- reduce(0L)                    # global # less than new x
+      return(n / N - prob)               # proportion to prob
     }
     ret <- uniroot(f.quantile,
                    c(x.min, x.max),
-                   prob = prob[1])$root               # bisection
-    bcast(FALSE)                                      # to stop workers
+                   prob = prob[1])$root  # bisection
+    bcast(FALSE)                         # to stop workers
     return(ret)
   } # End of master().
 
   ### The workers function.
   workers <- function(x.gbd){
     ### Send information to master who don't own data.
-    reduce(length(x.gbd), op = "sum")                 # local same size
-    reduce(min(x.gbd), op = "min")                    # local leftest
-    reduce(max(x.gbd), op = "max")                    # local rightest
+    reduce(length(x.gbd), op = "sum")    # local same size
+    reduce(min(x.gbd), op = "min")       # local leftest
+    reduce(max(x.gbd), op = "max")       # local rightest
 
     ### The workers summarize data and reduce to the master.
     repeat{
-      flag <- bcast(TRUE)                             # workers run
+      flag <- bcast(TRUE)                # workers run
       if(! flag){
         break
       }
-      x <- bcast(0.0)                                 # get new bisection x
-      reduce(sum(x.gbd <= x))                         # local # less than new x
+      x <- bcast(0.0)                    # get new bisection x
+      reduce(sum(x.gbd <= x))            # local # less than new x
     }
   }
 
