@@ -1,243 +1,243 @@
 @ mpiP
-@ Command :
+@ Command : /home/snoweye/work-my/local/R-devel/lib/R/bin/exec/R --slave --no-restore --file=quantile.mw.r --args 
 @ Version                  : 3.3.0
 @ MPIP Build date          : Sep 21 2013, 14:36:21
-@ Start time               : 2013 10 01 00:09:11
-@ Stop time                : 2013 10 01 00:09:11
+@ Start time               : 2013 10 06 22:44:40
+@ Stop time                : 2013 10 06 22:44:41
 @ Timer Used               : PMPI_Wtime
 @ MPIP env var             : [null]
 @ Collector Rank           : 0
-@ Collector PID            : 5600
+@ Collector PID            : 7037
 @ Final Output Dir         : .
 @ Report generation        : Single collector task
-@ MPI Task Assignment      : 0
-@ MPI Task Assignment      : 1
-@ MPI Task Assignment      : 2
-@ MPI Task Assignment      : 3
+@ MPI Task Assignment      : 0 wolf-vb9
+@ MPI Task Assignment      : 1 wolf-vb9
+@ MPI Task Assignment      : 2 wolf-vb9
+@ MPI Task Assignment      : 3 wolf-vb9
 
 ---------------------------------------------------------------------------
 @--- MPI Time (seconds) ---------------------------------------------------
 ---------------------------------------------------------------------------
 Task    AppTime    MPITime     MPI%
-   0      0.241     0.0581    24.15
-   1      0.214     0.0139     6.49
-   2      0.224     0.0193     8.62
-   3      0.216    0.00458     2.12
-   *      0.894     0.0959    10.73
+   0      0.254     0.0104     4.08
+   1      0.229    0.00974     4.25
+   2      0.252     0.0581    23.02
+   3      0.229     0.0426    18.65
+   *      0.964      0.121    12.53
 ---------------------------------------------------------------------------
 @--- Callsites: 24 --------------------------------------------------------
 ---------------------------------------------------------------------------
  ID Lev File/Address        Line Parent_Funct             MPI_Call
-  1   0 0x7f55dd979dd4           [unknown]                Barrier
-  2   0 0x7f55dd979d94           [unknown]                Bcast
-  3   0 0x7f55dd979995           [unknown]                Allreduce
-  4   0 0x7f55dd979bb4           [unknown]                Bcast
-  5   0 0x7f55dd979ca4           [unknown]                Bcast
-  6   0 0x7f55dd97c2b9           [unknown]                Reduce
-  7   0 0x7f39b4e77dd4           [unknown]                Barrier
-  8   0 0x7f39b4e77d94           [unknown]                Bcast
-  9   0 0x7f39b4e77995           [unknown]                Allreduce
- 10   0 0x7f39b4e77bb4           [unknown]                Bcast
- 11   0 0x7f39b4e77ca4           [unknown]                Bcast
- 12   0 0x7f39b4e7a2b9           [unknown]                Reduce
- 13   0 0x7f9a0e99add4           [unknown]                Barrier
- 14   0 0x7f9a0e99ad94           [unknown]                Bcast
- 15   0 0x7f9a0e99a995           [unknown]                Allreduce
- 16   0 0x7f9a0e99abb4           [unknown]                Bcast
- 17   0 0x7f9a0e99aca4           [unknown]                Bcast
- 18   0 0x7f9a0e99d2b9           [unknown]                Reduce
- 19   0 0x7ffc6fdbadd4           [unknown]                Barrier
- 20   0 0x7ffc6fdbad94           [unknown]                Bcast
- 21   0 0x7ffc6fdba995           [unknown]                Allreduce
- 22   0 0x7ffc6fdbabb4           [unknown]                Bcast
- 23   0 0x7ffc6fdbaca4           [unknown]                Bcast
- 24   0 0x7ffc6fdbd2b9           [unknown]                Reduce
+  1   0 0x7f01eb48ae84           [unknown]                Barrier
+  2   0 0x7f01eb48aa45           [unknown]                Allreduce
+  3   0 0x7f01eb48d4e9           [unknown]                Reduce
+  4   0 0x7f01eb48ad54           [unknown]                Bcast
+  5   0 0x7f01eb48ae44           [unknown]                Bcast
+  6   0 0x7f01eb48ac64           [unknown]                Bcast
+  7   0 0x7f077ff6ae84           [unknown]                Barrier
+  8   0 0x7f077ff6aa45           [unknown]                Allreduce
+  9   0 0x7f077ff6d4e9           [unknown]                Reduce
+ 10   0 0x7f077ff6ad54           [unknown]                Bcast
+ 11   0 0x7f077ff6ae44           [unknown]                Bcast
+ 12   0 0x7f077ff6ac64           [unknown]                Bcast
+ 13   0 0x7f0991c06e84           [unknown]                Barrier
+ 14   0 0x7f0991c06a45           [unknown]                Allreduce
+ 15   0 0x7f0991c094e9           [unknown]                Reduce
+ 16   0 0x7f0991c06d54           [unknown]                Bcast
+ 17   0 0x7f0991c06e44           [unknown]                Bcast
+ 18   0 0x7f0991c06c64           [unknown]                Bcast
+ 19   0 0x7f348324de84           [unknown]                Barrier
+ 20   0 0x7f348324da45           [unknown]                Allreduce
+ 21   0 0x7f34832504e9           [unknown]                Reduce
+ 22   0 0x7f348324dd54           [unknown]                Bcast
+ 23   0 0x7f348324de44           [unknown]                Bcast
+ 24   0 0x7f348324dc64           [unknown]                Bcast
 ---------------------------------------------------------------------------
 @--- Aggregate Time (top twenty, descending, milliseconds) ----------------
 ---------------------------------------------------------------------------
 Call                 Site       Time    App%    MPI%     COV
-Allreduce               3       57.4    6.42   59.83    0.00
-Allreduce               9       15.6    1.75   16.31    0.00
-Allreduce              21       10.2    1.14   10.61    0.00
-Bcast                  16       2.16    0.24    2.26    0.00
-Bcast                  22       2.12    0.24    2.21    0.00
-Bcast                  10       2.11    0.24    2.20    0.00
-Barrier                 7       1.18    0.13    1.23    0.00
-Barrier                19       1.18    0.13    1.23    0.00
-Barrier                13       1.18    0.13    1.23    0.00
-Allreduce              15      0.766    0.09    0.80    0.00
-Reduce                  6      0.305    0.03    0.32    0.00
-Bcast                   4      0.203    0.02    0.21    0.00
-Bcast                  17      0.163    0.02    0.17    0.00
-Bcast                  14      0.161    0.02    0.17    0.00
-Reduce                 18      0.148    0.02    0.15    0.00
-Reduce                 24      0.148    0.02    0.15    0.00
-Reduce                 12      0.143    0.02    0.15    0.00
-Bcast                  20      0.131    0.01    0.14    0.00
-Bcast                  23      0.121    0.01    0.13    0.00
-Bcast                   8      0.118    0.01    0.12    0.00
+Allreduce              20       52.9    5.49   43.77    0.00
+Allreduce              14       34.9    3.62   28.85    0.00
+Allreduce               2       8.22    0.85    6.80    0.00
+Bcast                  18       4.32    0.45    3.57    0.00
+Allreduce               8       3.38    0.35    2.80    0.00
+Bcast                  24       3.06    0.32    2.53    0.00
+Bcast                  12       2.92    0.30    2.42    0.00
+Bcast                  16       1.57    0.16    1.30    0.00
+Bcast                  10       1.54    0.16    1.28    0.00
+Barrier                19       1.41    0.15    1.17    0.00
+Barrier                13        1.4    0.15    1.16    0.00
+Barrier                 7       1.39    0.14    1.15    0.00
+Reduce                  3        1.3    0.13    1.07    0.00
+Bcast                   6      0.415    0.04    0.34    0.00
+Reduce                  9      0.279    0.03    0.23    0.00
+Reduce                 15      0.279    0.03    0.23    0.00
+Reduce                 21      0.262    0.03    0.22    0.00
+Bcast                  22      0.249    0.03    0.21    0.00
+Bcast                  11      0.234    0.02    0.19    0.00
+Bcast                  23      0.226    0.02    0.19    0.00
 ---------------------------------------------------------------------------
 @--- Aggregate Sent Message Size (top twenty, descending, bytes) ----------
 ---------------------------------------------------------------------------
 Call                 Site      Count      Total       Avrg  Sent%
-Bcast                  20          6        156         26  11.47
-Bcast                   8          6        156         26  11.47
-Bcast                  14          6        156         26  11.47
-Bcast                   2          6        156         26  11.47
-Reduce                  6          8         64          8   4.71
-Reduce                 12          8         64          8   4.71
-Reduce                 18          8         64          8   4.71
-Reduce                 24          8         64          8   4.71
-Bcast                  16         12         48          4   3.53
-Bcast                  22         12         48          4   3.53
-Bcast                  10         12         48          4   3.53
-Bcast                   4         12         48          4   3.53
-Bcast                  17          5         40          8   2.94
-Bcast                  23          5         40          8   2.94
-Bcast                  11          5         40          8   2.94
-Bcast                   5          5         40          8   2.94
-Allreduce               3          8         32          4   2.35
-Allreduce               9          8         32          4   2.35
-Allreduce              15          8         32          4   2.35
-Allreduce              21          8         32          4   2.35
+Bcast                  17         11        286         26  11.72
+Bcast                  23         11        286         26  11.72
+Bcast                  11         11        286         26  11.72
+Bcast                   5         11        286         26  11.72
+Reduce                  3         13        104          8   4.26
+Reduce                  9         13        104          8   4.26
+Reduce                 15         13        104          8   4.26
+Reduce                 21         13        104          8   4.26
+Bcast                  24         22         88          4   3.61
+Bcast                  18         22         88          4   3.61
+Bcast                  12         22         88          4   3.61
+Bcast                   6         22         88          4   3.61
+Bcast                  16         10         80          8   3.28
+Bcast                  22         10         80          8   3.28
+Bcast                  10         10         80          8   3.28
+Bcast                   4         10         80          8   3.28
+Allreduce               2         13         52          4   2.13
+Allreduce               8         13         52          4   2.13
+Allreduce              14         13         52          4   2.13
+Allreduce              20         13         52          4   2.13
 ---------------------------------------------------------------------------
 @--- Callsite Time statistics (all, milliseconds): 24 ---------------------
 ---------------------------------------------------------------------------
 Name              Site Rank  Count      Max     Mean      Min   App%   MPI%
-Allreduce            3    0      8     56.4     7.17    0.031  23.84  98.70
-Allreduce            3    *      8     56.4     7.17    0.031   6.42  59.83
+Allreduce            2    0     13     2.61    0.632    0.028   3.24  79.41
+Allreduce            2    *     13     2.61    0.632    0.028   0.85   6.80
 
-Allreduce            9    2      8     15.1     1.96     0.04   6.99  81.02
-Allreduce            9    *      8     15.1     1.96     0.04   1.75  16.31
+Allreduce            8    1     13     1.75     0.26    0.029   1.48  34.70
+Allreduce            8    *     13     1.75     0.26    0.029   0.35   2.80
 
-Allreduce           15    3      8    0.306   0.0958    0.026   0.36  16.72
-Allreduce           15    *      8    0.306   0.0958    0.026   0.09   0.80
+Allreduce           14    3     13     31.8     2.68    0.025  15.25  81.73
+Allreduce           14    *     13     31.8     2.68    0.025   3.62  28.85
 
-Allreduce           21    1      8      9.8     1.27    0.027   4.76  73.33
-Allreduce           21    *      8      9.8     1.27    0.027   1.14  10.61
+Allreduce           20    2     13     49.4     4.07    0.026  20.96  91.04
+Allreduce           20    *     13     49.4     4.07    0.026   5.49  43.77
 
-Barrier              1    0      2    0.052    0.039    0.026   0.03   0.13
-Barrier              1    *      2    0.052    0.039    0.026   0.01   0.08
+Barrier              1    0      2    0.051    0.039    0.027   0.03   0.75
+Barrier              1    *      2    0.051    0.039    0.027   0.01   0.06
 
-Barrier              7    2      2     1.15    0.592    0.034   0.53   6.13
-Barrier              7    *      2     1.15    0.592    0.034   0.13   1.23
+Barrier              7    1      2     1.35    0.694    0.034   0.61  14.24
+Barrier              7    *      2     1.35    0.694    0.034   0.14   1.15
 
-Barrier             13    3      2     1.15     0.59    0.032   0.55  25.74
-Barrier             13    *      2     1.15     0.59    0.032   0.13   1.23
+Barrier             13    3      2     1.36    0.702    0.044   0.61   3.29
+Barrier             13    *      2     1.36    0.702    0.044   0.15   1.16
 
-Barrier             19    1      2     1.15     0.59    0.031   0.55   8.49
-Barrier             19    *      2     1.15     0.59    0.031   0.13   1.23
+Barrier             19    2      2     1.37    0.705    0.039   0.56   2.43
+Barrier             19    *      2     1.37    0.705    0.039   0.15   1.17
 
-Bcast                2    0      6    0.015   0.0143    0.013   0.04   0.15
-Bcast                2    *      6    0.015   0.0143    0.013   0.01   0.09
+Bcast                4    0     10    0.023   0.0179    0.017   0.07   1.73
+Bcast                4    *     10    0.023   0.0179    0.017   0.02   0.15
 
-Bcast                4    0     12    0.039   0.0169    0.014   0.08   0.35
-Bcast                4    *     12    0.039   0.0169    0.014   0.02   0.21
+Bcast                5    0     11    0.017   0.0146    0.012   0.06   1.56
+Bcast                5    *     11    0.017   0.0146    0.012   0.02   0.13
 
-Bcast                5    0      5    0.018   0.0162    0.014   0.03   0.14
-Bcast                5    *      5    0.018   0.0162    0.014   0.01   0.08
+Bcast                6    0     22    0.039   0.0189    0.014   0.16   4.01
+Bcast                6    *     22    0.039   0.0189    0.014   0.04   0.34
 
-Bcast                8    2      6    0.027   0.0197    0.017   0.05   0.61
-Bcast                8    *      6    0.027   0.0197    0.017   0.01   0.12
+Bcast               10    1     10     1.33    0.154     0.02   0.67  15.85
+Bcast               10    *     10     1.33    0.154     0.02   0.16   1.28
 
-Bcast               10    2     12    0.886    0.176     0.02   0.94  10.91
-Bcast               10    *     12    0.886    0.176     0.02   0.24   2.20
+Bcast               11    1     11    0.028   0.0213    0.018   0.10   2.40
+Bcast               11    *     11    0.028   0.0213    0.018   0.02   0.19
 
-Bcast               11    2      5     0.03   0.0226     0.02   0.05   0.59
-Bcast               11    *      5     0.03   0.0226     0.02   0.01   0.12
+Bcast               12    1     22    0.791    0.133    0.019   1.27  29.95
+Bcast               12    *     22    0.791    0.133    0.019   0.30   2.42
 
-Bcast               14    3      6    0.041   0.0268    0.018   0.07   3.51
-Bcast               14    *      6    0.041   0.0268    0.018   0.02   0.17
+Bcast               16    3     10     1.33    0.157    0.019   0.69   3.69
+Bcast               16    *     10     1.33    0.157    0.019   0.16   1.30
 
-Bcast               16    3     12    0.893     0.18    0.027   1.00  47.24
-Bcast               16    *     12    0.893     0.18    0.027   0.24   2.26
+Bcast               17    3     11    0.023   0.0198    0.016   0.10   0.51
+Bcast               17    *     11    0.023   0.0198    0.016   0.02   0.18
 
-Bcast               17    3      5    0.038   0.0326    0.022   0.08   3.56
-Bcast               17    *      5    0.038   0.0326    0.022   0.02   0.17
+Bcast               18    3     22     1.39    0.196     0.02   1.89  10.12
+Bcast               18    *     22     1.39    0.196     0.02   0.45   3.57
 
-Bcast               20    1      6    0.026   0.0218     0.02   0.06   0.94
-Bcast               20    *      6    0.026   0.0218     0.02   0.01   0.14
+Bcast               22    2     10     0.04   0.0249    0.021   0.10   0.43
+Bcast               22    *     10     0.04   0.0249    0.021   0.03   0.21
 
-Bcast               22    1     12     0.91    0.177    0.028   0.99  15.30
-Bcast               22    *     12     0.91    0.177    0.028   0.24   2.21
+Bcast               23    2     11    0.028   0.0205    0.018   0.09   0.39
+Bcast               23    *     11    0.028   0.0205    0.018   0.02   0.19
 
-Bcast               23    1      5    0.027   0.0242    0.022   0.06   0.87
-Bcast               23    *      5    0.027   0.0242    0.022   0.01   0.13
+Bcast               24    2     22    0.788    0.139    0.029   1.21   5.26
+Bcast               24    *     22    0.788    0.139    0.029   0.32   2.53
 
-Reduce               6    0      8    0.063   0.0381    0.031   0.13   0.52
-Reduce               6    *      8    0.063   0.0381    0.031   0.03   0.32
+Reduce               3    0     13    0.822   0.0998     0.03   0.51  12.54
+Reduce               3    *     13    0.822   0.0998     0.03   0.13   1.07
 
-Reduce              12    2      8     0.03   0.0179    0.014   0.06   0.74
-Reduce              12    *      8     0.03   0.0179    0.014   0.02   0.15
+Reduce               9    1     13     0.06   0.0215    0.015   0.12   2.86
+Reduce               9    *     13     0.06   0.0215    0.015   0.03   0.23
 
-Reduce              18    3      8    0.035   0.0185    0.015   0.07   3.23
-Reduce              18    *      8    0.035   0.0185    0.015   0.02   0.15
+Reduce              15    3     13    0.067   0.0215    0.015   0.12   0.65
+Reduce              15    *     13    0.067   0.0215    0.015   0.03   0.23
 
-Reduce              24    1      8    0.034   0.0185    0.016   0.07   1.07
-Reduce              24    *      8    0.034   0.0185    0.016   0.02   0.15
+Reduce              21    2     13     0.04   0.0202    0.013   0.10   0.45
+Reduce              21    *     13     0.04   0.0202    0.013   0.03   0.22
 ---------------------------------------------------------------------------
 @--- Callsite Message Sent statistics (all, sent bytes) -------------------
 ---------------------------------------------------------------------------
 Name              Site Rank   Count       Max      Mean       Min       Sum
-Allreduce            3    0       8         4         4         4        32
-Allreduce            3    *       8         4         4         4        32
+Allreduce            2    0      13         4         4         4        52
+Allreduce            2    *      13         4         4         4        52
 
-Allreduce            9    2       8         4         4         4        32
-Allreduce            9    *       8         4         4         4        32
+Allreduce            8    1      13         4         4         4        52
+Allreduce            8    *      13         4         4         4        52
 
-Allreduce           15    3       8         4         4         4        32
-Allreduce           15    *       8         4         4         4        32
+Allreduce           14    3      13         4         4         4        52
+Allreduce           14    *      13         4         4         4        52
 
-Allreduce           21    1       8         4         4         4        32
-Allreduce           21    *       8         4         4         4        32
+Allreduce           20    2      13         4         4         4        52
+Allreduce           20    *      13         4         4         4        52
 
-Bcast                2    0       6        26        26        26       156
-Bcast                2    *       6        26        26        26       156
+Bcast                4    0      10         8         8         8        80
+Bcast                4    *      10         8         8         8        80
 
-Bcast                4    0      12         4         4         4        48
-Bcast                4    *      12         4         4         4        48
+Bcast                5    0      11        26        26        26       286
+Bcast                5    *      11        26        26        26       286
 
-Bcast                5    0       5         8         8         8        40
-Bcast                5    *       5         8         8         8        40
+Bcast                6    0      22         4         4         4        88
+Bcast                6    *      22         4         4         4        88
 
-Bcast                8    2       6        26        26        26       156
-Bcast                8    *       6        26        26        26       156
+Bcast               10    1      10         8         8         8        80
+Bcast               10    *      10         8         8         8        80
 
-Bcast               10    2      12         4         4         4        48
-Bcast               10    *      12         4         4         4        48
+Bcast               11    1      11        26        26        26       286
+Bcast               11    *      11        26        26        26       286
 
-Bcast               11    2       5         8         8         8        40
-Bcast               11    *       5         8         8         8        40
+Bcast               12    1      22         4         4         4        88
+Bcast               12    *      22         4         4         4        88
 
-Bcast               14    3       6        26        26        26       156
-Bcast               14    *       6        26        26        26       156
+Bcast               16    3      10         8         8         8        80
+Bcast               16    *      10         8         8         8        80
 
-Bcast               16    3      12         4         4         4        48
-Bcast               16    *      12         4         4         4        48
+Bcast               17    3      11        26        26        26       286
+Bcast               17    *      11        26        26        26       286
 
-Bcast               17    3       5         8         8         8        40
-Bcast               17    *       5         8         8         8        40
+Bcast               18    3      22         4         4         4        88
+Bcast               18    *      22         4         4         4        88
 
-Bcast               20    1       6        26        26        26       156
-Bcast               20    *       6        26        26        26       156
+Bcast               22    2      10         8         8         8        80
+Bcast               22    *      10         8         8         8        80
 
-Bcast               22    1      12         4         4         4        48
-Bcast               22    *      12         4         4         4        48
+Bcast               23    2      11        26        26        26       286
+Bcast               23    *      11        26        26        26       286
 
-Bcast               23    1       5         8         8         8        40
-Bcast               23    *       5         8         8         8        40
+Bcast               24    2      22         4         4         4        88
+Bcast               24    *      22         4         4         4        88
 
-Reduce               6    0       8         8         8         8        64
-Reduce               6    *       8         8         8         8        64
+Reduce               3    0      13         8         8         8       104
+Reduce               3    *      13         8         8         8       104
 
-Reduce              12    2       8         8         8         8        64
-Reduce              12    *       8         8         8         8        64
+Reduce               9    1      13         8         8         8       104
+Reduce               9    *      13         8         8         8       104
 
-Reduce              18    3       8         8         8         8        64
-Reduce              18    *       8         8         8         8        64
+Reduce              15    3      13         8         8         8       104
+Reduce              15    *      13         8         8         8       104
 
-Reduce              24    1       8         8         8         8        64
-Reduce              24    *       8         8         8         8        64
+Reduce              21    2      13         8         8         8       104
+Reduce              21    *      13         8         8         8       104
 ---------------------------------------------------------------------------
 @--- End of Report --------------------------------------------------------
 ---------------------------------------------------------------------------

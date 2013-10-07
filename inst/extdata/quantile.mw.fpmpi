@@ -30,21 +30,21 @@ MPI_Pcontrol may be used to control the collection of data.  Use the values
 defined in fpmpi.h, such as FPMPI_PROF_COLLSYNC, to control what data is 
 collected or reported by FPMPI2.
 
-Date:     	Tue Oct  1 00:11:08 2013
+Date:     	Sun Oct  6 22:35:14 2013
 Processes:	4
-Execute time:	1.348
+Execute time:	1.289
 Timing Stats: [seconds]	[min/max]    	[min rank/max rank]
-  wall-clock: 1.348 sec	1.335911 / 1.368558	1 / 0
-        user: 0.635 sec	0.620000 / 0.656000	1 / 3
-         sys: 0.053 sec	0.048000 / 0.060000	0 / 3
+  wall-clock: 1.289 sec	1.284051 / 1.294243	2 / 3
+        user: 0.602 sec	0.576000 / 0.612000	0 / 2
+         sys: 0.071 sec	0.064000 / 0.076000	3 / 0
 
                   Average of sums over all processes
 Routine                 Calls       Time Msg Length    %Time by message length
                                                     0.........1........1........
                                                               K        M
-MPI_Allreduce       :       8   0.000197         32 0*00000000000000000000000000
-MPI_Bcast           :      23    0.00219         61 0730.00000000000000000000000
-MPI_Reduce          :       8    0.00113         64 00*0000000000000000000000000
+MPI_Allreduce       :      13   0.000337         52 0*00000000000000000000000000
+MPI_Bcast           :      43    0.00228        114 0910100000000000000000000000
+MPI_Reduce          :      13   0.000194        104 00*0000000000000000000000000
 MPI_Barrier         :       2    0.00102
 
 Details for each MPI routine
@@ -53,23 +53,23 @@ Details for each MPI routine
                                 (max over          0.........1........1........
                                  processes [rank])           K        M
 MPI_Allreduce:
-	Calls     :          8            8 [   0] 0*00000000000000000000000000
-	Time      :   0.000197     0.000203 [   2] 0*00000000000000000000000000
-	Data Sent :         32           32 [   0]
-	SyncTime  :     0.0205        0.058 [   0] 0*00000000000000000000000000
-	By bin    : 1-4	[8,8]	[  0.000189,  0.000203]	[   0.00438,     0.058]
+	Calls     :         13           13 [   0] 0*00000000000000000000000000
+	Time      :   0.000337     0.000368 [   0] 0*00000000000000000000000000
+	Data Sent :         52           52 [   0]
+	SyncTime  :     0.0257       0.0525 [   0] 0*00000000000000000000000000
+	By bin    : 1-4	[13,13]	[  0.000302,  0.000368]	[   0.00282,    0.0525]
 MPI_Bcast:
-	Calls     :         23           23 [   0] 0520300000000000000000000000
-	Time      :    0.00219      0.00313 [   3] 0730.00000000000000000000000
-	Data Sent :         61          244 [   0]
-	By bin    : 1-4	[12,12]	[  0.000242,   0.00203]
-	          : 5-8	[5,5]	[  4.53e-05,   0.00103]
-	          : 17-32	[6,6]	[   6.1e-05,  0.000101]
+	Calls     :         43           43 [   0] 0520300000000000000000000000
+	Time      :    0.00228      0.00299 [   3] 0910100000000000000000000000
+	Data Sent :        114          454 [   0]
+	By bin    : 1-4	[22,22]	[  0.000217,   0.00261]
+	          : 5-8	[10,10]	[  9.82e-05,  0.000207]
+	          : 17-32	[11,11]	[  0.000112,  0.000175]
 MPI_Reduce:
-	Calls     :          8            8 [   0] 00*0000000000000000000000000
-	Time      :    0.00113      0.00428 [   0] 00*0000000000000000000000000
-	Data Sent :         64           64 [   0]
-	By bin    : 5-8	[8,8]	[  8.01e-05,   0.00428]
+	Calls     :         13           13 [   0] 00*0000000000000000000000000
+	Time      :   0.000194     0.000363 [   0] 00*0000000000000000000000000
+	Data Sent :        104          104 [   0]
+	By bin    : 5-8	[13,13]	[  0.000127,  0.000363]
 MPI_Barrier:
 	Calls     :          2
 	Time      :    0.00102
