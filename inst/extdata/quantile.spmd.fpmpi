@@ -30,20 +30,20 @@ MPI_Pcontrol may be used to control the collection of data.  Use the values
 defined in fpmpi.h, such as FPMPI_PROF_COLLSYNC, to control what data is 
 collected or reported by FPMPI2.
 
-Date:     	Tue Oct  1 00:10:46 2013
+Date:     	Sun Oct  6 22:34:26 2013
 Processes:	3
-Execute time:	1.253
+Execute time:	1.222
 Timing Stats: [seconds]	[min/max]    	[min rank/max rank]
-  wall-clock: 1.253 sec	1.227918 / 1.299854	2 / 0
-        user: 0.484 sec	0.456000 / 0.500000	0 / 2
-         sys: 0.03733 sec	0.024000 / 0.052000	0 / 1
+  wall-clock: 1.222 sec	1.198871 / 1.245155	0 / 1
+        user: 0.428 sec	0.384000 / 0.484000	1 / 0
+         sys: 0.04667 sec	0.028000 / 0.068000	0 / 2
 
                   Average of sums over all processes
 Routine                 Calls       Time Msg Length    %Time by message length
                                                     0.........1........1........
                                                               K        M
-MPI_Allreduce       :      16   0.000528         96 0730000000000000000000000000
-MPI_Barrier         :       2   0.000405
+MPI_Allreduce       :      26    0.00135        156 0280000000000000000000000000
+MPI_Barrier         :       2   0.000407
 
 Details for each MPI routine
                   Average of sums over all processes
@@ -51,15 +51,15 @@ Details for each MPI routine
                                 (max over          0.........1........1........
                                  processes [rank])           K        M
 MPI_Allreduce:
-	Calls     :         16           16 [   0] 0550000000000000000000000000
-	Time      :   0.000528     0.000561 [   2] 0730000000000000000000000000
-	Data Sent :         96           96 [   0]
-	SyncTime  :       0.03        0.055 [   0] 0*.0000000000000000000000000
-	By bin    : 1-4	[8,8]	[  0.000319,  0.000373]	[  0.000321,    0.0548]
-	          : 5-8	[8,8]	[  0.000152,  0.000193]	[  0.000182,   0.00045]
+	Calls     :         26           26 [   0] 0550000000000000000000000000
+	Time      :    0.00135      0.00302 [   2] 0280000000000000000000000000
+	Data Sent :        156          156 [   0]
+	SyncTime  :    0.00403      0.00499 [   0] 0550000000000000000000000000
+	By bin    : 1-4	[13,13]	[   0.00025,  0.000338]	[  0.000356,   0.00357]
+	          : 5-8	[13,13]	[  0.000234,   0.00269]	[  0.000506,   0.00267]
 MPI_Barrier:
 	Calls     :          2
-	Time      :   0.000405
+	Time      :   0.000407
 
 Summary of target processes for point-to-point communication:
 1-norm distance of point-to-point with an assumed 2-d topology

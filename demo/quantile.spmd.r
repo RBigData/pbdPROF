@@ -12,9 +12,9 @@ if(comm.size() != 3){
 
 ### Generate data.
 comm.set.seed(1234)
-n <- 100
+n <- 1000
 X <- runif(n * comm.size())
-X <- X[(1:n) + n * comm.rank()]                 # each owns 100 samples
+X <- X[(1:n) + n * comm.rank()]                 # each owns 1000 samples
 
 ### Define quantile function in SPMD.
 quantile.spmd <- function(x.gbd, prob = 0.5){
@@ -23,9 +23,9 @@ quantile.spmd <- function(x.gbd, prob = 0.5){
   }
 
   ### Get information from everyone to everyone.
-  N <- allreduce(length(x.gbd), op = "sum")   # global sample size
-  x.min <- allreduce(min(x.gbd), op = "min")  # global leftest data
-  x.max <- allreduce(max(x.gbd), op = "max")  # global rightest data
+  N <- allreduce(length(x.gbd), op = "sum")   # global size
+  x.min <- allreduce(min(x.gbd), op = "min")  # global leftest
+  x.max <- allreduce(max(x.gbd), op = "max")  # global rightest
 
   f.quantile <- function(x, prob = 0.5){      # bisection
     n <- allreduce(sum(x.gbd <= x), op = "sum")
