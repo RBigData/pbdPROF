@@ -5,16 +5,15 @@
 library(pbdMPI, quietly = TRUE)
 init()
 
-### Check # of processors.
-if(comm.size() != 3){
-  comm.stop("3 processors are requried.")
-}
-
 ### Generate data.
 comm.set.seed(1234)
-n <- 1000
-X <- runif(n * comm.size())
-X <- X[(1:n) + n * comm.rank()]                 # each owns 1000 samples
+n <- 1000                                       # each owns 1000 samples
+for(i.rank in 0:(comm.size() - 1)){
+  X <- runif(n)
+  if(i.rank == comm.rank()){
+    break
+  }
+}
 
 ### Define quantile function in SPMD.
 quantile.spmd <- function(x.gbd, prob = 0.5){
@@ -35,8 +34,11 @@ quantile.spmd <- function(x.gbd, prob = 0.5){
 } # End of quantile.spmd().
 
 ### Run.
-q50.X <- quantile.spmd(X)
-comm.print(q50.X)
+log.time <- system.time({
+  q50.X <- replicate(50, quantile.spmd(X))
+})
+comm.print(q50.X[1])
+comm.print(log.time)
 
 ### Finish.
 finalize()
