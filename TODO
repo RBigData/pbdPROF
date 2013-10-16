@@ -1,0 +1,14 @@
+=== Small jobs ===
+
+* Clean up the vignette (it's a bit messy for my tastes).
+
+* Unify the example code/plots.
+
+* Include pmclust profiler plots.
+
+
+=== Not so small jobs... ===
+
+* Build interface for TAU.
+
+* Make a build that includes the mpiP source (including libunwind).
