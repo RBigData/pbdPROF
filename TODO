@@ -2,9 +2,9 @@
 
 * Clean up the vignette (it's a bit messy for my tastes).
 
-* Unify the example code/plots.
+* Unify the example code/plots in the vignette.
 
-* Include pmclust profiler plots.
+* Include pmclust profiler plots in the vignette.
 
 
 === Not so small jobs... ===
