@@ -6,6 +6,12 @@
 
 * Include pmclust profiler plots in the vignette.
 
+* Fix legends on plots so that they are meaningful (rather than 
+  factor(garbage))
+
+* Expand the plot()/autoplot() documentation to better explain the different
+  types of plots.
+
 
 === Not so small jobs... ===
 
