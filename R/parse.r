@@ -18,11 +18,31 @@ parse.prof.fpmpi <- function(x, ...){
   
   # Get informative region
   id.start <- grep("^Details for each MPI", x)
+  if(length(id.start) == 0){
+    stop("Input file format is invalid.")
+  } else{
+    id.start <- id.start + 5
+  }
+
   id.end <- grep("Summary of target processes for point-to-point", x)
-  x.sub <- x[(id.start + 5):(id.end - 2)]
+  if(length(id.end) == 0){
+    id.end <- max(which(x != ""))
+  } else{
+    id.end <- id.end - 2
+  }
+
+  x.sub <- x[id.start:id.end]
+
+  # Check tab or space is being used.
+  id.func <- grep("^\\t", x.sub)
+  if(length(id.func) > 0){
+    head.string <- "^\\t"
+  } else{
+    head.string <- " .*"
+  }
   
   # Get functions
-  id.func <- grep("^\\t", x.sub, invert = TRUE)
+  id.func <- grep(head.string, x.sub, invert = TRUE)
   
   j <- 0
   for(i in id.func){
@@ -39,7 +59,7 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get Calls if any
     k <- k + 1
-    if(length(grep("^\\tCalls", x.sub[k])) > 0){
+    if(length(grep(paste(head.string, "Calls", sep = ""), x.sub[k])) > 0){
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
@@ -48,7 +68,7 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get Time if any
     k <- k + 1
-    if(length(grep("^\\tTime", x.sub[k])) > 0){
+    if(length(grep(paste(head.string, "Time", sep = ""), x.sub[k])) > 0){
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
@@ -57,7 +77,7 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get Data Sent if any
     k <- k + 1
-    if(length(grep("^\\tData Sent", x.sub[k])) > 0){
+    if(length(grep(paste(head.string, "Data Sent", sep = ""), x.sub[k])) > 0){
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
@@ -66,16 +86,24 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get SyncTime if any
     k <- k + 1
-    if(length(grep("^\\tSyncTime", x.sub[k])) > 0){
+    if(length(grep(paste(head.string, "SyncTime", sep = ""), x.sub[k])) > 0){
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
       ret[[j]]$SyncTime <- as.double(tmp[[1]][id.tmp[1]])
     }
   }
+
+  # Drop empty finction calls.
+  new.ret <- ret
+  for(j in 1:length(ret)){
+    if(ret[[j]]$Routine == ""){
+      new.ret[[j]] <- NULL
+    }
+  }
   
   # Cast return as dataframe
-  ret <- parsed_fpmpi_2_df(ret)
+  ret <- parsed_fpmpi_2_df(new.ret)
   
   return( ret )
 } # End of parse.prof.fpmpi().
