@@ -12,8 +12,10 @@
 * Expand the plot()/autoplot() documentation to better explain the different
   types of plots.
 
-* plot documentation lists plot.type arguments incorrectly, and is generally 
+* plot() documentation lists plot.type arguments incorrectly, and is generally 
   of poor quality.
+
+* In plot(), plot.type="counts" is completely broken.
 
 
 === Medium jobs ===
