@@ -12,6 +12,14 @@
 * Expand the plot()/autoplot() documentation to better explain the different
   types of plots.
 
+* plot documentation lists plot.type arguments incorrectly, and is generally 
+  of poor quality.
+
+
+=== Medium jobs ===
+
+* which= in plot() is broken.
+
 
 === Not so small jobs... ===
 
