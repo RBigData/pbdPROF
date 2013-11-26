@@ -25,6 +25,10 @@
 
 === Not so small jobs... ===
 
+* Build interface for PAPI (do this before TAU)
+
 * Build interface for TAU.
 
 * Make a build that includes the mpiP source (including libunwind).
+
+* There may perhaps be problems with profiling scalapack ...
