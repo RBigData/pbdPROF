@@ -8,7 +8,7 @@ dnl Process this file with autoconf to produce a configure script
 AC_INIT(DESCRIPTION)
 
 dnl Determine R_HOME.
-: ${R_HOME=‘R RHOME‘}
+: ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
   exit 1
@@ -154,14 +154,15 @@ dnl For MPICH3/MPICH2/MPICH
 if test -z "${MPI_INCLUDE_PATH}" ; then
 ### MPICH2 users have to specify --with-mpi-type=MPICH2 to get this.
   if test "$MPITYPE" = "MPICH2" -o "$MPITYPE" = "MPICH" -o "$MPITYPE" = "MPICH3" ; then
-    if test "$SED" != "F" -a "$MPICC" != "F" -a "$MPICH2VERSION" != "F" ; then
-      echo "found sed, mpicc, and mpich2version ..."
+    if test "$SED" != "F" -a "$MPICC" != "F" ; then
+      echo "found sed and mpicc ..."
       TMP_INC="F"
       TMP_LIB="F"
 
       TMP_CMD=`mpicc -show`
       echo ">> TMP_CMD = ${TMP_CMD}"
 
+      dnl check "mpi.h".
       TMP_IFS="${IFS}"; IFS=" "
       for dir in ${TMP_CMD}; do
         dir_inc=`echo ${dir} | sed -e "s/^-I\(.*\)$/\1/"`
@@ -180,6 +181,7 @@ if test -z "${MPI_INCLUDE_PATH}" ; then
       done
       IFS="${TMP_IFS}"
 
+      dnl check library.
       TMP_IFS="${IFS}"; IFS=" "
       for dir in ${TMP_CMD}; do
         dir_lib=`echo ${dir} | sed -e "s/^-L\(.*\)$/\1/"`
@@ -222,7 +224,7 @@ dnl 'Paths not specified'
 if test -z "${MPI_INCLUDE_PATH}" ; then
   dnl Another way is to specify MPI_ROOT, perhaps via --with-mpi
   AC_ARG_WITH(mpi,
-              AC_HELP_STRING([--with-mpi=LIB_PATH],
+              AC_HELP_STRING([--with-mpi=MPI_ROOT],
                              [location of top-level MPI directory]),
               [ if test "${withval}" != "no"; then
                       MPI_ROOT=${withval}
@@ -242,7 +244,8 @@ if test -z "${MPI_INCLUDE_PATH}" ; then
              /usr/lib/mpi/gcc/openmpi \
              /usr/lib64/mpi/gcc/openmpi \
              /usr/lib/mpi/gcc/ompi \
-             /usr/lib64/mpi/gcc/ompi ; do
+             /usr/lib64/mpi/gcc/ompi \
+             /usr/local/mpi/openmpi ; do
       if test -f $d/include/openmpi-i386/mpi.h && test -d $d/lib/openmpi/lib; then
       dnl This is what Fedora 17 had
         echo "I am here $d and it is openmpi"
