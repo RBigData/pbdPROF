@@ -22,21 +22,25 @@ else
   endif
 endif
 
-### set MPI_LIB
+
+### set MPI_INCLUDE
 ifeq "$(WIN)" "64"
-  MPI_LIB = $(shell ${R_SCMD} "source('../R/get_mpi.r');get.mpi(64)")
+  MPI_INCLUDE = $(shell ${R_SCMD} "source('../R/get_winmpi.r');get.wininc(64)")
 else
-  MPI_LIB = $(shell ${R_SCMD} "source('../R/get_mpi.r');get.mpi(32)")
+  MPI_INCLUDE = $(shell ${R_SCMD} "source('../R/get_winmpi.r');get.wininc(32)")
 endif
 
-### MPI_LIB is still not found then set to the default.
-ifeq "$(MPI_LIB)" ""
-  MPI_LIB = $(MPI_ROOT)/lib
+### set MPI_LIB
+ifeq "$(WIN)" "64"
+  MPI_LIB = $(shell ${R_SCMD} "source('../R/get_winmpi.r');get.winlib(64)")
+else
+  MPI_LIB = $(shell ${R_SCMD} "source('../R/get_winmpi.r');get.winlib(32)")
 endif
 
 ### Set PKG_*
 # PKG_CPPFLAGS = -I"$(MPI_ROOT)/include" -DMPI2 -DWIN
-# PKG_LIBS = -L"$(MPI_LIB)" -lmpi
+## PKG_LIBS = -L"$(MPI_LIB)" -lmpi
+# PKG_LIBS = $(MPI_LIB)
 
 ### For user configuration.
 USER_CONF = Makeconf

@@ -1335,7 +1335,7 @@ Optional Packages:
                           location of MPI library files
   --with-mpi-type=MPI_TYPE
                           type of MPI: OPENMPI, MPICH2, MPICH3, or INTELMPI
-  --with-mpi=LIB_PATH     location of top-level MPI directory
+  --with-mpi=MPI_ROOT     location of top-level MPI directory
   --with-fpmpi="-L/..../fpmpi/lib -lfpmpi"
                           location and name of fpmpi library
   --with-mpiP="-L/..../mpiP/lib -lmpiP"
@@ -2296,7 +2296,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-: ${R_HOME=‘R RHOME‘}
+: ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
   exit 1
@@ -3342,15 +3342,15 @@ fi
 if test -z "${MPI_INCLUDE_PATH}" ; then
 ### MPICH2 users have to specify --with-mpi-type=MPICH2 to get this.
   if test "$MPITYPE" = "MPICH2" -o "$MPITYPE" = "MPICH" -o "$MPITYPE" = "MPICH3" ; then
-    if test "$SED" != "F" -a "$MPICC" != "F" -a "$MPICH2VERSION" != "F" ; then
-      echo "found sed, mpicc, and mpich2version ..."
+    if test "$SED" != "F" -a "$MPICC" != "F" ; then
+      echo "found sed and mpicc ..."
       TMP_INC="F"
       TMP_LIB="F"
 
       TMP_CMD=`mpicc -show`
       echo ">> TMP_CMD = ${TMP_CMD}"
 
-      TMP_IFS="${IFS}"; IFS=" "
+            TMP_IFS="${IFS}"; IFS=" "
       for dir in ${TMP_CMD}; do
         dir_inc=`echo ${dir} | sed -e "s/^-I\(.*\)$/\1/"`
 
@@ -3367,7 +3367,7 @@ if test -z "${MPI_INCLUDE_PATH}" ; then
       done
       IFS="${TMP_IFS}"
 
-      TMP_IFS="${IFS}"; IFS=" "
+            TMP_IFS="${IFS}"; IFS=" "
       for dir in ${TMP_CMD}; do
         dir_lib=`echo ${dir} | sed -e "s/^-L\(.*\)$/\1/"`
 
@@ -3425,7 +3425,8 @@ fi
              /usr/lib/mpi/gcc/openmpi \
              /usr/lib64/mpi/gcc/openmpi \
              /usr/lib/mpi/gcc/ompi \
-             /usr/lib64/mpi/gcc/ompi ; do
+             /usr/lib64/mpi/gcc/ompi \
+             /usr/local/mpi/openmpi ; do
       if test -f $d/include/openmpi-i386/mpi.h && test -d $d/lib/openmpi/lib; then
               echo "I am here $d and it is openmpi"
         MPI_ROOT=$d
