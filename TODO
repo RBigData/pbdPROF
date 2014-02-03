@@ -32,3 +32,6 @@
 * Make a build that includes the mpiP source (including libunwind).
 
 * There may perhaps be problems with profiling scalapack ...
+
+* Profiling under Windows system is never working.
+  fpmpi did claim working under MS-MPI.
