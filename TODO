@@ -17,6 +17,7 @@
 
 * In plot(), plot.type="counts" is completely broken.
 
+* in plot() with plot.type=stats1, "Number of Function Calls" should be an int
 
 === Medium jobs ===
 
