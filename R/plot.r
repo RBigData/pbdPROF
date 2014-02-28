@@ -80,9 +80,9 @@ plot_fpmpi <- function(x, ..., which=1L:4L, show.title=TRUE, label)
   # Plot them
   plots <- list(g1, g2, g3, g4)
   
-  grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
+  g <- grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
   
-  invisible()
+  return( g )
 }
 
 
@@ -520,11 +520,11 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   plots <- list(g1, g2, g3, g4)
   
   if (add.legend)
-    grid_plotter(plots=plots, which=which, label=label, show.title=show.title, legend=legend)
+    g <- grid_plotter(plots=plots, which=which, label=label, show.title=show.title, legend=legend)
   else
-    grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
+    g <- grid_plotter(plots=plots, which=which, label=label, show.title=show.title)
   
-  invisible()
+  return( g )
 }
 
 
