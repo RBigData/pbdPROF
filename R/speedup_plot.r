@@ -1,15 +1,3 @@
-library(ggplot2)
-library(reshape2)
-require(gridExtra)
-
-x <- c(1, 2, 4, 6, 8, 10, 12, 16)
-y <- c(111.4242, 40.348, 21.416, 14.734, 12.030, 9.695, 7.969, 5.930)
-z <- y/2 + runif(length(y), 2, 10)
-
-bench <- data.frame(y, z)
-
-
-
 benchplot <- function(cores, timings, plot.type="speedup", title=NULL)
 {
   plot.type <- match.arg(tolower(plot.type), c("speedup", "runtime", "both"))
@@ -99,9 +87,23 @@ benchplot <- function(cores, timings, plot.type="speedup", title=NULL)
 
 
 
-g1 <- benchplot(x, bench[, 1], "both")
-g2 <- benchplot(x, bench, "both")
+
+### Test cases
+# FIXME delete before release
+
+#library(ggplot2)
+#library(reshape2)
+#require(gridExtra)
+
+#x <- c(1, 2, 4, 6, 8, 10, 12, 16)
+#y <- c(111.4242, 40.348, 21.416, 14.734, 12.030, 9.695, 7.969, 5.930)
+#z <- y/2 + runif(length(y), 2, 10)
+
+#bench <- data.frame(y, z)
+
+#g1 <- benchplot(x, bench[, 1], "both")
+#g2 <- benchplot(x, bench, "both")
 
 #grid.arrange(g1, g2, ncol=1)
-benchplot(x, bench, "speedup")
+#benchplot(x, bench, "speedup")
 
