@@ -45,7 +45,7 @@ grid_plotter <- function(plots, which, label, show.title=TRUE, legend)
       if (k == length(which) && k < prod(grid))
         j <- j:(j + 1L)
         
-      g <- placeGrob(g, ggplotGrob(plots[[k]]), row=i, col=j)
+      g <- placeGrob(g, ggplotGrob(plots[[which[k]]]), row=i, col=j)
       k <- k + 1L
       
       if (k > length(which))

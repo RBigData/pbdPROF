@@ -1,6 +1,6 @@
 === Small jobs ===
 
-* Clean up the vignette (it's a bit messy for my tastes).
+* Clean up the vignette.
 
 * Unify the example code/plots in the vignette.
 
@@ -19,20 +19,12 @@
 
 * in plot() with plot.type=stats1, "Number of Function Calls" should be an int
 
-=== Medium jobs ===
 
-* which= in plot() is broken.
+=== Big jobs ===
 
-
-=== Not so small jobs... ===
-
-* Build interface for PAPI (do this before TAU)
+* Build interface for PAPI.
 
 * Build interface for TAU.
 
 * Make a build that includes the mpiP source (including libunwind).
 
-* There may perhaps be problems with profiling scalapack ...
-
-* Profiling under Windows system is never working.
-  fpmpi did claim working under MS-MPI.
