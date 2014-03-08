@@ -28,10 +28,3 @@ autoplot.prof <- function(object, ...)
 { 
   plot(object, ...)
 }
-### autoplot is a S3 method imported from ggplot2 via NAMESPACE
-#autoplot.prof <- function(object, ..., which=1L:4L, show.title=TRUE, plot.type="timing", label, bar.label=FALSE)
-#{ 
-#  plot(x, ..., which=which, show.title=show.title, plot.type=plot.type, label=label, bar.label=bar.label)
-#}
-
-

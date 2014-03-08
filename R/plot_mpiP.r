@@ -114,6 +114,7 @@ plot_mpip_stats <- function(output, bar.label, plot.type)
   {
     # Function call count by rank
     g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
+#            scale_y_discrete("Number of Function Calls") +
             ylab("Number of Function Calls") +
             theme(legend.position = "none") +
             facet_wrap(facets =~ Call_Name, scales = "free_x")
@@ -143,11 +144,15 @@ plot_mpip_stats <- function(output, bar.label, plot.type)
       g3 <- g3 + geom_text(data=timingmean, aes(label=Mean_time, y=Mean_time), size=3)
       g4 <- g4 + geom_text(data=timingmax, aes(label=Max_time, y=Max_time), size=3)
     }
+    
+    return( list(g1=g1, g2=g2, g3=g3, g4=g4) )
   }
+  
   else if (plot.type == "stats2")
   {
     # Sum of MPI function count by rank
     g1 <- qplot(Rank, Count, data=timingcount, fill=factor(Call_Name), geom="bar", stat="identity") +
+#            scale_y_discrete("Number of Function Calls")
             ylab("Number of Function Calls")
     
     # Sum of Min run time by rank
@@ -195,16 +200,15 @@ plot_mpip_stats <- function(output, bar.label, plot.type)
     
     
     # Plot a single legend
+    g1 <- g1 + labs(fill = "MPI Call")
     tmp <- ggplot_gtable(ggplot_build(g1))
     leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
     legend <- tmp$grobs[[leg]]
     
     g1 <- g1 + theme(legend.position = "none")
     
-    add.legend <- TRUE
+    return( list(g1=g1, g2=g2, g3=g3, g4=g4, legend=legend) )
   }
-  
-  return( list(g1=g1, g2=g2, g3=g3, g4=g4) )
 }
 
 
@@ -260,6 +264,8 @@ plot_mpip_messages <- function(output, bar.label, plot.type)
       g3 <- g3 + geom_text(data = messagemax, aes(label = Max, y = Max), size = 3)
       g4 <- g4 + geom_text(data = messagesum, aes(label = Sum, y = Sum), size = 3)
     }
+    
+    return( list(g1=g1, g2=g2, g3=g3, g4=g4) )
   }
   
   else if (plot.type == "messages2")
@@ -313,16 +319,15 @@ plot_mpip_messages <- function(output, bar.label, plot.type)
     }
     
     # Plot a single legend
+    g1 <- g1 + labs(fill = "MPI Call")
     tmp <- ggplot_gtable(ggplot_build(g1))
     leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
     legend <- tmp$grobs[[leg]]
     
     g1 <- g1 + theme(legend.position = "none")
     
-    add.legend <- TRUE
+    return( list(g1=g1, g2=g2, g3=g3, g4=g4, legend=legend) )
   }
-  
-  return( list(g1=g1, g2=g2, g3=g3, g4=g4) )
 }
 
 
@@ -388,7 +393,6 @@ plot_mpip_counts <- function(output, bar.label, plot.type)
 
 
 
-
 ### mpip
 plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", label, bar.label=FALSE)
 {
@@ -430,8 +434,15 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
     if (plot.type == "stats1" && missing(label))
       label <- "Timing Statistics by Function"
     
-    if (plot.type == "stats2" && missing(label))
-      label <- "Summed Timing Statistics by Rank"
+    if (plot.type == "stats2")
+    {
+      add.legend <- TRUE
+      legend <- plots$legend
+      plots$legend <- NULL
+      
+      if (missing(label))
+        label <- "Summed Timing Statistics by Rank"
+    }
   }
   
   # --------------------------------------------------------
@@ -442,8 +453,18 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   {
     plots <- plot_mpip_messages(output=output, bar.label=bar.label, plot.type=plot.type)
     
-    if (missing(label))
-      label <- "Summed Message Statistics by Rank"
+    if (plot.type == "messages1" && missing(label))
+      label <- "Message Statistics by Rank"
+    
+    if (plot.type == "messages2")
+    {
+      add.legend <- TRUE
+      legend <- plots$legend
+      plots$legend <- NULL
+      
+      if (missing(label))
+        label <- "Summed Message Statistics by Rank"
+    }
   }
   
   # --------------------------------------------------------
