@@ -6,18 +6,10 @@
 
 * Include pmclust profiler plots in the vignette.
 
-* Fix legends on plots so that they are meaningful (rather than 
-  factor(garbage))
-
 * Expand the plot()/autoplot() documentation to better explain the different
   types of plots.
 
-* plot() documentation lists plot.type arguments incorrectly, and is generally 
-  of poor quality.
-
-* In plot(), plot.type="counts" is completely broken.
-
-* in plot() with plot.type=stats1, "Number of Function Calls" should be an int
+* In plot() for mpiP objects, plot.type="counts" is completely broken.
 
 
 === Big jobs ===

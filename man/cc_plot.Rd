@@ -26,13 +26,15 @@
   \item{object}{\code{prof} class object}
   \item{...}{extra arguments}
   \item{which}{Vector consisting of a subset of the integers 1, 2, 3, 4.
-               Determines which plots will be produced.}
+      Determines which plots will be produced.}
   \item{show.title}{Logical; determines whether or not the plot title
-                    will be shown.}
-  \item{plot.type}{for profiling mpiP including "timing", "stats1", "stat2",
-                   "messages1", "message2", and "counts".}
-  \item{label}{The label for the plot title.}
-  \item{bar.label}{show labeled legend.}
+      will be shown.}
+  \item{plot.type}{for profiling mpiP including "timing", "stats1", "stats2",
+      "messages1", and "messages2".}
+  \item{label}{The label for the plot title. Should be a character string or
+      left missing for the default.}
+  \item{bar.label}{logical; indicates whether or not numeric values of 
+      heights of barplots should be included should .}
 }
 \seealso{
   \code{
