@@ -1,6 +1,15 @@
 ### Timings by Rank
 plot_mpip_timing <- function(output, bar.label, plot.type)
 {
+  ### Fool R CMD check
+  Rank <- MPI_time <- Tot <- Call1 <- Time <- Call2 <-
+  Time_per <- Count <- Call_Name <- Mean_time <- Max_time <-
+  Mpi_per <- Min_time <- Min <- Mean <- Max <- Sum <- NULL
+  rm(list = c("Rank", "MPI_time", "Tot", "Call1", "Time", "Call2",
+              "Time_per", "Count", "Call_Name", "Mean_time", "Max_time",
+              "Mpi_per", "Min_time", "Min", "Mean", "Max", "Sum"))
+  
+  
   rankvsmpi <- output[[1]]
   rankvsmpi <- rankvsmpi[(rankvsmpi$Task != "*"), ]
   commsize <- nrow(rankvsmpi)
@@ -82,6 +91,15 @@ plot_mpip_timing <- function(output, bar.label, plot.type)
 ### Timing statistics
 plot_mpip_stats <- function(output, bar.label, plot.type)
 {
+  ### Fool R CMD check
+  Rank <- MPI_time <- Tot <- Call1 <- Time <- Call2 <-
+  Time_per <- Count <- Call_Name <- Mean_time <- Max_time <-
+  Mpi_per <- Min_time <- Min <- Mean <- Max <- Sum <- NULL
+  rm(list = c("Rank", "MPI_time", "Tot", "Call1", "Time", "Call2",
+              "Time_per", "Count", "Call_Name", "Mean_time", "Max_time",
+              "Mpi_per", "Min_time", "Min", "Mean", "Max", "Sum"))
+  
+  
   timing <- output[[5]]
   timing <- timing[(timing$Rank != "*"), ]
   rownames(timing) <- 1:nrow(timing)
@@ -216,6 +234,15 @@ plot_mpip_stats <- function(output, bar.label, plot.type)
 ### Message statistics
 plot_mpip_messages <- function(output, bar.label, plot.type)
 {
+  ### Fool R CMD check
+  Rank <- MPI_time <- Tot <- Call1 <- Time <- Call2 <-
+  Time_per <- Count <- Call_Name <- Mean_time <- Max_time <-
+  Mpi_per <- Min_time <- Min <- Mean <- Max <- Sum <- NULL
+  rm(list = c("Rank", "MPI_time", "Tot", "Call1", "Time", "Call2",
+              "Time_per", "Count", "Call_Name", "Mean_time", "Max_time",
+              "Mpi_per", "Min_time", "Min", "Mean", "Max", "Sum"))
+  
+  
   message <- output[[6]]
     
   messagemin <- data.frame(Call_Name = message$Name, Rank = message$Rank, Min = message$Min)
@@ -335,6 +362,17 @@ plot_mpip_messages <- function(output, bar.label, plot.type)
 ### Counts FIXME
 plot_mpip_counts <- function(output, bar.label, plot.type)
 {
+  ### Fool R CMD check
+  Rank <- MPI_time <- Tot <- Call1 <- Time <- Call2 <- Call3 <-
+  Time_per <- Count <- Call_Name <- Mean_time <- Max_time <-
+  Mpi_per <- Min_time <- Min <- Mean <- Max <- Sum <- 
+  Message_size <- Message_size_per <- NULL
+  rm(list = c("Rank", "MPI_time", "Tot", "Call1", "Time", "Call2", "Call3",
+              "Time_per", "Count", "Call_Name", "Mean_time", "Max_time",
+              "Mpi_per", "Min_time", "Min", "Mean", "Max", "Sum", 
+              "Message_size", "Message_size_per"))
+  
+  
   timing <- output[[5]]
   timingcount <- data.frame(Call_Name = timing$Name, Rank = timing$Rank, Count = timing$Count)
   timingcount <- timingcount[(timingcount$Rank != "*"),]
@@ -402,14 +440,6 @@ plot_mpip <- function(x, ..., which=1L:4L, show.title=TRUE, plot.type="timing", 
   add.legend <- FALSE
   
   output <- x@parsed
-  
-  ### Fool R CMD check
-  Rank <- MPI_time <- Tot <- Call1 <- Time <- Call2 <-
-  Time_per <- Count <- Call_Name <- Mean_time <- Max_time <-
-  Mpi_per <- Min_time <- Min <- Mean <- Max <- Sum <- NULL
-  rm(list = c("Rank", "MPI_time", "Tot", "Call1", "Time", "Call2",
-              "Time_per", "Count", "Call_Name", "Mean_time", "Max_time",
-              "Mpi_per", "Min_time", "Min", "Mean", "Max", "Sum"))
   
   # --------------------------------------------------------
   # Timing plots
