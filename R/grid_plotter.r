@@ -45,7 +45,7 @@ grid_plotter <- function(plots, which, label, show.title=TRUE, legend)
       if (k == length(which) && k < prod(grid))
         j <- j:(j + 1L)
         
-      g <- placeGrob(g, ggplotGrob(plots[[k]]), row=i, col=j)
+      g <- placeGrob(g, ggplotGrob(plots[[which[k]]]), row=i, col=j)
       k <- k + 1L
       
       if (k > length(which))
@@ -63,11 +63,11 @@ grid_plotter <- function(plots, which, label, show.title=TRUE, legend)
   label <- paste("\n", label, sep="")
   
   if (missing(legend))
-    grid.arrange(g, main=label)
+    plots <- arrangeGrob(g, main=label)
   else
-    grid.arrange(g, main=label, legend, ncol=2, widths=c(10, 2))
+    plots <- arrangeGrob(g, main=label, legend, ncol=2, widths=c(10, 2))
   
-  invisible()
+  return( plots )
 }
 
 

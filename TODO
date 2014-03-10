@@ -1,37 +1,22 @@
 === Small jobs ===
 
-* Clean up the vignette (it's a bit messy for my tastes).
+* Clean up the vignette.
 
 * Unify the example code/plots in the vignette.
 
 * Include pmclust profiler plots in the vignette.
 
-* Fix legends on plots so that they are meaningful (rather than 
-  factor(garbage))
-
 * Expand the plot()/autoplot() documentation to better explain the different
   types of plots.
 
-* plot() documentation lists plot.type arguments incorrectly, and is generally 
-  of poor quality.
-
-* In plot(), plot.type="counts" is completely broken.
+* In plot() for mpiP objects, plot.type="counts" is completely broken.
 
 
-=== Medium jobs ===
+=== Big jobs ===
 
-* which= in plot() is broken.
-
-
-=== Not so small jobs... ===
-
-* Build interface for PAPI (do this before TAU)
+* Build interface for PAPI.
 
 * Build interface for TAU.
 
 * Make a build that includes the mpiP source (including libunwind).
 
-* There may perhaps be problems with profiling scalapack ...
-
-* Profiling under Windows system is never working.
-  fpmpi did claim working under MS-MPI.
