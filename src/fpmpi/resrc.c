@@ -1,7 +1,6 @@
 #include "fpmpiconf.h"
 #include "mpi.h"
 #include "profiler.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H

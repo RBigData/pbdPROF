@@ -5,6 +5,9 @@
  *      See COPYRIGHT in top-level directory.
  */
 /* 
+   Changes 10/18/2013:
+      + WDG - Added support for MPI3 const declarations
+
    Changes 6/26/2012:
       + WDG - Added missing MPI2 collectives - Exscan, Alltoallw, 
         Reduce_scatter_block.  Added collection of data about communication
@@ -156,6 +159,16 @@
 #include <time.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#ifdef MPI_VERSION
+#if MPI_VERSION >= 3
+#define MPI3_CONST const
+#else
+#define MPI3_CONST
+#endif
+#else
+#define MPI3_CONST
 #endif
 
 /* Global defs & variables */
@@ -592,7 +605,8 @@ static int Get_Bin_ID(int buf_size)
     MPI_Allgather - prototyping replacement for MPI_Allgather
     Trace the beginning and ending of MPI_Allgather.
 */
-int MPI_Allgather( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+int MPI_Allgather( MPI3_CONST void *sendbuf, int sendcount, 
+		   MPI_Datatype sendtype, 
 		   void *recvbuf, int recvcount, MPI_Datatype recvtype, 
 		   MPI_Comm comm )
 {
@@ -631,8 +645,10 @@ int MPI_Allgather( void *sendbuf, int sendcount, MPI_Datatype sendtype,
     MPI_Allgatherv - prototyping replacement for MPI_Allgatherv
     Trace the beginning and ending of MPI_Allgatherv.
 */
-int MPI_Allgatherv( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
-		    void *recvbuf, int *recvcounts, int *displs, 
+int MPI_Allgatherv( MPI3_CONST void *sendbuf, int sendcount, 
+		    MPI_Datatype sendtype, 
+		    void *recvbuf, MPI3_CONST int *recvcounts, 
+		    MPI3_CONST int *displs, 
 		    MPI_Datatype recvtype, MPI_Comm comm ) 
 {
   int    returnVal;
@@ -672,7 +688,7 @@ int MPI_Allgatherv( void *sendbuf, int sendcount, MPI_Datatype sendtype,
     MPI_Allreduce - prototyping replacement for MPI_Allreduce
     Trace the beginning and ending of MPI_Allreduce.
 */
-int MPI_Allreduce( void *sendbuf, void *recvbuf, int count, 
+int MPI_Allreduce( MPI3_CONST void *sendbuf, void *recvbuf, int count, 
 		   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   int    returnVal;
@@ -703,7 +719,8 @@ int MPI_Allreduce( void *sendbuf, void *recvbuf, int count,
     MPI_Alltoall - prototyping replacement for MPI_Alltoall
     Trace the beginning and ending of MPI_Alltoall.
 */
-int MPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+int MPI_Alltoall( MPI3_CONST void *sendbuf, int sendcount, 
+		  MPI_Datatype sendtype, 
 		  void *recvbuf, int recvcnt, MPI_Datatype recvtype, 
 		  MPI_Comm comm )
 {
@@ -737,9 +754,11 @@ int MPI_Alltoall( void *sendbuf, int sendcount, MPI_Datatype sendtype,
     MPI_Alltoallv - prototyping replacement for MPI_Alltoallv
     Trace the beginning and ending of MPI_Alltoallv.
 */
-int MPI_Alltoallv( void *sendbuf, int *sendcnts, int *sdispls, 
-		   MPI_Datatype sendtype, void *recvbuf, int *recvcnts, 
-		   int *rdispls, MPI_Datatype recvtype, MPI_Comm comm )
+int MPI_Alltoallv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts, 
+		   MPI3_CONST int *sdispls, 
+		   MPI_Datatype sendtype, void *recvbuf, 
+		   MPI3_CONST int *recvcnts, MPI3_CONST int *rdispls, 
+		   MPI_Datatype recvtype, MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -775,9 +794,11 @@ int MPI_Alltoallv( void *sendbuf, int *sendcnts, int *sdispls,
     MPI_Alltoallw - prototyping replacement for MPI_Alltoallw
     Trace the beginning and ending of MPI_Alltoallw.
 */
-int MPI_Alltoallw(void *sendbuf, int *sendcnts, int *sdispls, 
-                  MPI_Datatype *sendtypes, void *recvbuf, int *recvcnts, 
-                  int *rdispls, MPI_Datatype *recvtypes, MPI_Comm comm)
+int MPI_Alltoallw(MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts, 
+		  MPI3_CONST int *sdispls, MPI3_CONST MPI_Datatype *sendtypes, 
+		  void *recvbuf, MPI3_CONST int *recvcnts, 
+                  MPI3_CONST int *rdispls, MPI3_CONST MPI_Datatype *recvtypes, 
+		  MPI_Comm comm)
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -922,7 +943,7 @@ int MPI_Bcast( void *buffer, int count, MPI_Datatype datatype,
     MPI_Gather - prototyping replacement for MPI_Gather
     Trace the beginning and ending of MPI_Gather.
 */
-int MPI_Gather( void *sendbuf, int sendcnt, MPI_Datatype sendtype, 
+int MPI_Gather( MPI3_CONST void *sendbuf, int sendcnt, MPI_Datatype sendtype, 
 		void *recvbuf, int recvcount, MPI_Datatype recvtype, 
 		int root, MPI_Comm comm )
 {
@@ -960,8 +981,9 @@ int MPI_Gather( void *sendbuf, int sendcnt, MPI_Datatype sendtype,
     MPI_Gatherv - prototyping replacement for MPI_Gatherv
     Trace the beginning and ending of MPI_Gatherv.
 */
-int MPI_Gatherv( void *sendbuf, int sendcnt, MPI_Datatype sendtype, 
-		 void *recvbuf, int *recvcnts, int *displs, 
+int MPI_Gatherv( MPI3_CONST void *sendbuf, int sendcnt, MPI_Datatype sendtype, 
+		 void *recvbuf, MPI3_CONST int *recvcnts, 
+		 MPI3_CONST int *displs, 
 		 MPI_Datatype recvtype, int root, MPI_Comm comm )
 {
   int    returnVal;
@@ -992,8 +1014,8 @@ int MPI_Gatherv( void *sendbuf, int sendcnt, MPI_Datatype sendtype,
     MPI_Pack - prototyping replacement for MPI_Pack
     Log the beginning and ending of the time spent in MPI_Pack calls.
 */
-int MPI_Pack( void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, 
-	      int outcount, int *position, MPI_Comm comm )
+int MPI_Pack( MPI3_CONST void *inbuf, int incount, MPI_Datatype datatype, 
+	      void *outbuf, int outcount, int *position, MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1016,8 +1038,9 @@ int MPI_Pack( void *inbuf, int incount, MPI_Datatype datatype, void *outbuf,
     MPI_Unpack - prototyping replacement for MPI_Unpack
     Log the beginning and ending of the time spent in MPI_Unpack calls.
 */
-int MPI_Unpack( void *inbuf, int insize, int *position, void *outbuf, 
-		int outcount, MPI_Datatype datatype, MPI_Comm comm )
+int MPI_Unpack( MPI3_CONST void *inbuf, int insize, int *position, 
+		void *outbuf, int outcount, MPI_Datatype datatype, 
+		MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1040,7 +1063,8 @@ int MPI_Unpack( void *inbuf, int insize, int *position, void *outbuf,
     MPI_Reduce_scatter - prototyping replacement for MPI_Reduce_scatter
     Trace the beginning and ending of MPI_Reduce_scatter.
 */
-int MPI_Reduce_scatter( void *sendbuf, void *recvbuf, int *recvcnts, 
+int MPI_Reduce_scatter( MPI3_CONST void *sendbuf, void *recvbuf, 
+			MPI3_CONST int *recvcnts, 
 			MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   int    returnVal;
@@ -1075,8 +1099,9 @@ int MPI_Reduce_scatter( void *sendbuf, void *recvbuf, int *recvcnts,
     MPI_Reduce_scatter_block
     Trace the beginning and ending of MPI_Reduce_scatter_block
 */
-int MPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount, 
-		       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Reduce_scatter_block(MPI3_CONST void *sendbuf, void *recvbuf, 
+			     int recvcount, 
+			     MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1108,9 +1133,9 @@ int MPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     MPI_Reduce - prototyping replacement for MPI_Reduce
     Trace the beginning and ending of MPI_Reduce.
 */
-int MPI_Reduce( void *sendbuf, void *recvbuf, int count, 
-		  MPI_Datatype datatype, MPI_Op op, int root, 
-		  MPI_Comm comm )
+int MPI_Reduce( MPI3_CONST void *sendbuf, void *recvbuf, int count, 
+		MPI_Datatype datatype, MPI_Op op, int root, 
+		MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime, synctime;
@@ -1139,8 +1164,8 @@ int MPI_Reduce( void *sendbuf, void *recvbuf, int count,
     MPI_Scan - prototyping replacement for MPI_Scan
     Trace the beginning and ending of MPI_Scan.
 */
-int MPI_Scan( void *sendbuf, void *recvbuf, int count, 
-		MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
+int MPI_Scan( MPI3_CONST void *sendbuf, void *recvbuf, int count, 
+	      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime, synctime;
@@ -1170,7 +1195,7 @@ int MPI_Scan( void *sendbuf, void *recvbuf, int count,
     MPI_Exscan - prototyping replacement for MPI_Exscan
     Trace the beginning and ending of MPI_Exscan.
 */
-int MPI_Exscan( void *sendbuf, void *recvbuf, int count, 
+int MPI_Exscan( MPI3_CONST void *sendbuf, void *recvbuf, int count, 
 		MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   int    returnVal;
@@ -1201,7 +1226,7 @@ int MPI_Exscan( void *sendbuf, void *recvbuf, int count,
     MPI_Scatter - prototyping replacement for MPI_Scatter
     Trace the beginning and ending of MPI_Scatter.
 */
-int MPI_Scatter( void *sendbuf, int sendcnt, MPI_Datatype sendtype, 
+int MPI_Scatter( MPI3_CONST void *sendbuf, int sendcnt, MPI_Datatype sendtype, 
 		 void *recvbuf, int recvcnt, MPI_Datatype recvtype, 
 		 int root, MPI_Comm comm )
 {
@@ -1240,7 +1265,8 @@ int MPI_Scatter( void *sendbuf, int sendcnt, MPI_Datatype sendtype,
     MPI_Scatterv - prototyping replacement for MPI_Scatterv
     Trace the beginning and ending of MPI_Scatterv.
 */
-int MPI_Scatterv( void *sendbuf, int *sendcnts, int *displs, 
+int MPI_Scatterv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts, 
+		  MPI3_CONST int *displs, 
 		  MPI_Datatype sendtype, void *recvbuf, int recvcnt, 
 		  MPI_Datatype recvtype, int root, MPI_Comm comm )
 {
@@ -1340,8 +1366,8 @@ int MPI_Recv( void *buf, int count, MPI_Datatype datatype, int source,
     MPI_Send - prototyping replacement for MPI_Send
     Trace the beginning and ending of MPI_Send.
 */
-int MPI_Send( void *buf, int count, MPI_Datatype datatype, int dest, 
-	       int tag, MPI_Comm comm )
+int MPI_Send( MPI3_CONST void *buf, int count, MPI_Datatype datatype, int dest, 
+	      int tag, MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime, synctime=0;
@@ -1385,10 +1411,11 @@ int MPI_Send( void *buf, int count, MPI_Datatype datatype, int dest,
     MPI_Sendrecv - prototyping replacement for MPI_Sendrecv
     Trace the beginning and ending of MPI_Sendrecv.
 */
-int MPI_Sendrecv( void * sendbuf, int sendcount, MPI_Datatype sendtype, 
-		   int dest, int sendtag, void * recvbuf, int recvcount, 
-		   MPI_Datatype recvtype, int source, int recvtag, 
-		   MPI_Comm comm, MPI_Status * status)
+int MPI_Sendrecv( MPI3_CONST void * sendbuf, int sendcount, 
+		  MPI_Datatype sendtype, 
+		  int dest, int sendtag, void * recvbuf, int recvcount, 
+		  MPI_Datatype recvtype, int source, int recvtag, 
+		  MPI_Comm comm, MPI_Status * status)
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1451,8 +1478,8 @@ int MPI_Sendrecv_replace( void *buf, int count, MPI_Datatype datatype,
     MPI_Bsend - prototyping replacement for MPI_Bsend
     Trace the beginning and ending of MPI_Bsend.
 */
-int MPI_Bsend( void *buf, int count, MPI_Datatype datatype, int dest, 
-	       int tag, MPI_Comm comm )
+int MPI_Bsend( MPI3_CONST void *buf, int count, MPI_Datatype datatype, 
+	       int dest, int tag, MPI_Comm comm )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1477,8 +1504,8 @@ int MPI_Bsend( void *buf, int count, MPI_Datatype datatype, int dest,
     MPI_Ibsend - prototyping replacement for MPI_Ibsend
     Trace the beginning and ending of MPI_Ibsend.
 */
-int MPI_Ibsend( void *buf, int count, MPI_Datatype datatype, int dest, 
-		int tag, MPI_Comm comm, MPI_Request *request )
+int MPI_Ibsend( MPI3_CONST void *buf, int count, MPI_Datatype datatype, 
+		int dest, int tag, MPI_Comm comm, MPI_Request *request )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1526,8 +1553,8 @@ int MPI_Irecv( void * buf, int count, MPI_Datatype datatype, int source,
     MPI_Irsend - prototyping replacement for MPI_Irsend
     Trace the beginning and ending of MPI_Irsend.
 */
-int MPI_Irsend( void *buf, int count, MPI_Datatype datatype, int dest, 
-		int tag, MPI_Comm comm, MPI_Request *request )
+int MPI_Irsend( MPI3_CONST void *buf, int count, MPI_Datatype datatype, 
+		int dest, int tag, MPI_Comm comm, MPI_Request *request )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1552,8 +1579,8 @@ int MPI_Irsend( void *buf, int count, MPI_Datatype datatype, int dest,
     MPI_Rsend - prototyping replacement for MPI_Rsend
     Trace the beginning and ending of MPI_Rsend.
 */
-int MPI_Rsend( void * buf, int count, MPI_Datatype datatype, int dest,
-	       int tag, MPI_Comm comm)
+int MPI_Rsend( MPI3_CONST void * buf, int count, MPI_Datatype datatype,
+	       int dest, int tag, MPI_Comm comm)
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1578,8 +1605,8 @@ int MPI_Rsend( void * buf, int count, MPI_Datatype datatype, int dest,
     MPI_Ssend - prototyping replacement for MPI_Ssend
     Trace the beginning and ending of MPI_Ssend.
 */
-int MPI_Ssend( void * buf, int count, MPI_Datatype datatype, int dest,
-		int tag, MPI_Comm comm)
+int MPI_Ssend( MPI3_CONST void * buf, int count, MPI_Datatype datatype, 
+	       int dest, int tag, MPI_Comm comm)
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1603,8 +1630,8 @@ int MPI_Ssend( void * buf, int count, MPI_Datatype datatype, int dest,
     MPI_Isend - prototyping replacement for MPI_Isend
     Trace the beginning and ending of MPI_Isend.
 */
-int MPI_Isend( void *buf, int count, MPI_Datatype datatype, int dest, 
-		int tag, MPI_Comm comm, MPI_Request *request )
+int MPI_Isend( MPI3_CONST void *buf, int count, MPI_Datatype datatype, 
+	       int dest, int tag, MPI_Comm comm, MPI_Request *request )
 {
   int    returnVal;
   double startwtime, endwtime;
@@ -1629,8 +1656,8 @@ int MPI_Isend( void *buf, int count, MPI_Datatype datatype, int dest,
     MPI_Issend - prototyping replacement for MPI_Issend
     Trace the beginning and ending of MPI_Issend.
 */
-int MPI_Issend( void * buf, int count, MPI_Datatype datatype, 
-		 int dest, int tag, MPI_Comm comm, MPI_Request * request)
+int MPI_Issend( MPI3_CONST void * buf, int count, MPI_Datatype datatype, 
+		int dest, int tag, MPI_Comm comm, MPI_Request * request)
 {
   int    returnVal;
   double startwtime, endwtime;
