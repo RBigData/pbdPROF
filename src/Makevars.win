@@ -149,7 +149,7 @@ endif
 
 
 ### Set PKG_*
-# PKG_CPPFLAGS = -I"$(MPI_ROOT)/include" -DMPI2 -DWIN
+# PKG_CPPFLAGS = -I"$(MPI_INCLUDE)" -DMPI2 $(WIN_FLAGS)
 ## PKG_LIBS = -L"$(MPI_LIB)" -lmpi
 # PKG_LIBS = $(MPI_LIB)
 
@@ -174,10 +174,10 @@ ARCHFLAGS = cr
 all: $(SHLIB)
 	@$(CP) ../R/windows/zzz.r ../R/
 
-# all: $(R_FPMPI) $(SHLIB)
-# 	@$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' > $(USER_CONF)
-# 	@$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
-# 	@$(ECHO) 'R_FPMPI = lib${R_ARCH}/$(R_FPMPI)' >> $(USER_CONF)
+#all: $(R_FPMPI) $(SHLIB)
+#	$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' > $(USER_CONF)
+#	$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
+#	$(ECHO) 'R_FPMPI = lib${R_ARCH}/$(R_FPMPI)' >> $(USER_CONF)
 
 $(SHLIB): $(OBJECTS)
 
