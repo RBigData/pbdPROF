@@ -1,8 +1,6 @@
 # This Makevars.win supports for MS-MPI in Windows 7 (32/64bits) and MPICH2.
-# - MPI_HOME needs to be defined for MS-MPI in the batch file outside of
-#   packages.
-# - MPI_ROOT_64, MPI_ROOT_32, or MPI_ROOT need to be defined for MPICH2
-#   in the batch file outside of packages.
+#   - MPI_ROOT_64, MPI_ROOT_32, or MPI_ROOT need to be defined
+#     in the batch file outside of packages.
 # Note that these variables will be exported to Makeconf and carried to other
 # pbdR packages, while flags used to compile are provided by R script such as
 # get.wininc() and get.winlib() that convert to 8+3 file path rule.
@@ -49,56 +47,46 @@ R_SCMD = ${R_HOME}/bin${R_ARCH_BIN}/Rscript -e
 ### Check again.
 ifeq ($(WIN_MPI_TYPE), "MS-MPI")
   ### For MS-MPI
-  ifeq "$(MPI_HOME)" ""
-    ### set MPI_ROOT, MPI_ROOT_32, and MPI_ROOT_64
-    ifeq "$(WIN)" "64"
-      ifeq "$(MPI_ROOT_64)" ""
-        ifeq "$(MPI_ROOT)" ""
-          ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
-            ### The second best guest
-            ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
-              $(error MPI_ROOT is not found ...)
-            else
-              MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
-            endif
+  ### set MPI_ROOT, MPI_ROOT_32, and MPI_ROOT_64
+  ifeq "$(WIN)" "64"
+    ifeq "$(MPI_ROOT_64)" ""
+      ifeq "$(MPI_ROOT)" ""
+        ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
+          ### The second best guest
+          ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
+            $(error MPI_ROOT_64 is not found ...)
           else
-            ### The first best guest
-            MPI_ROOT = C:/Program Files/Microsoft MPI
+            MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
           endif
+        else
+          ### The first best guest
+          MPI_ROOT = C:/Program Files/Microsoft MPI
         endif
-        MPI_ROOT_32 = $(MPI_ROOT)
-      else
-        MPI_ROOT = $(MPI_ROOT_32)
       endif
+      MPI_ROOT_32 = $(MPI_ROOT)
     else
-      ifeq "$(MPI_ROOT_32)" ""
-        ifeq "$(MPI_ROOT)" ""
-          ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
-            ### The second best guest
-            ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
-              $(error MPI_ROOT is not found ...)
-            else
-              MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
-            endif
-          else
-            ### The first best guest
-            MPI_ROOT = C:/Program Files/Microsoft MPI
-          endif
-        endif
-        MPI_ROOT_32 = $(MPI_ROOT)
-      else
-        MPI_ROOT = $(MPI_ROOT_32)
-      endif
+      MPI_ROOT = $(MPI_ROOT_32)
     endif
-    ### For Winbuilder
-    MPI_HOME = $(MPI_ROOT)
   else
-    ### Use Winbuilder default
-    MPI_ROOT = ${MPI_HOME}
-    MPI_ROOT_64 = ${MPI_HOME}
-    MPI_ROOT_32 = ${MPI_HOME}
+    ifeq "$(MPI_ROOT_32)" ""
+      ifeq "$(MPI_ROOT)" ""
+        ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
+          ### The second best guest
+          ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
+            $(error MPI_ROOT_32 is not found ...)
+          else
+            MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
+          endif
+        else
+          ### The first best guest
+          MPI_ROOT = C:/Program Files/Microsoft MPI
+        endif
+      endif
+      MPI_ROOT_32 = $(MPI_ROOT)
+    else
+      MPI_ROOT = $(MPI_ROOT_32)
+    endif
   endif
-
 
   ### set MPI_INCLUDE, MPI_LIB, and WIN_FLAGS
   # mpi.h of MS-MPI needs to use _WIN64 to turn on __int64 and include stdint.h
