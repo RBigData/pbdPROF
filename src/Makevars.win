@@ -43,49 +43,58 @@ endif
 ### Get Rscript.
 R_SCMD = ${R_HOME}/bin${R_ARCH_BIN}/Rscript -e
 
-
 ### Check again.
 ifeq ($(WIN_MPI_TYPE), "MS-MPI")
   ### For MS-MPI
-  ### set MPI_ROOT, MPI_ROOT_32, and MPI_ROOT_64
-  ifeq "$(WIN)" "64"
-    ifeq "$(MPI_ROOT_64)" ""
-      ifeq "$(MPI_ROOT)" ""
-        ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
-          ### The second best guest
-          ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
-            $(error MPI_ROOT_64 is not found ...)
-          else
-            MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
-          endif
-        else
-          ### The first best guest
-          MPI_ROOT = C:/Program Files/Microsoft MPI
-        endif
-      endif
-      MPI_ROOT_32 = $(MPI_ROOT)
-    else
-      MPI_ROOT = $(MPI_ROOT_32)
-    endif
+  ifneq "${MPI_HOME}" ""
+    MPI_ROOT = ${MPI_HOME}
+    MPI_ROOT_64 = ${MPI_HOME}
+    MPI_ROOT_32 = ${MPI_HOME}
   else
-    ifeq "$(MPI_ROOT_32)" ""
-      ifeq "$(MPI_ROOT)" ""
-        ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
-          ### The second best guest
-          ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
-            $(error MPI_ROOT_32 is not found ...)
+    ### set MPI_ROOT, MPI_ROOT_32, and MPI_ROOT_64
+    ifeq "$(WIN)" "64"
+      ifeq "$(MPI_ROOT_64)" ""
+        ifeq "$(MPI_ROOT)" ""
+          ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
+            ### The second best guest
+            ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
+              MPI_ROOT = $(shell  ${R_SCMD} "cat(gsub('Inc','',Sys.getenv('MSMPI_INC')))")
+            else
+              MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
+            endif
           else
-            MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
+            ### The first best guest
+            MPI_ROOT = C:/Program Files/Microsoft MPI
           endif
-        else
-          ### The first best guest
-          MPI_ROOT = C:/Program Files/Microsoft MPI
         endif
+        ### Reset MPI_ROOT_64
+        MPI_ROOT_64 = $(MPI_ROOT)
+      else
+        MPI_ROOT = $(MPI_ROOT_64)
       endif
-      MPI_ROOT_32 = $(MPI_ROOT)
     else
-      MPI_ROOT = $(MPI_ROOT_32)
+      ifeq "$(MPI_ROOT_32)" ""
+        ifeq "$(MPI_ROOT)" ""
+          ifeq ($(wildcard C:/Program Files/Microsoft MPI),)
+            ### The second best guest
+            ifeq ($(wildcard C:/Program Files/Microsoft HPC Pack 2012),)
+              MPI_ROOT = $(shell  ${R_SCMD} "cat(gsub('Inc','',Sys.getenv('MSMPI_INC')))")
+            else
+              MPI_ROOT = C:/Program Files/Microsoft HPC Pack 2012
+            endif
+          else
+            ### The first best guest
+            MPI_ROOT = C:/Program Files/Microsoft MPI
+          endif
+        endif
+        ### Reset MPI_ROOT_32
+        MPI_ROOT_32 = $(MPI_ROOT)
+      else
+        MPI_ROOT = $(MPI_ROOT_32)
+      endif
     endif
+
+    MPI_HOME = $(MPI_ROOT)
   endif
 
   ### set MPI_INCLUDE, MPI_LIB, and WIN_FLAGS
