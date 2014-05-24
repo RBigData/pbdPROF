@@ -16,7 +16,7 @@ Copyright: See pbdPROF/inst/fpmpi_LICENSE.txt for the files in
         src/fpmpi/ and src/fpmpi_win.
 Description: MPI profiling tools.
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
-        FreeBSD. No MPI profiling for Windows yet.
+        FreeBSD. No MPI library required on Windows yet.
 License: Mozilla Public License 2.0
 URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
