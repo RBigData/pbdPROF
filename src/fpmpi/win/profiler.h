@@ -12,7 +12,7 @@
 /* typedefs */
 
 //#ifndef HAVE_INT32_T
-typedef int int32_t;  /* @int32@ determined by configure */
+typedef unsigned int int32_t;  /* @int32@ determined by configure */
 //#endif
 
 /* In more recent MPI versions, C sized types (e.g., uint8_t) are available. */

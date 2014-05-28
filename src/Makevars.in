@@ -9,12 +9,12 @@ USER_CONF = Makeconf
 ### For fpmpi
 R_FPMPI = @R_FPMPI@
 FPMPI_OBJS= \
-fpmpi/commused.o \
-fpmpi/fputil.o \
-fpmpi/profiler.o \
-fpmpi/resrc.o \
-fpmpi/testwait.o \
-fpmpi/topology.o
+	fpmpi/commused.o \
+	fpmpi/fputil.o \
+	fpmpi/profiler.o \
+	fpmpi/resrc.o \
+	fpmpi/testwait.o \
+	fpmpi/topology.o
 
 ### For static library.
 ARCH = $(AR)

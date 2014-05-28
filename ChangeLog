@@ -1,3 +1,12 @@
+2014-05-27: Ver. 0.2-4
+  * Fix Makevars.win logic.
+
+2014-05-24: Ver. 0.2-3
+  * Migrate to MS-MPI. However, fpmpi is still not tested.
+
+2014-05-15: Ver. 0.2-3
+  * Add MPI3 support and upgrade to fpmpi2-2.3.
+
 2014-03-08: Ver. 0.2-2
   * Fixed plot legend titles.
   * Adjusted PKG_CFLAGS.

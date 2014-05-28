@@ -665,7 +665,7 @@ if test "X${PROF_TYPE}" = "Xfpmpi"; then
     AC_DEFINE_UNQUOTED(MAX_PROCBY32,$max_procsby32,[maximum number of processes,
                        divided by 32 (for use with int32 bit vectors)])
 
-    FPMPI2_VERSION='"'2.2'"'
+    FPMPI2_VERSION='"'2.3'"'
     AC_DEFINE_UNQUOTED(FPMPI2_VERSION,$FPMPI2_VERSION,
                        [Provide the version for FPMPI 2])
 

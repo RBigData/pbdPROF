@@ -20,3 +20,5 @@
 
 * Make a build that includes the mpiP source (including libunwind).
 
+* Build fpmpi2 in Windows system (define int32_t via Makevars.win).
+
