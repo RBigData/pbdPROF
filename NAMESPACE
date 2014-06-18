@@ -14,7 +14,8 @@ exportMethods(
 
 export(
   read.prof, 
-  autoplot.prof
+  autoplot.prof,
+  benchplot
 )
 
 ### S3 methods.

@@ -1,0 +1,17 @@
+*.in
+*.o
+*.mod
+*.so
+*.a
+*.log
+*.status
+*~
+*.swp
+
+src/Makevars
+
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
