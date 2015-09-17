@@ -29,9 +29,7 @@ Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^2
 \end{minipage}
 \\
 \\
-$^1$Department of Ecology and Evolutionary Biology, \\
-University of Tennessee, \\
-Knoxville, TN, USA \\
+$^1$pbdR Core Team \\
 \\
 $^2$National Institute for Computational Sciences, \\
 University of Tennessee, \\
