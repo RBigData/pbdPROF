@@ -8,9 +8,6 @@
 \alias{parse.prof.fpmpi}
 \alias{parse.prof.mpip}
 \alias{parse.prof.tau}
-\alias{plot_fpmpi}
-\alias{plot_mpip}
-\alias{plot_tau}
 \alias{which.article}
 \alias{which.profiler}
 \title{ All Internal Functions }

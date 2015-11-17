@@ -1,3 +1,6 @@
+2015-11-18: Ver. 0.3-0
+  * Move plotters to separate package. Remove dependency on ggplot2.
+
 2014-05-27: Ver. 0.2-4
   * Fix Makevars.win logic.
 
