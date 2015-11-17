@@ -3,9 +3,9 @@ which.profiler <- function(file.name)
 {
   test <- readLines(file.name, n=1)
   
-  if(length(grep(pattern="FPMPI", x=test)) > 0)
-    return( 'fpmpi' )
-  else if(length(grep(pattern="mpiP", x=test)) > 0)
+  if (grepl("FPMPI", test))
+    return('fpmpi')
+  else if(grep("mpiP", test))
     return ('mpip')
   else
     stop("This profiler is not implemented at this time.")
