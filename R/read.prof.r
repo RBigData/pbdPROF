@@ -1,4 +1,3 @@
-### For reading profile outputs.
 which.profiler <- function(file.name)
 {
   test <- readLines(file.name, n=1)
