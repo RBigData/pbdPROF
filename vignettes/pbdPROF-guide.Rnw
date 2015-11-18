@@ -77,11 +77,10 @@ Oak Ridge, TN, USA \\
 \input{./include/03-testing}
 \part{Profiling}
 \input{./include/04-example}
-\input{./include/05-profiling}
-% \input{./include/06-plotting}
+\input{./include/05-plotting}
 \part{Appendix}
 \appendix
-\input{./include/07-debugging}
+\input{./include/06-debugging}
 
 \bibliographystyle{./include/jss}
 \bibliography{./include/pbdPROF}
