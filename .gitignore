@@ -9,6 +9,10 @@
 *.swp
 
 src/Makevars
+src/Makeconf
+src/fpmpi/fpmpiconf.h
+src/fpmpi/profiler.h
+
 
 *.aux
 *.bbl
