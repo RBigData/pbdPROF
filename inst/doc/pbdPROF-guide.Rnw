@@ -25,20 +25,24 @@
 \author{
 \begin{minipage}{6in}
 \centering
-Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^2$, George Ostrouchov$^{4}$\\
+Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^4$, George Ostrouchov$^{4,5}$\\
 \end{minipage}
 \\
 \\
 $^1$pbdR Core Team \\
 \\
-$^2$National Institute for Computational Sciences, \\
+$^2$Business Analytics and Statistics, \\
 University of Tennessee, \\
 Knoxville, TN, USA \\
 \\
 $^3$Jaypee Institute of Information Technology\\
 Uttar Pradesh, India\\
 \\
-$^4$Computer Science and Mathematics Division, \\
+$^4$National Institute for Computational Sciences, \\
+University of Tennessee, \\
+Knoxville, TN, USA \\
+\\
+$^5$Computer Science and Mathematics Division, \\
 Oak Ridge National Laboratory, \\
 Oak Ridge, TN, USA \\
 %\\
@@ -71,11 +75,10 @@ Oak Ridge, TN, USA \\
 \input{./include/03-testing}
 \part{Profiling}
 \input{./include/04-example}
-\input{./include/05-profiling}
-% \input{./include/06-plotting}
+\input{./include/05-plotting}
 \part{Appendix}
 \appendix
-\input{./include/07-debugging}
+\input{./include/06-debugging}
 
 \bibliographystyle{./include/jss}
 \bibliography{./include/pbdPROF}
