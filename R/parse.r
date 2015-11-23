@@ -1,8 +1,11 @@
-### Internal parsing methods
+#' @importFrom utils read.table
+#' @importFrom stats embed
 
-parse.prof <- function(x, ...){
-  UseMethod("parse.prof")
-}
+
+
+### Internal parsing methods
+parse.prof <- function(x, ...) UseMethod("parse.prof")
+
 
 
 ### default method (Don't delete/change this.)
@@ -11,7 +14,7 @@ parse.prof.default <- function(x, ...){
 }
 
 
-### fpmpi
+
 parse.prof.fpmpi <- function(x, ...){
   # For return
   ret <- list()
@@ -109,7 +112,7 @@ parse.prof.fpmpi <- function(x, ...){
 } # End of parse.prof.fpmpi().
 
 
-### mpiP
+
 parse.prof.mpip <- function(x, ...){
   #Rscript for profiling mpiP
   
@@ -141,7 +144,7 @@ parse.prof.mpip <- function(x, ...){
 } # End of parse.prof.mpip().
 
 
-### tau
+
 parse.prof.tau <- function(x, ...){
   stop("parse.prof for TAU is not implemented yet.")
 } # End of parse.prof.tau().

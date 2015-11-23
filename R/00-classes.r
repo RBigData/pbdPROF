@@ -20,14 +20,36 @@ valid_prof <- function(object)
 }
 
 
-### Profiler class 'prof'
+#' Class prof
+#' 
+#' Class for Profiler Output
+#' 
+#' @slot profiler
+#' The type of profiler used (e.g. fpmpi, mpiP). Stored as a character
+#' vector.
+#' @slot raw
+#' The raw (non-processed) profiler output.  Storage is basically a
+#' character vector, but set as a virtual class \code{rawprof}.
+#' @slot parsed
+#' A dataframe containing the processed version of the raw data.
+#' 
+#' @seealso \code{\link{read.prof}}
+#' 
+#' @aliases prof prof-class fpmpi-class mpip-class tau-class rawprof-class
+#' 
+#' @import methods
+#' 
+#' @name prof-class
+#' @keywords Classes
+#' @docType class
+#' @exportClass prof
 setClass(
-         "prof", 
-          representation(
-                         profiler="character",
-                         raw="rawprof",
-                         parsed="list"
-          ),
-          validity=valid_prof
+  "prof", 
+  representation(
+    profiler="character",
+    raw="rawprof",
+    parsed="list"
+  ),
+  validity=valid_prof
 )
 
