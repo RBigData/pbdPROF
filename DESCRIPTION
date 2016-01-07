@@ -24,7 +24,7 @@ MailingList: Please send questions and comments regarding pbdR to
 Maintainer: Wei-Chen Chen <wccsnow@gmail.com>
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2015-12-31 01:26:57 UTC; snoweye
+Packaged: 2016-01-07 03:25:10 UTC; snoweye
 Author: Wei-Chen Chen [aut, cre],
   Drew Schmidt [aut],
   Gaurav Sehrawat [aut],
