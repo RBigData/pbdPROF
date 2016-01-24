@@ -81,7 +81,9 @@ Oak Ridge, TN, USA \\
 \appendix
 \input{./include/06-debugging}
 
-\bibliographystyle{./jss}
+\newpage
+\phantomsection
+\bibliographystyle{plainnat}
 \bibliography{./include/pbdPROF}
 
 \end{document}
