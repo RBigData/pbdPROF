@@ -1,3 +1,6 @@
+2016-01-24: Ver. 0.3-0
+  * Change the bib style file.
+
 2015-11-17: Ver. 0.3-0
   * Move plotters to separate package. Remove dependency on ggplot2.
   * Switch to roxygen2 help.

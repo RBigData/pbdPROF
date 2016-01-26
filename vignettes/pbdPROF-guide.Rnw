@@ -29,9 +29,7 @@ Wei-Chen Chen$^1$, Drew Schmidt$^2$, Gaurav Sehrawat$^3$, Pragneshkumar Patel$^4
 \end{minipage}
 \\
 \\
-$^1$Department of Ecology and Evolutionary Biology, \\
-University of Tennessee, \\
-Knoxville, TN, USA \\
+$^1$pbdR Core Team \\
 \\
 $^2$Business Analytics and Statistics, \\
 University of Tennessee, \\
@@ -51,7 +49,8 @@ Oak Ridge, TN, USA \\
 %\\
 %\today
 }
-\title{A Quick Guide for the \pkg{pbdPROF} Package {\small (Ver. \profversion)}}
+%\title{A Quick Guide for the \pkg{pbdPROF} Package {\small (Ver. \profversion)}}
+\title{A Quick Guide for the \pkg{pbdPROF} Package}
 
 
 \begin{document}
@@ -82,7 +81,9 @@ Oak Ridge, TN, USA \\
 \appendix
 \input{./include/06-debugging}
 
-\bibliographystyle{./include/jss}
+\newpage
+\phantomsection
+\bibliographystyle{plainnat}
 \bibliography{./include/pbdPROF}
 
 \end{document}
