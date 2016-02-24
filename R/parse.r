@@ -135,7 +135,7 @@ parse.prof.mpip <- function(x, ...)
   #selection the region between ---- and --- putting it in time series space using embed
   regions <- t(t(embed(grep("@---", lines), 2)) + c(-2, 2)) 
   #mapply on set of regions
-  ret_mpip <- mapply(function(start,stop) {
+  ret <- mapply(function(start,stop) {
     #converting to character without having to worry about spaces and empty lines
     chunk <- paste(lines[start:stop], collapse = "\n")
     #resusing the chunk
@@ -151,8 +151,16 @@ parse.prof.mpip <- function(x, ...)
     return(ret_mpip)
     #arguments of mapply
   }, regions[,2], regions[,1])
-
-  return(ret_mpip)
+  
+  
+  date <- x[grep(x, pattern="^@ Start time")]
+  date <- gsub(date, pattern=".*: ", replacement="")
+  time <- ret[[1]]$AppTime[3]
+  processes <- NROW(ret[[1]]) - 1
+  
+  attr(ret, "Metadata") <- list(date=date, processes=processes, time=time)
+  
+  return(ret)
 }
 
 

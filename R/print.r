@@ -44,8 +44,10 @@ title_case <- function(x) gsub(x, pattern="(^|[[:space:]])([[:alpha:]])", replac
 
 
 
-print_fpmpi <- function(x)
+printprof <- function(x)
 {
+  cat(sprintf(paste(which.article(x@profiler), x@profiler, "profiler object:\n")))
+  
   x <- attr(x@parsed, "Metadata")
   maxlen <- max(sapply(names(x), nchar))
   names <- gsub(names(x), pattern="_", replacement=" ")
@@ -55,27 +57,6 @@ print_fpmpi <- function(x)
   maxlen <- max(sapply(x, function(y) nchar(paste(y))))
   
   lapply(1:length(x), function(i) cat(paste("  ", spacenames[i], x[[i]], sep=" ", collapse="\n"), "\n"))
-  
-  invisible()
-}
-
-
-
-print_mpip <- function(x)
-{
-  
-}
-
-
-
-printprof <- function(x)
-{
-  cat(sprintf(paste(which.article(x@profiler), x@profiler, "profiler object:\n")))
-  
-  if (x@profiler == 'fpmpi')
-    print_fpmpi(x)
-  else if (x@profiler == 'mpip')
-    print_mpip(x)
   
   invisible()
 }
