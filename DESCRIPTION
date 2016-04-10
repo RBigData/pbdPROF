@@ -1,5 +1,5 @@
 Package: pbdPROF
-Version: 0.3-0
+Version: 0.3-1
 Title: Programming with Big Data --- MPI Profiling Tools
 Authors@R: c(person("Wei-Chen", "Chen", role = c("aut", "cre"), 
     email = "wccsnow@gmail.com"),
@@ -24,9 +24,3 @@ MailingList: Please send questions and comments regarding pbdR to
 Maintainer: Wei-Chen Chen <wccsnow@gmail.com>
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2016-01-24 18:57:44 UTC; snoweye
-Author: Wei-Chen Chen [aut, cre],
-  Drew Schmidt [aut],
-  Gaurav Sehrawat [aut],
-  Pragneshkumar Patel [aut],
-  George Ostrouchov [aut]

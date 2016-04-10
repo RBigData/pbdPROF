@@ -7,6 +7,10 @@
 #' MPL\cr LazyLoad: \tab yes\cr } This package requires an MPI library
 #' (OpenMPI, MPICH2, or LAM/MPI).
 #' 
+#' @import methods
+#' @importFrom utils read.table
+#' @importFrom stats embed
+#' 
 #' @docType package
 #' @author Wei-Chen Chen, Drew Schmidt, Gaurav Sehrawat, Pragneshkumar Patel,
 #' and George Ostrouchov.
@@ -53,5 +57,3 @@ NULL
 #' 
 #' @name profilers
 NULL
-
-

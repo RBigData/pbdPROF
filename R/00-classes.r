@@ -37,8 +37,6 @@ valid_prof <- function(object)
 #' 
 #' @aliases prof prof-class fpmpi-class mpip-class tau-class rawprof-class
 #' 
-#' @import methods
-#' 
 #' @name prof-class
 #' @keywords Classes
 #' @docType class
@@ -52,4 +50,3 @@ setClass(
   ),
   validity=valid_prof
 )
-

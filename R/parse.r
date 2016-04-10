@@ -1,54 +1,49 @@
-#' @importFrom utils read.table
-#' @importFrom stats embed
-
-
-
 ### Internal parsing methods
 parse.prof <- function(x, ...) UseMethod("parse.prof")
 
 
 
 ### default method (Don't delete/change this.)
-parse.prof.default <- function(x, ...){
+parse.prof.default <- function(x, ...)
+{
   stop("Profiler type is not found.")
 }
 
 
 
-parse.prof.fpmpi <- function(x, ...){
+parse.prof.fpmpi <- function(x, ...)
+{
   # For return
   ret <- list()
   
   # Get informative region
   id.start <- grep("^Details for each MPI", x)
-  if(length(id.start) == 0){
+  if (length(id.start) == 0)
     stop("Input file format is invalid.")
-  } else{
+  else
     id.start <- id.start + 5
-  }
 
   id.end <- grep("Summary of target processes for point-to-point", x)
-  if(length(id.end) == 0){
+  if (length(id.end) == 0)
     id.end <- max(which(x != ""))
-  } else{
+  else
     id.end <- id.end - 2
-  }
 
   x.sub <- x[id.start:id.end]
 
   # Check tab or space is being used.
   id.func <- grep("^\\t", x.sub)
-  if(length(id.func) > 0){
+  if (length(id.func) > 0)
     head.string <- "^\\t"
-  } else{
+  else
     head.string <- " .*"
-  }
   
   # Get functions
   id.func <- grep(head.string, x.sub, invert = TRUE)
   
   j <- 0
-  for(i in id.func){
+  for (i in id.func)
+  {
     j <- j + 1
     ret[[j]] <- list(Routine = NULL,
                      Calls = NULL,
@@ -62,7 +57,8 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get Calls if any
     k <- k + 1
-    if(length(grep(paste(head.string, "Calls", sep = ""), x.sub[k])) > 0){
+    if (length(grep(paste(head.string, "Calls", sep = ""), x.sub[k])) > 0)
+    {
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
@@ -71,7 +67,8 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get Time if any
     k <- k + 1
-    if(length(grep(paste(head.string, "Time", sep = ""), x.sub[k])) > 0){
+    if (length(grep(paste(head.string, "Time", sep = ""), x.sub[k])) > 0)
+    {
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
@@ -80,7 +77,8 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get Data Sent if any
     k <- k + 1
-    if(length(grep(paste(head.string, "Data Sent", sep = ""), x.sub[k])) > 0){
+    if (length(grep(paste(head.string, "Data Sent", sep = ""), x.sub[k])) > 0)
+    {
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
@@ -89,31 +87,45 @@ parse.prof.fpmpi <- function(x, ...){
     
     # Get SyncTime if any
     k <- k + 1
-    if(length(grep(paste(head.string, "SyncTime", sep = ""), x.sub[k])) > 0){
+    if (length(grep(paste(head.string, "SyncTime", sep = ""), x.sub[k])) > 0)
+    {
       tmp <- strsplit(x.sub[k], ":") 
       tmp <- strsplit(tmp[[1]][2], " ") 
       id.tmp <- which(tmp[[1]] != "")
       ret[[j]]$SyncTime <- as.double(tmp[[1]][id.tmp[1]])
     }
   }
-
+  
   # Drop empty finction calls.
   new.ret <- ret
-  for(j in 1:length(ret)){
-    if(ret[[j]]$Routine == ""){
+  for (j in 1:length(ret))
+  {
+    if (ret[[j]]$Routine == "")
       new.ret[[j]] <- NULL
-    }
   }
   
   # Cast return as dataframe
   ret <- parsed_fpmpi_2_df(new.ret)
   
+  # get metadata
+  metagetter <- function(pattern)
+  {
+    line <- x[grep(x, pattern=pattern)]
+    gsub(line, pattern=".*\t", replacement="")
+  }
+  date <- metagetter("^Date:")
+  processes <- metagetter("^Processes:")
+  time <- metagetter("^Execute time:")
+  
+  attr(ret, "Metadata") <- list(date=date, processes=processes, time=time)
+  
   return( ret )
-} # End of parse.prof.fpmpi().
+}
 
 
 
-parse.prof.mpip <- function(x, ...){
+parse.prof.mpip <- function(x, ...)
+{
   #Rscript for profiling mpiP
   
   ret_mpip <- list()
@@ -123,7 +135,7 @@ parse.prof.mpip <- function(x, ...){
   #selection the region between ---- and --- putting it in time series space using embed
   regions <- t(t(embed(grep("@---", lines), 2)) + c(-2, 2)) 
   #mapply on set of regions
-  ret_mpip <- mapply(function(start,stop) {
+  ret <- mapply(function(start,stop) {
     #converting to character without having to worry about spaces and empty lines
     chunk <- paste(lines[start:stop], collapse = "\n")
     #resusing the chunk
@@ -139,13 +151,21 @@ parse.prof.mpip <- function(x, ...){
     return(ret_mpip)
     #arguments of mapply
   }, regions[,2], regions[,1])
+  
+  
+  date <- x[grep(x, pattern="^@ Start time")]
+  date <- gsub(date, pattern=".*: ", replacement="")
+  time <- ret[[1]]$AppTime[3]
+  processes <- NROW(ret[[1]]) - 1
+  
+  attr(ret, "Metadata") <- list(date=date, processes=processes, time=time)
+  
+  return(ret)
+}
 
-  return(ret_mpip)
-} # End of parse.prof.mpip().
 
 
-
-parse.prof.tau <- function(x, ...){
+parse.prof.tau <- function(x, ...)
+{
   stop("parse.prof for TAU is not implemented yet.")
-} # End of parse.prof.tau().
-
+}
