@@ -134,6 +134,8 @@ parse.prof.mpip <- function(x, ...)
   lines <- x 
   #selection the region between ---- and --- putting it in time series space using embed
   regions <- t(t(embed(grep("@---", lines), 2)) + c(-2, 2)) 
+#  regions <- regions[-2, ]
+  
   #mapply on set of regions
   ret <- mapply(function(start,stop) {
     #converting to character without having to worry about spaces and empty lines
