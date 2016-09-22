@@ -10,8 +10,8 @@ citEntry(
                       as.person("George Ostrouchov")),
   year = "2013",
   note = "{R} Package",
-  url = "http://cran.r-project.org/package=pbdPROF",
-  textVersion = "Chen, W.-C., Schmidt, D., Sehrawat, G., Patel, P., and Ostrouchov, G. (2013) pbdPROF: MPI Profiling Tools. R Package, URL http://cran.r-project.org/package=pbdPROF"
+  url = "https://cran.r-project.org/package=pbdPROF",
+  textVersion = "Chen, W.-C., Schmidt, D., Sehrawat, G., Patel, P., and Ostrouchov, G. (2013) pbdPROF: MPI Profiling Tools. R Package, URL https://cran.r-project.org/package=pbdPROF"
 )
 
 citEntry(
@@ -24,7 +24,7 @@ citEntry(
                       as.person("George Ostrouchov")),
   year = "2013",
   note = "{R} Vignette",
-  url = "http://cran.r-project.org/package=pbdPROF",
-  textVersion = "Chen, W.-C., Schmidt, D., Sehrawat, G., Patel, P., and Ostrouchov, G. (2013) A Quick Guide for the pbdPROF Package. R Vignette, URL http://cran.r-project.org/package=pbdPROF"
+  url = "https://cran.r-project.org/package=pbdPROF",
+  textVersion = "Chen, W.-C., Schmidt, D., Sehrawat, G., Patel, P., and Ostrouchov, G. (2013) A Quick Guide for the pbdPROF Package. R Vignette, URL https://cran.r-project.org/package=pbdPROF"
 )
 
