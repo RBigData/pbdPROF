@@ -1,6 +1,6 @@
 ### Setup R source code and objects.
 PKG_CPPFLAGS = @PKG_CPPFLAGS@
-PKG_CFLAGS = $(SAFE_CFLAGS) -w
+PKG_CFLAGS = $(SAFE_CFLAGS)
 PKG_LIBS     = @PKG_LIBS@
 
 ### For user configuration.
