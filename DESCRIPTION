@@ -1,5 +1,5 @@
 Package: pbdPROF
-Version: 0.3-1
+Version: 0.3-2
 Title: Programming with Big Data --- MPI Profiling Tools
 Authors@R: c(person("Wei-Chen", "Chen", role = c("aut", "cre"), 
     email = "wccsnow@gmail.com"),
