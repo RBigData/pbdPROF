@@ -48,7 +48,7 @@
 /* #undef F77_TRUE_VALUE_SET */
 
 /* Provide the version for FPMPI2 */
-#define FPMPI2_VERSION "2.2"
+#define FPMPI2_VERSION "2.4"
 
 /* Define for full tracing of communication */
 /* #undef FULL_OUTPUT */
@@ -60,8 +60,7 @@
 /* #undef GETRUSAGE_HAS_MINFLT */
 
 /* Define for getrusage() availability */
-//#define HAVE_GETRUSAGE 1
-#undef HAVE_GETRUSAGE
+#define HAVE_GETRUSAGE 1
 
 /* Define if int32_t is available */
 #define HAVE_INT32_T 1
@@ -96,17 +95,8 @@
 /* Define if MPI_F_STATUS_IGNORE is defined */
 #define HAVE_MPI_F_STATUS_IGNORE 1
 
-/* Define to 1 if you have the `MPI_Init_thread' function. */
-#define HAVE_MPI_INIT_THREAD 1
-
-/* Define if MPI_IN_PLACE is defined */
-#define HAVE_MPI_IN_PLACE 1
-
 /* Define if MPI_ROOT is defined */
 #define HAVE_MPI_ROOT 1
-
-/* Define to 1 if you have the `MPI_Status_c2f' function. */
-#define HAVE_MPI_STATUS_C2F 1
 
 /* Define to 1 if you have the <papi.h> header file. */
 /* #undef HAVE_PAPI_H */
@@ -127,8 +117,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/resource.h> header file. */
-//#define HAVE_SYS_RESOURCE_H 1
-#undef HAVE_SYS_RESOURCE_H
+#define HAVE_SYS_RESOURCE_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
@@ -159,22 +148,22 @@
 #define NEEDS_STRDUP_DEF 1
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT ""
+#define PACKAGE_BUGREPORT "fpmpi@mcs.anl.gov"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME ""
+#define PACKAGE_NAME "fpmpi2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING ""
+#define PACKAGE_STRING "fpmpi2 2.4"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME ""
+#define PACKAGE_TARNAME "fpmpi2"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION ""
+#define PACKAGE_VERSION "2.4"
 
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4

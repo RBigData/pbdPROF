@@ -23,4 +23,10 @@ extern int fpmpi_ProfControlDebug;
 #define FPMPI_PROF_DESTVOL 0x40
 #define FPMPI_PROF_DESTVOL_DETAIL 0x80
 
+/* Special value to indicated phase definition */
+#define FPMPI_PROF_END_PHASE 0xffff
+
+/* An alternative to using MPI_Pcontrol */
+void fpmpi_EndPhase(const char *);
+
 #endif
