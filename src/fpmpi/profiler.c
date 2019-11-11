@@ -2853,7 +2853,7 @@ static int getSummaryPartnerData( CallData *cd, int nprocs )
     return 0;
 }
 
-/* WCC: Overwrite PMPI_Address for MPI-3.0 */
+/* WCC: Overwrite PMPI_Address for MPI-2.0 or newer */
 #undef PMPI_Address
 #define PMPI_Address MPI_Get_address
 #undef PMPI_Type_struct
@@ -2881,8 +2881,9 @@ static MPI_Datatype getSummaryDatatype( void )
     blk[0] = 2; din[0] = MPI_DOUBLE;
     blk[1] = 1; din[1] = MPI_LONG_LONG;
     blk[2] = 1; din[2] = MPI_INT;
-    blk[3] = 1; din[3] = MPI_UB;
-    PMPI_Type_struct( 4, blk, displs, din, &cb_dtype );
+    //WCC:del blk[3] = 1; din[3] = MPI_UB;
+    //WCC:alt PMPI_Type_struct( 4, blk, displs, din, &cb_dtype );
+    PMPI_Type_struct( 3, blk, displs, din, &cb_dtype );
 #else    
     PMPI_Address( &cbMax[0].time, &displs[0] );
     PMPI_Address( &cbMax[0].calls, &displs[1] );
@@ -2891,8 +2892,9 @@ static MPI_Datatype getSummaryDatatype( void )
       displs[i] -= displs[0];
     blk[0] = 3; din[0] = MPI_DOUBLE;
     blk[1] = 1; din[1] = MPI_INT;
-    blk[2] = 1; din[2] = MPI_UB;
-    PMPI_Type_struct( 3, blk, displs, din, &cb_dtype );
+    //WCC:del blk[2] = 1; din[2] = MPI_UB;
+    //WCC:alt PMPI_Type_struct( 3, blk, displs, din, &cb_dtype );
+    PMPI_Type_struct( 2, blk, displs, din, &cb_dtype );
 #endif
     PMPI_Type_commit( &cb_dtype );
     

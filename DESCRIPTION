@@ -7,7 +7,7 @@ Authors@R: c(person("Wei-Chen", "Chen", role = c("aut", "cre"),
     person("Gaurav", "Sehrawat", role="aut"), 
     person("Pragneshkumar", "Patel", role = "aut"), 
     person("George", "Ostrouchov", role ="aut"))
-Depends: R (>= 3.6.1)
+Depends: R (>= 3.6.0)
 Imports: methods, stats, utils
 LazyLoad: yes
 LazyData: yes
