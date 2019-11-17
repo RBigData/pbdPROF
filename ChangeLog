@@ -1,3 +1,10 @@
+2019-11-10: Ver. 0.4-0
+  * Update to fpmpi2-2.4.
+  * Replace all MPI-1 deprecated functions and varaibels.
+  * Update to MPI-2 or newer.
+  * Make C codes to test and verify "MPI_UB" used by "src/fpmpi/profiler.c"
+    with MPI-2 (OpenMPI-2.0.4) and MPI-3 (OpenMPI-4.0.2).
+
 2016-02-23: Ver. 0.3-1
   * Update fpmpi parser.
   * Improve prof print methods.

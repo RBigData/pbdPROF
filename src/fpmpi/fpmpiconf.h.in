@@ -94,17 +94,8 @@
 /* Define if MPI_F_STATUS_IGNORE is defined */
 #undef HAVE_MPI_F_STATUS_IGNORE
 
-/* Define to 1 if you have the `MPI_Init_thread' function. */
-#undef HAVE_MPI_INIT_THREAD
-
-/* Define if MPI_IN_PLACE is defined */
-#undef HAVE_MPI_IN_PLACE
-
 /* Define if MPI_ROOT is defined */
 #undef HAVE_MPI_ROOT
-
-/* Define to 1 if you have the `MPI_Status_c2f' function. */
-#undef HAVE_MPI_STATUS_C2F
 
 /* Define to 1 if you have the <papi.h> header file. */
 #undef HAVE_PAPI_H

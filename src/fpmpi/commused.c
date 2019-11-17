@@ -35,39 +35,45 @@ int MPI_Comm_dup_orig( MPI_Comm oldcomm, MPI_Comm *newcomm )
   int *dummyattrval, flag;
 
   if (comm_dup_world_keyval == MPI_KEYVAL_INVALID) {
-      PMPI_Keyval_create(MPI_DUP_FN,MPI_NULL_DELETE_FN,&comm_dup_world_keyval,(void *)0);
+      PMPI_Comm_create_keyval(MPI_COMM_DUP_FN,MPI_COMM_NULL_DELETE_FN,
+			      &comm_dup_world_keyval,(void *)0);
   }
   if (comm_dup_self_keyval  == MPI_KEYVAL_INVALID) {
-      PMPI_Keyval_create(MPI_DUP_FN,MPI_NULL_DELETE_FN,&comm_dup_self_keyval,(void *)0);
+      PMPI_Comm_create_keyval(MPI_COMM_DUP_FN,MPI_COMM_NULL_DELETE_FN,
+			      &comm_dup_self_keyval,(void *)0);
   }
   if (comm_dup_other_keyval == MPI_KEYVAL_INVALID) {
-      PMPI_Keyval_create(MPI_DUP_FN,MPI_NULL_DELETE_FN,&comm_dup_other_keyval,(void *)0);
+      PMPI_Comm_create_keyval(MPI_COMM_DUP_FN,MPI_COMM_NULL_DELETE_FN,
+			      &comm_dup_other_keyval,(void *)0);
   }
 
-  PMPI_Attr_get(oldcomm,comm_dup_other_keyval,&dummyattrval,&flag);
+  PMPI_Comm_get_attr(oldcomm,comm_dup_other_keyval,&dummyattrval,&flag);
   if (!flag) {
-      PMPI_Attr_get(oldcomm,comm_dup_world_keyval,&dummyattrval,&flag);
+      PMPI_Comm_get_attr(oldcomm,comm_dup_world_keyval,&dummyattrval,&flag);
       if (flag) {
           comm_world_dups += 1;
       } else {
-          PMPI_Attr_get(oldcomm,comm_dup_self_keyval,&dummyattrval,&flag);
+          PMPI_Comm_get_attr(oldcomm,comm_dup_self_keyval,&dummyattrval,&flag);
           if (flag) {
               comm_self_dups += 1;
           } else {
               PMPI_Comm_size(oldcomm,&flag);
               if (flag == 1) {
-                  PMPI_Attr_put(oldcomm,comm_dup_self_keyval,(void *)&comm_dup_self_keyval);
+                  PMPI_Comm_set_attr(oldcomm,comm_dup_self_keyval,
+				     (void *)&comm_dup_self_keyval);
                   comm_self_dups += 1;
               } else {
                   PMPI_Comm_compare(oldcomm,MPI_COMM_WORLD,&flag);
                   if (flag == MPI_IDENT) {
-                      PMPI_Attr_put(oldcomm,comm_dup_world_keyval,(void *)&comm_dup_world_keyval);
+                      PMPI_Comm_set_attr(oldcomm,comm_dup_world_keyval,
+					 (void *)&comm_dup_world_keyval);
                       comm_world_dups += 1;
                   } else {
-                      PMPI_Attr_put(oldcomm,comm_dup_other_keyval,(void *)&comm_dup_other_keyval);
+                      PMPI_Comm_set_attr(oldcomm,comm_dup_other_keyval,
+					 (void *)&comm_dup_other_keyval);
                   }
               }
-          } 
+          }
       }
   }
 
@@ -86,24 +92,28 @@ int MPI_Comm_split_orig( MPI_Comm oldcomm, int color, int key, MPI_Comm *newcomm
   int *dummyattrval, flag;
 
   if (comm_dup_world_keyval == MPI_KEYVAL_INVALID) {
-      PMPI_Keyval_create(MPI_DUP_FN,MPI_NULL_DELETE_FN,&comm_dup_world_keyval,(void *)0);
+      PMPI_Comm_create_keyval(MPI_COMM_DUP_FN,MPI_COMM_NULL_DELETE_FN,
+			      &comm_dup_world_keyval,(void *)0);
   }
   if (comm_dup_other_keyval == MPI_KEYVAL_INVALID) {
-      PMPI_Keyval_create(MPI_DUP_FN,MPI_NULL_DELETE_FN,&comm_dup_other_keyval,(void *)0);
+      PMPI_Comm_create_keyval(MPI_COMM_DUP_FN,MPI_COMM_NULL_DELETE_FN,
+			      &comm_dup_other_keyval,(void *)0);
   }
 
-  PMPI_Attr_get(oldcomm,comm_dup_other_keyval,&dummyattrval,&flag);
+  PMPI_Comm_get_attr(oldcomm,comm_dup_other_keyval,&dummyattrval,&flag);
   if (!flag) {
-      PMPI_Attr_get(oldcomm,comm_dup_world_keyval,&dummyattrval,&flag);
+      PMPI_Comm_get_attr(oldcomm,comm_dup_world_keyval,&dummyattrval,&flag);
       if (flag) {
           comm_world_splits += 1;
       } else {
           PMPI_Comm_compare(oldcomm,MPI_COMM_WORLD,&flag);
           if (flag == MPI_IDENT) {
-              PMPI_Attr_put(oldcomm,comm_dup_world_keyval,(void *)&comm_dup_world_keyval);
+              PMPI_Comm_set_attr(oldcomm,comm_dup_world_keyval,
+				 (void *)&comm_dup_world_keyval);
               comm_world_splits += 1;
           } else {
-              PMPI_Attr_put(oldcomm,comm_dup_other_keyval,(void *)&comm_dup_other_keyval);
+              PMPI_Comm_set_attr(oldcomm,comm_dup_other_keyval,
+				 (void *)&comm_dup_other_keyval);
           }
       }
   }

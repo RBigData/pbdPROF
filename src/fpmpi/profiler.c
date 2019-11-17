@@ -4,12 +4,26 @@
  *  (C) 2001-2003 by Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
-/* 
+/*
+   Changes 5/13/2018:
+      + WDG - Added Ibarrer by request
+        Count the number of times testxxx or iprobe succeeds
+        Allow multiple phases of data collection and reporting.  This can be
+        enabled through MPI_Pcontrol, or an explict fpmpi call
+	Improve output of non-communication routines, including max value
+	and location.
+        General code cleanup (though more to do)
+	Due to the number of changes, version changed to 2.4
+
+   Changes 5/11/2018:
+      + WDG - Assume at least MPI2 (MPI_IN_PLACE, Alltoallw, etc.)
+        Macro for recording synchronization time
+
    Changes 10/18/2013:
       + WDG - Added support for MPI3 const declarations
 
    Changes 6/26/2012:
-      + WDG - Added missing MPI2 collectives - Exscan, Alltoallw, 
+      + WDG - Added missing MPI2 collectives - Exscan, Alltoallw,
         Reduce_scatter_block.  Added collection of data about communication
 	volume to each partner in MPI_COMM_WORLD (not just the partners).
 	Added communicator creation time, including sync time.
@@ -148,7 +162,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -167,7 +180,7 @@
 #else
 #define MPI3_CONST
 #endif
-#else
+#else /* No MPI_VERSION defined! */
 #define MPI3_CONST
 #endif
 
@@ -178,7 +191,7 @@
 #define MAX_MSG 1073741824
 #define MPI_PROF_FILE_NAME "fpmpi_profile"
 
-/* Specifics about output of the volume of communication to each 
+/* Specifics about output of the volume of communication to each
    destination. */
 #define DESTVOL_SUMMARY 1
 #define DESTVOL_DETAIL  2
@@ -197,8 +210,8 @@ int fpmpi_ProfControlWait  = 0;
    longer than a certain size (typically the rendezvous size).  This 
    parameter is configurable so experiments with other lengths can be used */
 int fpmpi_ProfControlWaitSize = 0;
-/* Some collective routines are not semantically synchronizing, but either 
-   their use or their implementation may be synchronizing.  MPI_Bcast is an 
+/* Some collective routines are not semantically synchronizing, but either
+   their use or their implementation may be synchronizing.  MPI_Bcast is an
    example. This flag allows us to deal with such collectives as if they
    are synchronizing (Bcast,scatter*,gather*) */
 int fpmpi_ProfControlSyncAlt = 0;
@@ -214,7 +227,7 @@ static int testwaitSyncEnabled = 0;
    runs, we keep this data associated with each routine) */
 static int32_t allPartners[MAX_PROCBY32];
 
-enum bin_sizes {sz_0, sz_1to4, sz_5to8, sz_9to16, sz_17to32, sz_33to64, 
+enum bin_sizes {sz_0=0, sz_1to4, sz_5to8, sz_9to16, sz_17to32, sz_33to64, 
 		sz_65to128, sz_129to256, sz_257to512, sz_513to1024, 
 		sz_1to4K, sz_5to8K, sz_9to16K, sz_17to32K, sz_33to64K, 
 		sz_65to128K, sz_129to256K, sz_257to512K, sz_513to1024K,
@@ -232,75 +245,11 @@ unsigned long  maxBinSize[NBINS] = {
     128*1024*1024, 256*1024*1024, 512*1024*1024,
     1024*1024*1024, -1 };
 
+/* Sanity check for MPI_Finalize output */
+static int isInitialized = 0;
+
 /* Forward references */
 static int CheckEnvBool( const char[], int * );
-
-/* 
- * Definitions for the data that is collected.
- * 
- * The hierarchy of structures is:
- *
- * For each class of routine (e.g., point-to-point, collective) there
- * is an array of structures:
- *   array of { routine-name, pointer-to-raw-data, pointer-to-summary-data }
- * A null routine name designates end-of-list.
- *
- * Each pointer to raw data contains information on each routine, 
- * separated in the bins by message size.  Additional information on 
- * process partners and on synchronization (collective) or wait (blocking
- * point-to-point) operations may also be collected.
- *
- * These arrays are used to simplify the reporting of results; the
- * output routine loop over them (also by class) to compute things like
- * total point-to-point communication volume.   
- */
-typedef struct {
-    double    time;     /* sum of time */
-    double    synctime; /* sum of synchronization or wait time, if relevant */
-    msgsize_t size;     /* sum of exact size */
-    int       calls;    /* Number of calls */
-} CommBinData; 
-
-/* This struct combines all of the data about the use of a routine - both
-    the communication (CommBinData) and the partners (topology) */
-typedef struct {
-    CommBinData  b[NBINS];     /* One bin for each range of message size */
-    int32_t      partners[MAX_PROCBY32];
-                               /* partners is a bit vector to keep track of
-		                  with which processes this one has been in
-				  communication.  Pt2pt only */
-    msgsize_t    *sizeToPartner;  /* Total message volume to partner.  
-				     Allocated if feature enabled; pt2pt only.
-				   */
-} CommData;
-
-/* This structure contains all of the information about the use of a routine,
-   including the routine's name, communication data, and memory used to
-   create the output */
-typedef struct {
-    const char *name;               /* Name of routine */
-    int         hasSyncTime; 
-    CommData    *data;              /* Raw data (for this process).
-				       Pointer used to simplify definition;
-				       access in routines is directly to the
-				       data to which this points */
-    CommData    sumData,            /* Aggregated data (valid on process 0 */
- 	        maxData, minData;   /* only) */
-    double      totalTime, totalSync,
-                minTime, maxTime, maxSync;
-    int         totalCalls, 
-	        minCalls, maxCalls;
-    msgsize_t   totalSize, maxSize; /* TotalSize is the aggregate size over all
-				       processes.  maxSize is the maximum sent
-				       or received by any one process */
-    int         maxTimeLoc, maxCallsLoc, maxSizeLoc, maxSyncLoc; 
-                                    /* Rank of process with the maxTime etc. */
-    /* partner data */
-    int         totalPartners, maxPartners, maxPartnersLoc,
-	        minPartners, minPartnersLoc;
-} CallData;
-
-/* NoCommData and CallBasicData are defined in profiler.h */
 
 static int getSummaryNoCommData( CallBasicData *, int );
 static int getSummaryCommData( CallData *, int );
@@ -317,6 +266,27 @@ void  PrintDetailedPartners( FILE *pf, int llrank, int nprocs );
 
 #define COUNTER_DECL(name) static CommData name##_data
 #define COUNTER_DECL_COLL(name) COUNTER_DECL(name)
+
+/* Define a counter index for each counter.  By using an enum, it
+   is easier to insert new counters */
+enum counterIdx { allgather_idx = 0, allgatherv_idx, allreduce_idx,
+		  alltoall_idx, alltoallv_idx, alltoallw_idx,
+		  bcast_idx, gather_idx, gatherv_idx,
+		  reduce_scatter_idx, reduce_scatter_block_idx,
+		  reduce_idx, scan_idx, exscan_idx, scatter_idx,
+		  scatterv_idx,
+		  recv_idx, send_idx, sendrecv_idx, sendrecv_replace_idx,
+		  bsend_idx, ibsend_idx, isend_idx, issend_idx, irsend_idx,
+		  rsend_idx, ssend_idx, irecv_idx,
+		  pack_idx, unpack_idx,
+		  lastcounter_idx };
+
+enum counterBasicIdx { iprobe_idx=0, probe_idx, barrier_idx, ibarrier_idx,
+		       wait_idx, waitall_idx, waitsome_idx, waitany_idx,
+		       test_idx, testall_idx, testsome_idx, testany_idx,
+		       comm_create_idx, comm_split_idx, comm_dup_idx,
+		       comm_split_type_idx, comm_cart_idx, comm_graph_idx,
+		       lastcounterBasic_idx };
 
 COUNTER_DECL_COLL(allgather);
 COUNTER_DECL_COLL(allgatherv);
@@ -355,7 +325,7 @@ static CallData collectiveInfo[] = {
     { "Scan", 0, &scan_data },
     { "Exscan", 0, &exscan_data },
     { "Scatter", 0, &scatter_data },
-    { "Scatterv", 0, &scatterv_data }, 
+    { "Scatterv", 0, &scatterv_data },
     { 0, 0 } };
 
 COUNTER_DECL(recv);
@@ -376,24 +346,24 @@ COUNTER_DECL(irecv);
 static CallData pt2ptInfo[] = {
     { "Recv", 1, &recv_data },
     { "Send", 1, &send_data },
-    { "Sendrecv", 0, &sendrecv_data }, 
+    { "Sendrecv", 0, &sendrecv_data },
     { "Sendrecv_replace", 0, &sendrecv_replace_data },
     { "Bsend", 0, &bsend_data },
-    { "Ibsend", 0, &ibsend_data }, 
+    { "Ibsend", 0, &ibsend_data },
     { "Isend", 0, &isend_data },
     { "Issend", 0, &issend_data },
     { "Irsend", 0, &irsend_data },
     { "Rsend", 0, &rsend_data },
     { "Ssend", 0, &ssend_data },
-    { "Irecv", 0, &irecv_data }, 
+    { "Irecv", 0, &irecv_data },
     { 0, 0 } };
 
 COUNTER_DECL(pack);
 COUNTER_DECL(unpack);
 
 static CallData packInfo[] = {
-    { "Pack", 0, &pack_data }, 
-    { "Unpack", 0, &unpack_data }, 
+    { "Pack", 0, &pack_data },
+    { "Unpack", 0, &unpack_data },
     { 0, 0 } };
 
 static NoCommData iprobe_data;
@@ -404,13 +374,17 @@ static CallBasicData probeInfo[] = {
     { "Iprobe", 0, &iprobe_data },
     { 0, 0 } };
 
-static NoCommData barrier_data;
-static CallBasicData barrierInfo = { "Barrier", 0, &barrier_data };
+static NoCommData barrier_data,
+    ibarrier_data;
+static CallBasicData barrierInfo[] = {
+    { "Barrier", 0, &barrier_data },
+    { "Ibarrier", 0, &ibarrier_data },
+    { 0, 0 } };
 
 /* The declarations for these are in the testwait.c file and are
    initialized in MPI_Init */
 
-/* If the order of these is changed, match the changes in testwait.c */   
+/* If the order of these is changed, match the changes in testwait.c */
 static CallBasicData testwaitInfo[] = {
     { "Wait", 1, 0 },
     { "Waitall", 1, 0 },
@@ -422,22 +396,34 @@ static CallBasicData testwaitInfo[] = {
     { "Testany", 0, 0 },
     { 0, 0, 0 } };
 
-static NoCommData comm_create_data, comm_split_data, comm_dup_data;
+static NoCommData comm_create_data, comm_split_data, comm_dup_data,
+    comm_split_type_data, comm_cart_data, comm_graph_data;
 static CallBasicData commInfo[] = {
-    { "Comm_create", 1, &comm_create_data },
-    { "Comm_split",  1, &comm_split_data },
-    { "Comm_dup",    1, &comm_dup_data }, 
+    { "Comm_create",     1, &comm_create_data },
+    { "Comm_split",      1, &comm_split_data },
+    { "Comm_dup",        1, &comm_dup_data },
+    { "Comm_split_type", 1, &comm_split_type_data },
+    { "Cart_create",     1, &comm_cart_data },
+    { "Graph_create",    1, &comm_graph_data },
     { 0, 0 } };
 
 /* At this point, we create a structure that contains pointers
    to each of these info structures; this will allow us to customize
    all of the output routines (This structure is not yet used) */
-typedef struct fpmpiData { 
+typedef struct fpmpiData {
     CallData      *allcolls, *colls, *pt2pt, *pack;
     CallBasicData *probe, *barrier, *testwait, *comm; } fpmpiData;
-fpmpiData fpmpiAllData = { allCollectiveInfo, collectiveInfo, pt2ptInfo, 
-			   packInfo, probeInfo, &barrierInfo, testwaitInfo,
+fpmpiData fpmpiAllData = { allCollectiveInfo, collectiveInfo, pt2ptInfo,
+			   packInfo, probeInfo, barrierInfo, testwaitInfo,
                            commInfo };
+
+/* Forward refs */
+void fpmpi_initCommData(int);
+void fpmpi_OutputData(FILE *, int, int);
+/* Phase calls */
+int fpmpi_GetNumPhases(void);
+int fpmpi_SavePhase(const char *);
+int fpmpi_RestorePhase(int, const char **);
 
 /* ------------------------------------------------------------------------ */
 /* These provide a quick way to handle one comm other than comm_world
@@ -497,10 +483,29 @@ static inline int Get_Msg_size( int, MPI_Datatype );
    in case we decide to change how we handle the data recording */
 #define UPDATE_COUNTER_COLL(name) UPDATE_COUNTER(name)
 
-/* Convert a (count/datatype) into a size in bytes 
+/* This puts UPDATE_COUNTER_SYNC in context */
+#define GET_SYNC_TIME(_comm)				\
+    double _t1, synctime;				\
+    _t1 = MPI_Wtime();					\
+    PMPI_Barrier(_comm);				\
+    synctime = MPI_Wtime() - _t1;
+#define RECORD_SYNC(_comm,_name)			\
+    if (fpmpi_ProfControlSync) {GET_SYNC_TIME(_comm);	\
+	UPDATE_COUNTER_SYNC(_name);}
+#define RECORD_SYNC_ALT(_comm,_name)			\
+    if (fpmpi_ProfControlSyncAlt) {GET_SYNC_TIME(_comm);\
+	UPDATE_COUNTER_SYNC(_name);}
+#define RECORD_SYNC_VAR(_comm,_var)			\
+    if (fpmpi_ProfControlSync) {GET_SYNC_TIME(_comm);	\
+	_var = synctime;}
+#define RECORD_SYNC_ALT_VAR(_comm,_var)				\
+    if (fpmpi_ProfControlSyncAlt) {GET_SYNC_TIME(_comm);	\
+	_var = synctime;}
+
+/* Convert a (count/datatype) into a size in bytes
  * Note:
  * Eventually we may want to have a short cut for this for
- * know implementation.  E.g., in MPICH2, the size may 
+ * know implementation.  E.g., in MPICH2, the size may
  * be extracted from basic datatypes without a routine call.
  */
 static inline int Get_Msg_size( int count, MPI_Datatype datatype )
@@ -551,10 +556,9 @@ static inline int Get_Msg_size( int count, MPI_Datatype datatype )
 */
 static int Get_Bin_ID(int buf_size)
 {
-  int bin_id = 0; /* By default, assume a zero size message */
+  int bin_id = sz_0; /* By default, assume a zero size message */
 
-  /* We subdivide this a little to catch the short messages 
-     early */
+  /* We subdivide this a little to catch the short messages early */
   if (buf_size > 4*ONE_KB) {
       if ( buf_size > MAX_MSG ) bin_id = NBINS - 1; /* The last bin is for
 						       messages > 1024MB */
@@ -612,28 +616,19 @@ int MPI_Allgather( MPI3_CONST void *sendbuf, int sendcount,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    buf_size;
 
-#ifdef HAVE_MPI_IN_PLACE
   if (sendbuf == MPI_IN_PLACE) {
       buf_size = Get_Msg_size( recvcount, recvtype );
   }
-  else 
-#endif
-  buf_size = Get_Msg_size( sendcount, sendtype );
+  else
+      buf_size = Get_Msg_size( sendcount, sendtype );
   bin_id = Get_Bin_ID( buf_size );
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(allgather);
-  }
-
-  startwtime = MPI_Wtime();	  
-  returnVal = PMPI_Allgather( sendbuf, sendcount, sendtype, recvbuf, 
+  RECORD_SYNC(comm,allgather);
+  startwtime = MPI_Wtime();
+  returnVal = PMPI_Allgather( sendbuf, sendcount, sendtype, recvbuf,
 			      recvcount, recvtype, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER_COLL(allgather);
@@ -653,29 +648,20 @@ int MPI_Allgatherv( MPI3_CONST void *sendbuf, int sendcount,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    buf_size;
 
-#ifdef HAVE_MPI_IN_PLACE
   if (sendbuf == MPI_IN_PLACE) {
       int myrank;
       PMPI_Comm_rank( comm, &myrank );
       buf_size = Get_Msg_size( recvcounts[myrank], recvtype );
   }
-  else 
-#endif
-  buf_size = Get_Msg_size( sendcount, sendtype );
+  else
+      buf_size = Get_Msg_size( sendcount, sendtype );
   bin_id = Get_Bin_ID( buf_size);
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(allgatherv);
-  }
-
-  startwtime = MPI_Wtime();	  
+  RECORD_SYNC(comm,allgatherv);
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Allgatherv( sendbuf, sendcount, sendtype, recvbuf, 
 			       recvcounts, displs, recvtype, comm );
   endwtime = MPI_Wtime();
@@ -693,21 +679,14 @@ int MPI_Allreduce( MPI3_CONST void *sendbuf, void *recvbuf, int count,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    buf_size;
 
   buf_size = Get_Msg_size( count, datatype );
   bin_id = Get_Bin_ID( buf_size );
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(allreduce);
-  }
-
-  startwtime = MPI_Wtime();	  
+  RECORD_SYNC(comm,allreduce);
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Allreduce( sendbuf, recvbuf, count, datatype, op, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER_COLL(allreduce);
@@ -726,7 +705,6 @@ int MPI_Alltoall( MPI3_CONST void *sendbuf, int sendcount,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    buf_size, nprocs;
 
@@ -734,19 +712,13 @@ int MPI_Alltoall( MPI3_CONST void *sendbuf, int sendcount,
   buf_size = nprocs * Get_Msg_size( sendcount, sendtype );
   bin_id = Get_Bin_ID( buf_size );
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(alltoall);
-  }
-
-  startwtime = MPI_Wtime();	  
+  RECORD_SYNC(comm,alltoall);
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Alltoall( sendbuf, sendcount, sendtype, recvbuf,
 			     recvcnt, recvtype, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER_COLL(alltoall);
-  
+
   return returnVal;
 }
 
@@ -762,7 +734,6 @@ int MPI_Alltoallv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    buf_size, i, nprocs;
 
@@ -773,36 +744,28 @@ int MPI_Alltoallv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
   }
   bin_id = Get_Bin_ID(buf_size);  /* Determine message bin ID */
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(alltoallv);
-  }
-
-  startwtime = MPI_Wtime();	  
+  RECORD_SYNC(comm,alltoallv);
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Alltoallv( sendbuf, sendcnts, sdispls, sendtype, recvbuf,
 			      recvcnts, rdispls, recvtype, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER_COLL(alltoallv);
-  
+
   return returnVal;
 }
 
-#if defined(MPI_VERSION) && MPI_VERSION >= 2
 /*
     MPI_Alltoallw - prototyping replacement for MPI_Alltoallw
     Trace the beginning and ending of MPI_Alltoallw.
 */
-int MPI_Alltoallw(MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts, 
-		  MPI3_CONST int *sdispls, MPI3_CONST MPI_Datatype *sendtypes, 
-		  void *recvbuf, MPI3_CONST int *recvcnts, 
-                  MPI3_CONST int *rdispls, MPI3_CONST MPI_Datatype *recvtypes, 
+int MPI_Alltoallw(MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
+		  MPI3_CONST int *sdispls, MPI3_CONST MPI_Datatype *sendtypes,
+		  void *recvbuf, MPI3_CONST int *recvcnts,
+                  MPI3_CONST int *rdispls, MPI3_CONST MPI_Datatype *recvtypes,
 		  MPI_Comm comm)
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    buf_size, i, nprocs;
 
@@ -813,22 +776,15 @@ int MPI_Alltoallw(MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
   }
   bin_id = Get_Bin_ID(buf_size);  /* Determine message bin ID */
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(alltoallw);
-  }
-
-  startwtime = MPI_Wtime();	  
+  RECORD_SYNC(comm,alltoallw);
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Alltoallw( sendbuf, sendcnts, sdispls, sendtypes, recvbuf,
 			      recvcnts, rdispls, recvtypes, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER_COLL(alltoallw);
-  
+
   return returnVal;
 }
-#endif
 
 /*
     MPI_Barrier - prototyping replacement for MPI_Barrier
@@ -839,7 +795,7 @@ int MPI_Barrier( MPI_Comm comm )
   int    returnVal;
   double startwtime, endwtime;
 
-  startwtime = MPI_Wtime();	  
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Barrier( comm );
   endwtime = MPI_Wtime();
   barrier_data.time  += endwtime - startwtime;
@@ -848,6 +804,25 @@ int MPI_Barrier( MPI_Comm comm )
   return returnVal;
 }
 
+#if defined(MPI_VERSION) && MPI_VERSION >= 3
+/*
+    MPI_Ibarrier - prototyping replacement for MPI_Ibarrier
+    Trace the beginning and ending of MPI_Ibarrier.
+*/
+int MPI_Ibarrier(MPI_Comm comm, MPI_Request *r)
+{
+  int    returnVal;
+  double startwtime, endwtime;
+
+  startwtime = MPI_Wtime();
+  returnVal = PMPI_Ibarrier(comm, r);
+  endwtime = MPI_Wtime();
+  ibarrier_data.time  += endwtime - startwtime;
+  ibarrier_data.calls += 1;
+
+  return returnVal;
+}
+#endif
 /*
      MPI_Iprobe - prototyping replacement for MPI_Iprobe
      Count calls, and accumulate total time.
@@ -855,14 +830,15 @@ int MPI_Barrier( MPI_Comm comm )
 int MPI_Iprobe(int source, int tag, MPI_Comm comm, int *flag, MPI_Status *status)
 {
   int     returnVal;
-  double startwtime, endwtime;
- 
+  double  startwtime, endwtime;
+
   startwtime    = MPI_Wtime();
   returnVal     = PMPI_Iprobe(source,tag,comm,flag,status);
   endwtime      = MPI_Wtime();
 
   iprobe_data.time += endwtime - startwtime;
   iprobe_data.calls += 1;
+  if (flag) iprobe_data.success += 1;
 
   return returnVal;
 }
@@ -907,7 +883,7 @@ int MPI_Bcast( void *buffer, int count, MPI_Datatype datatype,
 	       int root, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size, rank;
 
@@ -922,16 +898,10 @@ int MPI_Bcast( void *buffer, int count, MPI_Datatype datatype,
   }
 
   /* Permit the collection of synchronization time even for those collectives
-     that are not semantically synchronizing, because their use in the 
+     that are not semantically synchronizing, because their use in the
      code or the algorithm used for their implementation is synchronizing. */
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(bcast);
-  }
-
-  startwtime = MPI_Wtime();	  
+  RECORD_SYNC_ALT(comm,bcast)
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Bcast( buffer, count, datatype, root, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER(bcast);
@@ -948,28 +918,20 @@ int MPI_Gather( MPI3_CONST void *sendbuf, int sendcnt, MPI_Datatype sendtype,
 		int root, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size;
 
-#ifdef HAVE_MPI_IN_PLACE
   if (sendbuf == MPI_IN_PLACE) {
       buf_size = Get_Msg_size( recvcount, recvtype );
   }
-  else 
-#endif
-  buf_size = Get_Msg_size( sendcnt, sendtype );
+  else
+      buf_size = Get_Msg_size( sendcnt, sendtype );
   bin_id = Get_Bin_ID(buf_size);
-  
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(gather);
-  }
 
+  RECORD_SYNC_ALT(comm,gather)
   startwtime = MPI_Wtime();
-  returnVal = PMPI_Gather( sendbuf, sendcnt, sendtype, recvbuf, 
+  returnVal = PMPI_Gather( sendbuf, sendcnt, sendtype, recvbuf,
 			   recvcount, recvtype, root, comm );
   endwtime = MPI_Wtime();
   UPDATE_COUNTER(gather);
@@ -987,20 +949,14 @@ int MPI_Gatherv( MPI3_CONST void *sendbuf, int sendcnt, MPI_Datatype sendtype,
 		 MPI_Datatype recvtype, int root, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size;
 
   buf_size = Get_Msg_size( sendcnt, sendtype );
   bin_id = Get_Bin_ID(buf_size);
-  
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(gatherv);
-  }
 
+  RECORD_SYNC_ALT(comm,gatherv)
   startwtime = MPI_Wtime();
   returnVal = PMPI_Gatherv( sendbuf, sendcnt, sendtype, recvbuf, recvcnts,
 			    displs, recvtype, root, comm );
@@ -1069,31 +1025,22 @@ int MPI_Reduce_scatter( MPI3_CONST void *sendbuf, void *recvbuf,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    ierr, buf_size;
-  
+
   buf_size = Get_Msg_size( recvcnts[0], datatype ); /* FIXME */
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();	  
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(reduce_scatter);
-  }
-
+  RECORD_SYNC(comm,reduce_scatter);
   startwtime = MPI_Wtime();
   returnVal = PMPI_Reduce_scatter( sendbuf, recvbuf, recvcnts, datatype,
 				   op, comm );
-  endwtime = MPI_Wtime();	
-  UPDATE_COUNTER(reduce_scatter);  
-  
+  endwtime = MPI_Wtime();
+  UPDATE_COUNTER(reduce_scatter);
+
   return returnVal;
 }
 
-#if defined(MPI_VERSION) && ((MPI_VERSION == 2 && MPI_SUBVERSION >= 2)	|| \
-			     MPI_VERSION > 2)
 /*
     MPI_Reduce_scatter_block - prototyping replacement for 
     MPI_Reduce_scatter_block
@@ -1105,29 +1052,21 @@ int MPI_Reduce_scatter_block(MPI3_CONST void *sendbuf, void *recvbuf,
 {
   int    returnVal;
   double startwtime, endwtime;
-  double synctime;
   int    bin_id;
   int    ierr, buf_size;
-  
+
   buf_size = Get_Msg_size( recvcount, datatype );
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSync) {
-      startwtime = MPI_Wtime();	  
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(reduce_scatter_block);
-  }
-
+  RECORD_SYNC(comm,reduce_scatter_block);
   startwtime = MPI_Wtime();
   returnVal = PMPI_Reduce_scatter_block( sendbuf, recvbuf, recvcount, datatype,
 					 op, comm );
-  endwtime = MPI_Wtime();	
-  UPDATE_COUNTER(reduce_scatter_block);  
-  
+  endwtime = MPI_Wtime();
+  UPDATE_COUNTER(reduce_scatter_block);
+
   return returnVal;
 }
-#endif
 
 /*
     MPI_Reduce - prototyping replacement for MPI_Reduce
@@ -1138,24 +1077,18 @@ int MPI_Reduce( MPI3_CONST void *sendbuf, void *recvbuf, int count,
 		MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size;
-  
+
   buf_size = Get_Msg_size( count, datatype );
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(reduce);
-  }
-
+  RECORD_SYNC_ALT(comm,reduce)
   startwtime = MPI_Wtime();
   returnVal = PMPI_Reduce( sendbuf, recvbuf, count, datatype, op, root, comm );
-  endwtime = MPI_Wtime();	
-  UPDATE_COUNTER(reduce);  
+  endwtime = MPI_Wtime();
+  UPDATE_COUNTER(reduce);
 
   return returnVal;
 }
@@ -1168,29 +1101,22 @@ int MPI_Scan( MPI3_CONST void *sendbuf, void *recvbuf, int count,
 	      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size;
-  
+
   buf_size = Get_Msg_size( count, datatype );
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(scan);
-  }
-
+  RECORD_SYNC_ALT(comm,scan)
   startwtime = MPI_Wtime();
   returnVal = PMPI_Scan( sendbuf, recvbuf, count, datatype, op, comm );
   endwtime = MPI_Wtime();
-  UPDATE_COUNTER(scan);	  
+  UPDATE_COUNTER(scan);
 
   return returnVal;
 }
 
-#if defined(MPI_VERSION) && MPI_VERSION >= 2
 /*
     MPI_Exscan - prototyping replacement for MPI_Exscan
     Trace the beginning and ending of MPI_Exscan.
@@ -1199,28 +1125,21 @@ int MPI_Exscan( MPI3_CONST void *sendbuf, void *recvbuf, int count,
 		MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size;
-  
+
   buf_size = Get_Msg_size( count, datatype );
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(exscan);
-  }
-
+  RECORD_SYNC_ALT(comm,exscan)
   startwtime = MPI_Wtime();
   returnVal = PMPI_Exscan( sendbuf, recvbuf, count, datatype, op, comm );
   endwtime = MPI_Wtime();
-  UPDATE_COUNTER(exscan);	  
+  UPDATE_COUNTER(exscan);
 
   return returnVal;
 }
-#endif
 
 /*
     MPI_Scatter - prototyping replacement for MPI_Scatter
@@ -1231,31 +1150,25 @@ int MPI_Scatter( MPI3_CONST void *sendbuf, int sendcnt, MPI_Datatype sendtype,
 		 int root, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size, rank;
 
   /* If the rank is not the root, then the send arguments are ignored */
   PMPI_Comm_rank( comm, &rank );
   if (rank != root) {
-      buf_size = 0;  
+      buf_size = 0;
   }
   else {
       buf_size = Get_Msg_size( sendcnt, sendtype );
   }
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(scatter);
-  }
-
+  RECORD_SYNC_ALT(comm,scatter);
   startwtime = MPI_Wtime();
   returnVal = PMPI_Scatter( sendbuf, sendcnt, sendtype, recvbuf, recvcnt, 
 			    recvtype, root, comm );
-  endwtime = MPI_Wtime();	  
+  endwtime = MPI_Wtime();
   UPDATE_COUNTER(scatter);
 
   return returnVal;
@@ -1271,7 +1184,7 @@ int MPI_Scatterv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
 		  MPI_Datatype recvtype, int root, MPI_Comm comm )
 {
   int    returnVal;
-  double startwtime, endwtime, synctime;
+  double startwtime, endwtime;
   int    bin_id;
   int    buf_size, i, nprocs, rank;
   int    isIntercomm;
@@ -1294,18 +1207,12 @@ int MPI_Scatterv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
   }
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlSyncAlt) {
-      startwtime = MPI_Wtime();
-      PMPI_Barrier( comm );
-      synctime = MPI_Wtime() - startwtime;
-      UPDATE_COUNTER_SYNC(scatterv);
-  }
-
+  RECORD_SYNC_ALT(comm,scatterv)
   startwtime = MPI_Wtime();
   returnVal = PMPI_Scatterv( sendbuf, sendcnts, displs, sendtype, recvbuf, 
 			     recvcnt, recvtype, root, comm );
-  endwtime = MPI_Wtime();	
-  UPDATE_COUNTER(scatterv);  
+  endwtime = MPI_Wtime();
+  UPDATE_COUNTER(scatterv);
 
   return returnVal;
 }
@@ -1314,7 +1221,7 @@ int MPI_Scatterv( MPI3_CONST void *sendbuf, MPI3_CONST int *sendcnts,
     MPI_Recv - prototyping replacement for MPI_Recv
     Trace the beginning and ending of MPI_Recv.
 */
-int MPI_Recv( void *buf, int count, MPI_Datatype datatype, int source, 
+int MPI_Recv( void *buf, int count, MPI_Datatype datatype, int source,
 	       int tag, MPI_Comm comm, MPI_Status *status )
 {
   int    returnVal;
@@ -1366,7 +1273,7 @@ int MPI_Recv( void *buf, int count, MPI_Datatype datatype, int source,
     MPI_Send - prototyping replacement for MPI_Send
     Trace the beginning and ending of MPI_Send.
 */
-int MPI_Send( MPI3_CONST void *buf, int count, MPI_Datatype datatype, int dest, 
+int MPI_Send( MPI3_CONST void *buf, int count, MPI_Datatype datatype, int dest,
 	      int tag, MPI_Comm comm )
 {
   int    returnVal;
@@ -1377,12 +1284,15 @@ int MPI_Send( MPI3_CONST void *buf, int count, MPI_Datatype datatype, int dest,
   buf_size = Get_Msg_size( count, datatype );
   bin_id = Get_Bin_ID(buf_size);
 
-  if (fpmpi_ProfControlWait && dest != MPI_PROC_NULL && 
+  if (fpmpi_ProfControlWait && dest != MPI_PROC_NULL &&
       fpmpi_ProfControlWaitSize <= buf_size) {
       MPI_Request req;
       double      endttime;
       int         flag;
 
+      /* The definition of endtime here lets us estimate the time elapsed
+	 until the Test can succeed, thus the time before the matching
+         receive is posted. */
       startwtime = MPI_Wtime();
       returnVal = PMPI_Issend( buf, count, datatype, dest, tag, comm, &req );
       do {
@@ -1395,7 +1305,7 @@ int MPI_Send( MPI3_CONST void *buf, int count, MPI_Datatype datatype, int dest,
       UPDATE_COUNTER_SYNC(send);
   }
   else {
-      startwtime = MPI_Wtime();	  
+      startwtime = MPI_Wtime();
       returnVal  = PMPI_Send( buf, count, datatype, dest, tag, comm );
       endwtime   = MPI_Wtime();
   }
@@ -1700,15 +1610,9 @@ int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm)
 {
     int    returnVal;
     double startwtime, endwtime;
-    double synctime;
 
-    if (fpmpi_ProfControlSync) {
-	startwtime = MPI_Wtime();
-	PMPI_Barrier( comm );
-	synctime = MPI_Wtime() - startwtime;
-	comm_create_data.synctime += synctime;
-    }
-    startwtime = MPI_Wtime();	  
+    RECORD_SYNC_VAR(comm,comm_create_data.synctime);
+    startwtime = MPI_Wtime();
     returnVal = PMPI_Comm_create(comm, group, newcomm);
     endwtime = MPI_Wtime();
     comm_create_data.time += endwtime - startwtime;
@@ -1720,15 +1624,9 @@ int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
 {
     int    returnVal;
     double startwtime, endwtime;
-    double synctime;
 
-    if (fpmpi_ProfControlSync) {
-	startwtime = MPI_Wtime();
-	PMPI_Barrier( comm );
-	synctime = MPI_Wtime() - startwtime;
-	comm_dup_data.synctime += synctime;
-    }
-    startwtime = MPI_Wtime();	  
+    RECORD_SYNC_VAR(comm,comm_dup_data.synctime);
+    startwtime = MPI_Wtime();
     returnVal = PMPI_Comm_dup( comm, newcomm);
     endwtime = MPI_Wtime();
     comm_dup_data.time += endwtime - startwtime;
@@ -1736,19 +1634,14 @@ int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
 
     return returnVal;
 }
+
 int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm)
 {
     int    returnVal;
     double startwtime, endwtime;
-    double synctime;
 
-    if (fpmpi_ProfControlSync) {
-	startwtime = MPI_Wtime();
-	PMPI_Barrier( comm );
-	synctime = MPI_Wtime() - startwtime;
-	comm_split_data.synctime += synctime;
-    }
-    startwtime = MPI_Wtime();	  
+    RECORD_SYNC_VAR(comm,comm_split_data.synctime);
+    startwtime = MPI_Wtime();
     returnVal = PMPI_Comm_split( comm, color, key, newcomm);
     endwtime = MPI_Wtime();
     comm_split_data.time += endwtime - startwtime;
@@ -1757,22 +1650,87 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm *newcomm)
     return returnVal;
 }
 
+int MPI_Cart_create(MPI_Comm comm, int ndims, MPI3_CONST int dims[],
+		    MPI3_CONST int periods[], int reorder, MPI_Comm *comm_cart)
+{
+    int    returnVal;
+    double startwtime, endwtime;
+
+    RECORD_SYNC_VAR(comm,comm_cart_data.synctime);
+    startwtime = MPI_Wtime();
+    returnVal = PMPI_Cart_create(comm, ndims, dims, periods, reorder,
+				 comm_cart);
+    endwtime = MPI_Wtime();
+    comm_cart_data.time += endwtime - startwtime;
+    comm_cart_data.calls ++;
+
+    return returnVal;
+}
+
+int MPI_Graph_create(MPI_Comm comm, int nnodes, MPI3_CONST int index[],
+		     MPI3_CONST int edges[], int reorder, MPI_Comm *comm_graph)
+{
+    int    returnVal;
+    double startwtime, endwtime;
+
+    RECORD_SYNC_VAR(comm,comm_graph_data.synctime);
+    startwtime = MPI_Wtime();
+    returnVal = PMPI_Graph_create(comm, nnodes, index, edges, reorder,
+				  comm_graph);
+    endwtime = MPI_Wtime();
+    comm_graph_data.time += endwtime - startwtime;
+    comm_graph_data.calls ++;
+
+    return returnVal;
+}
+
+#if defined(MPI_VERSION) && MPI_VERSION >=3
+int MPI_Comm_split_type(MPI_Comm comm, int stype, int r, MPI_Info idata,
+			MPI_Comm *newcomm)
+{
+    int    returnVal;
+    double startwtime, endwtime;
+
+    RECORD_SYNC_VAR(comm,comm_split_type_data.synctime);
+    startwtime = MPI_Wtime();
+    returnVal = PMPI_Comm_split_type(comm, stype, r, idata, newcomm);
+    endwtime = MPI_Wtime();
+    comm_split_type_data.time += endwtime - startwtime;
+    comm_split_type_data.calls ++;
+
+    return returnVal;
+}
+#endif
 
 
 /* ------------------------------------------------------------------------
  * Here is the definition of MPI_Pcontrol
  *
- * MPI_Pcontrol( flag ) has the following definition
- *  flag has three bits.  The lower (0x1) bit controls the collection
- *  of data. The second (0x2) bit controls the collection of 
- *  time synchronization data for the collective routines
- *  The third (0x4) bit controls the collection of data about destinations.
+ * MPI_Pcontrol( flag, ... ) has the following definition
+ *
+ *  flag selects from several options:
+ *    if flag == FPMPI_PROF_PHASE
+ *    else
+ *      flag has three bits.  The lower (0x1) bit controls the collection
+ *      of data. The second (0x2) bit controls the collection of
+ *      time synchronization data for the collective routines
+ *      The third (0x4) bit controls the collection of data about destinations.
  * ------------------------------------------------------------------------
  */
 int MPI_Pcontrol( const int flag, ... )
 {
     va_list ap;
-    
+
+    /* Check for phase defintion, with a string name.  This interface
+       completes a phase, saving the data so far */
+    if (flag == FPMPI_PROF_END_PHASE) {
+	va_start(ap, flag);
+	fpmpi_SavePhase(va_arg(ap,const char *));
+	va_end(ap);
+	return 0;
+    }
+
+    /* Otherwise, check for control bits */
     fpmpi_ProfControl      = (flag & FPMPI_PROF_ON);
     fpmpi_ProfControlSync  = (flag & FPMPI_PROF_COLLSYNC) == FPMPI_PROF_COLLSYNC;
     fpmpi_ProfControlDests = (flag & FPMPI_PROF_DESTS) == FPMPI_PROF_DESTS;
@@ -1784,7 +1742,7 @@ int MPI_Pcontrol( const int flag, ... )
 	va_end( ap );
     }
     if (fpmpi_ProfControlWait) testwaitSyncEnabled = 1;
-    fpmpi_ProfControlSyncAlt = (flag & FPMPI_PROF_COLLSYNC_ALT) == 
+    fpmpi_ProfControlSyncAlt = (flag & FPMPI_PROF_COLLSYNC_ALT) ==
 	FPMPI_PROF_COLLSYNC_ALT;
     if ((flag & FPMPI_PROF_DESTVOL) == FPMPI_PROF_DESTVOL)
 	fpmpi_ProfControlDestVol = DESTVOL_SUMMARY;
@@ -1851,7 +1809,7 @@ static int fpmpi_Init( int *argc, char ***argv )
     /* Get the group of comm world so that we can translate ranks in other
        communicators */
     PMPI_Comm_group( MPI_COMM_WORLD, &group_world );
-    
+
     if (llrank == 0) {
 	int foundVal;
 	CheckEnvBool( "FPMPI_PROF", &fpmpi_ProfControl );
@@ -1859,10 +1817,10 @@ static int fpmpi_Init( int *argc, char ***argv )
 	CheckEnvBool( "FPMPI_PROF_DESTS", &fpmpi_ProfControlDests );
 	CheckEnvBool( "FPMPI_PROF_DESTVOL", &fpmpi_ProfControlDestVol );
 	/* Special case: the destination volume (DESTVOL) has two options:
-	   a simple, aggregated value, and a detailed (per routine) 
+	   a simple, aggregated value, and a detailed (per routine)
 	   choice. */
 	foundVal = 0;
-	if (foundVal) 
+	if (foundVal)
 	    fpmpi_ProfControlDestVol = DESTVOL_DETAIL;
 
 	CheckEnvBool( "FPMPI_PROF_WAITTIME", &fpmpi_ProfControlWait );
@@ -1916,10 +1874,12 @@ static int fpmpi_Init( int *argc, char ***argv )
     }
 
     fpmpiInitPerformanceCounters();
-    
+
     fpmpi_TestWaitInit( testwaitInfo );
     if (fpmpi_ProfControlWait) testwaitSyncEnabled = 1;
 
+    fpmpi_initCommData(size);
+#if 0
     /* Turn on the collecting-sync-flag for the alternate collectives */
     if (fpmpi_ProfControlSyncAlt) {
 	int i;
@@ -1957,21 +1917,25 @@ static int fpmpi_Init( int *argc, char ***argv )
 	    pt2ptInfo[i].data->sizeToPartner = dp;
 	}
     }
-
+#endif
     /* Consistency check */
     if (size > MAX_PROCS) {
 	/* Disable all partner data collection. Warn if collection was
 	   requested */
 	if (fpmpi_ProfControlDests || fpmpi_ProfControlDestVol) {
-	    if (llrank == 0) 
-		fprintf( stderr, 
-"Size of MPI_COMM_WORLD = %d is largner than MAX_PROCS (=%d) in fpmpi2\n\
-Collection of destination infomration is disabled; reconfigure and rebuild\n\
+	    if (llrank == 0)
+		fprintf( stderr,
+"Size of MPI_COMM_WORLD = %d is larger than MAX_PROCS (=%d) in fpmpi2\n\
+Collection of destination information is disabled; reconfigure and rebuild\n\
 fpmpi2 with a larger --with-max_procs value if desired\n", size, MAX_PROCS );
 	    fpmpi_ProfControlDests   = 0;
 	    fpmpi_ProfControlDestVol = 0;
 	}
     }
+
+    /* FIXME: Consider adding an option to indicated that fpmpi has
+       been initialized. */
+    isInitialized = 1;
 
     return 0;
 }
@@ -1988,7 +1952,7 @@ int MPI_Init( int *argc, char ***argv )
 
   return returnVal;
 }
-#ifdef HAVE_MPI_INIT_THREAD
+
 int MPI_Init_thread( int *argc, char ***argv, int requested, int *provided )
 {
     int returnVal;
@@ -1999,7 +1963,7 @@ int MPI_Init_thread( int *argc, char ***argv, int requested, int *provided )
 
     return returnVal;
 }
-#endif
+
 
 /*
  * --------------------------------------------------------------------
@@ -2016,8 +1980,8 @@ int MPI_Init_thread( int *argc, char ***argv, int requested, int *provided )
 */
 int MPI_Finalize( void )
 {
-  int returnVal;
-  int llrank, nprocs;
+  int   returnVal;
+  int   llrank, nprocs, nphases;
   FILE *pf;
 
   gettimeofday( &endTime_tv, NULL );
@@ -2025,26 +1989,36 @@ int MPI_Finalize( void )
   PMPI_Comm_rank( MPI_COMM_WORLD, &llrank );
   PMPI_Comm_size( MPI_COMM_WORLD, &nprocs );
 
-  /* Gather all of the data to process 0 and perform the various 
-     data accumulations */
-  AccumulateData( llrank, nprocs );
+  if (!isInitialized) {
+      fprintf(stderr, "Panic! fpmpi was not initialized\n");
+      fflush(stderr);
+      returnVal = PMPI_Finalize();
+      return returnVal;
+  }
 
+  /* Output common information about all phases */
   pf = OutputOpenFile( llrank );
 
   OutputHeader( pf, llrank );
   OutputProgramDescription( pf, llrank, nprocs );
   OutputResourceUsage( pf, llrank, nprocs );
 
-  (void)PMPI_Barrier( MPI_COMM_WORLD );
-
-  if (llrank == 0) {
-      PrintAverageData( pf, nprocs );
-      PrintDetailedData( pf, nprocs );
+  nphases = fpmpi_GetNumPhases();
+  if (nphases == 0) {
+      fpmpi_OutputData(pf, llrank, nprocs);
   }
-  fpmpi_Output_DupSplit( pf, llrank );
-
-  (void)PMPI_Barrier( MPI_COMM_WORLD );
-  PrintDetailedPartners( pf, llrank, nprocs );
+  else {
+      const char *name;
+      int  i;
+      for (i=0; i<nphases; i++) {
+	  fpmpi_RestorePhase(i, &name);
+	  if (llrank == 0) {
+	      fprintf(pf, "-------------------------------------------------------------------------------\n");
+	      fprintf(pf, "Phase %s\n", name);
+	  }
+	  fpmpi_OutputData(pf, llrank, nprocs);
+      }
+  }
 
   /* Performance counter data, if any (no output if no performance
      counters available) */
@@ -2260,7 +2234,7 @@ void OutputHeader( FILE *pf, int llrank )
       if (fpmpi_ProfControl)         fprintf( pf, "FPMPI enabled, " );
       if (fpmpi_ProfControlSync)     fprintf( pf, "Collective sync, " );
       if (fpmpi_ProfControlDests)    fprintf( pf, "Collect destinations, " );
-      if (fpmpi_ProfControlWait)     
+      if (fpmpi_ProfControlWait)
 	  fprintf( pf, "pt-to-pt sync for size>%d", fpmpi_ProfControlWaitSize );
       fprintf( pf, "\n" );
 
@@ -2328,15 +2302,13 @@ void  OutputProgramDescription( FILE *pf,
 	    fprintf(pf,"Date:     \t%s\n", c );
 	    fprintf(pf,"Processes:\t%d\n", nprocs);
 	}
-	
     }
-    
 }
 
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
 #endif
-/* 
+/*
  * The output filename can be controlled with environment variables:
  *
  */
@@ -2442,19 +2414,21 @@ static int AccumulateData( int llrank, int nprocs )
     for (i=0; packInfo[i].name; i++) {
 	getSummaryCommData( &packInfo[i], llrank );
     }
-    
+
     for (i=0; probeInfo[i].name; i++) {
 	getSummaryNoCommData( &probeInfo[i], llrank );
     }
     for (i=0; testwaitInfo[i].name; i++) {
 	getSummaryNoCommData( &testwaitInfo[i], llrank );
     }
-    getSummaryNoCommData( &barrierInfo, llrank );
+    for (i=0; barrierInfo[i].name; i++) {
+        getSummaryNoCommData( &barrierInfo[i], llrank );
+    }
 
     for (i=0; commInfo[i].name; i++) {
 	getSummaryNoCommData( &commInfo[i], llrank );
     }
-    
+
     return 0;
 }
 
@@ -2531,8 +2505,8 @@ Routine                 Calls       Time Msg Length    %%Time by message length\
 		     probeInfo[i].totalTime / nprocs );
 	}
     }
-    /* Fixme; like the allcollective data, include the 
-       sync time.  For that, we need to perform more processing 
+    /* Fixme; like the allcollective data, include the
+       sync time.  For that, we need to perform more processing
        on the data before we enter this routine */
     for (i=0; testwaitInfo[i].name; i++) {
 	if (testwaitInfo[i].totalCalls > 0) {
@@ -2543,22 +2517,24 @@ Routine                 Calls       Time Msg Length    %%Time by message length\
 	}
     }
 
-    if (barrierInfo.totalCalls > 0) {
-	fprintf( fp, "MPI_%-16.16s:%8d %10.3g\n", 
-		 barrierInfo.name,
-		 barrierInfo.totalCalls / nprocs,
-		 barrierInfo.totalTime / nprocs );
+    for (i=0; barrierInfo[i].name; i++) {
+        if (barrierInfo[i].totalCalls > 0) {
+	    fprintf( fp, "MPI_%-16.16s:%8d %10.3g\n",
+		     barrierInfo[i].name,
+		     barrierInfo[i].totalCalls / nprocs,
+		     barrierInfo[i].totalTime / nprocs );
+        }
     }
 
     for (i=0; commInfo[i].name; i++) {
 	if (commInfo[i].totalCalls > 0) {
-	    fprintf( fp, "MPI_%-16.16s:%8d %10.3g\n", 
+	    fprintf( fp, "MPI_%-16.16s:%8d %10.3g\n",
 		     commInfo[i].name,
 		     commInfo[i].totalCalls / nprocs,
 		     commInfo[i].totalTime / nprocs );
 	}
     }
-    
+
     return 0;
 }
 
@@ -2635,6 +2611,35 @@ static int PrintDetailedPartnerInfo( FILE *fp, CallData *cd, int nprocs )
 
     return 0;
 }
+
+
+static int PrintDetailedDataForNoComm(FILE *fp, CallBasicData *cd, int nprocs,
+    int syncEnabled);
+static int PrintDetailedDataForNoComm(FILE *fp, CallBasicData *cd, int nprocs,
+    int syncEnabled)
+{
+    fprintf(fp, "MPI_%s:\n", cd->name );
+    fprintf(fp, "\tCalls     : %10d   %10d [%4d]\n",
+	    cd->totalCalls / nprocs, cd->maxCalls, cd->maxCallsLoc);
+    fprintf(fp, "\tTime      : %10.3g   %10.3g [%4d]\n",
+	    cd->totalTime / nprocs, cd->maxTime, cd->maxTimeLoc );
+    /* If no routine ever waited, then skip the wait/sync time */
+    if (cd->hasSyncTime && syncEnabled) {
+	if (cd->totalSync > 0) {
+	    fprintf(fp, "\tSyncTime  : %10.3g   %10.3g [%4d]\n",
+		    cd->totalSync / nprocs, cd->maxSync, cd->maxSyncLoc);
+	}
+	else {
+	    fprintf(fp, "\tSyncTime  : 0\n" );
+	}
+    }
+    if (cd->maxSuccess > 0) {
+	fprintf(fp, "\tSuccessful: %10d   %10d [%4d]\n",
+		 cd->totalSuccess / nprocs, cd->maxSuccess, cd->maxSuccessLoc);
+    }
+    return 0;
+}
+
 static int PrintDetailedData( FILE *fp, int nprocs )
 {
     int i;
@@ -2670,67 +2675,83 @@ static int PrintDetailedData( FILE *fp, int nprocs )
 	    PrintDetailedDataForComm( fp, &packInfo[i], nprocs );
 	}
     }
-    
+
     for (i=0; probeInfo[i].name; i++) {
 	if (probeInfo[i].totalCalls > 0) {
-	    fprintf( fp, "MPI_%s:\n\tCalls     : %10d\n\tTime      : %10.3g\n",
-		     probeInfo[i].name,
-		     probeInfo[i].totalCalls / nprocs,
-		     probeInfo[i].totalTime / nprocs );	
-	    if (probeInfo[i].hasSyncTime) {
-		fprintf( fp, "\tSyncTime  : %10.3g\n", 
-			 probeInfo[i].totalSync / nprocs );
-	    }
+	    PrintDetailedDataForNoComm(fp, &probeInfo[i], nprocs, 1);
 	}
     }
 
     for (i=0; testwaitInfo[i].name; i++) {
 	if (testwaitInfo[i].totalCalls > 0) {
-	    fprintf( fp, "MPI_%s:\n\tCalls     : %10d\n\tTime      : %10.3g\n",
-		     testwaitInfo[i].name,
-		     testwaitInfo[i].totalCalls / nprocs,
-		     testwaitInfo[i].totalTime / nprocs );	
-	    if (testwaitSyncEnabled && testwaitInfo[i].hasSyncTime) {
-		fprintf( fp, "\tSyncTime  : %10.3g\n", 
-			 testwaitInfo[i].totalSync / nprocs );
-	    }
+	    PrintDetailedDataForNoComm(fp, &testwaitInfo[i], nprocs,
+		testwaitSyncEnabled);
 	}
     }
-    
-    if (barrierInfo.totalCalls > 0) {
-	fprintf( fp, "MPI_%s:\n\tCalls     : %10d\n\tTime      : %10.3g\n",
-		 barrierInfo.name,
-		 barrierInfo.totalCalls / nprocs,
-		 barrierInfo.totalTime / nprocs );	
+
+    for (i=0; barrierInfo[i].name; i++){
+        if (barrierInfo[i].totalCalls > 0) {
+	    PrintDetailedDataForNoComm(fp, &barrierInfo[i], nprocs, 1);
+        }
     }
 
     for (i=0; commInfo[i].name; i++) {
 	if (commInfo[i].totalCalls > 0) {
-	    fprintf( fp, "MPI_%s:\n\tCalls     : %10d\n\tTime      : %10.3g\n",
-		     commInfo[i].name,
-		     commInfo[i].totalCalls / nprocs,
-		     commInfo[i].totalTime / nprocs );	
-	    if (commInfo[i].hasSyncTime) {
-		fprintf( fp, "\tSyncTime  : %10.3g\n", 
-			 commInfo[i].totalSync / nprocs );
-	    }
+	    PrintDetailedDataForNoComm(fp, &commInfo[i], nprocs, 1);
 	}
     }
-    
-    /*    PrintAverageWaitTestData( llrank ); */
+
     return 0;
 }
 
-/* 
+/*
  * Get the overall summary data
  */
 static int getSummaryNoCommData( CallBasicData *cd, int llrank )
 {
-    PMPI_Reduce( &cd->data->time, &cd->totalTime, 2, MPI_DOUBLE, MPI_SUM, 0,
-		 MPI_COMM_WORLD );
-    PMPI_Reduce( &cd->data->calls, &cd->totalCalls, 1, MPI_INT, MPI_SUM, 0,
-		 MPI_COMM_WORLD );
+    struct { double var; int loc; } stime, smaxtime, ssync, smaxsync;
+    struct { int var; int loc; }    scalls, smaxcalls, ssuccess, smaxsuccess;
 
+    PMPI_Reduce(&cd->data->time, &cd->totalTime, 1, MPI_DOUBLE, MPI_SUM, 0,
+		MPI_COMM_WORLD);
+    PMPI_Reduce(&cd->data->synctime, &cd->totalSync, 1, MPI_DOUBLE, MPI_SUM, 0,
+		MPI_COMM_WORLD);
+    PMPI_Reduce(&cd->data->calls, &cd->totalCalls, 1, MPI_INT, MPI_SUM, 0,
+		MPI_COMM_WORLD);
+    PMPI_Reduce(&cd->data->success, &cd->totalSuccess, 1, MPI_INT, MPI_SUM,
+		0, MPI_COMM_WORLD);
+
+    /* Get the max times and locations */
+    stime.var    = cd->data->time;
+    stime.loc    = llrank;
+    ssync.var    = cd->data->synctime;
+    ssync.loc    = llrank;
+    scalls.var   = cd->data->calls;
+    scalls.loc   = llrank;
+    ssuccess.var = cd->data->success;
+    ssuccess.loc = llrank;
+
+    /* Reduce has a very awkward form for using MPI_IN_PLACE - valid
+       only at the root. But we could do these as vectors and
+       reduce the number of calls */
+    PMPI_Reduce(&stime, &smaxtime, 1, MPI_DOUBLE_INT,
+		MPI_MAXLOC, 0, MPI_COMM_WORLD);
+    PMPI_Reduce(&ssync, &smaxsync, 1, MPI_DOUBLE_INT,
+		MPI_MAXLOC, 0, MPI_COMM_WORLD );
+    PMPI_Reduce(&scalls, &smaxcalls, 1, MPI_2INT,
+		MPI_MAXLOC, 0, MPI_COMM_WORLD);
+    PMPI_Reduce(&ssuccess, &smaxsuccess, 1, MPI_2INT,
+		MPI_MAXLOC, 0, MPI_COMM_WORLD );
+    if (llrank == 0) {
+	cd->maxTime       = smaxtime.var;
+	cd->maxTimeLoc    = smaxtime.loc;
+	cd->maxSync       = smaxsync.var;
+	cd->maxSyncLoc    = smaxsync.loc;
+	cd->maxCalls      = smaxcalls.var;
+	cd->maxCallsLoc   = smaxcalls.loc;
+	cd->maxSuccess    = smaxsuccess.var;
+	cd->maxSuccessLoc = smaxsuccess.loc;
+    }
     return 0;
 }
 
@@ -2742,23 +2763,28 @@ static int getSummaryCommData( CallData *cd, int llrank )
     struct { double var; int loc; } stime, smaxtime, 
 					sdata, smaxdata, ssync, smaxsync;
     struct { int var; int loc; } scalls, smaxcalls;
-    
+
     if (cbtype == MPI_DATATYPE_NULL) {
 	cbtype = getSummaryDatatype();
-	
+
 	PMPI_Op_create( CBCombineMax, 1, &cb_max );
 	PMPI_Op_create( CBCombineMin, 1, &cb_min );
 	PMPI_Op_create( CBCombineSum, 1, &cb_sum );
     }
 
-    PMPI_Reduce( cd->data->b, cd->sumData.b, NBINS, cbtype, cb_sum, 0, 
+    PMPI_Reduce( cd->data->b, cd->sumData.b, NBINS, cbtype, cb_sum, 0,
 		 MPI_COMM_WORLD );
-    PMPI_Reduce( cd->data->b, cd->maxData.b, NBINS, cbtype, cb_max, 0, 
+    PMPI_Reduce( cd->data->b, cd->maxData.b, NBINS, cbtype, cb_max, 0,
 		 MPI_COMM_WORLD );
-    PMPI_Reduce( cd->data->b, cd->minData.b, NBINS, cbtype, cb_min, 0, 
+    PMPI_Reduce( cd->data->b, cd->minData.b, NBINS, cbtype, cb_min, 0,
 		 MPI_COMM_WORLD );
-    
+
     if (llrank == 0) {
+	/* Make sure initial values are zero */
+	cd->totalTime  = 0;
+	cd->totalCalls = 0;
+	cd->totalSync  = 0;
+	cd->totalSize  = 0;
 	for (i=0; i<NBINS; i++) {
 	    cd->totalTime  += cd->sumData.b[i].time;
 	    cd->totalCalls += cd->sumData.b[i].calls;
@@ -2785,7 +2811,7 @@ static int getSummaryCommData( CallData *cd, int llrank )
     }
     PMPI_Reduce( &stime, &smaxtime, 1, MPI_DOUBLE_INT,
 		 MPI_MAXLOC, 0, MPI_COMM_WORLD );
-    PMPI_Reduce( &scalls, &smaxcalls, 1, MPI_2INT, 
+    PMPI_Reduce( &scalls, &smaxcalls, 1, MPI_2INT,
 		 MPI_MAXLOC, 0, MPI_COMM_WORLD );
     PMPI_Reduce( &sdata, &smaxdata, 1, MPI_DOUBLE_INT,
 		 MPI_MAXLOC, 0, MPI_COMM_WORLD );
@@ -2827,6 +2853,12 @@ static int getSummaryPartnerData( CallData *cd, int nprocs )
     return 0;
 }
 
+/* WCC: Overwrite PMPI_Address for MPI-2.0 or newer */
+#undef PMPI_Address
+#define PMPI_Address MPI_Get_address
+#undef PMPI_Type_struct
+#define PMPI_Type_struct MPI_Type_create_struct
+
 static MPI_Datatype getSummaryDatatype( void )
 {
     MPI_Datatype din[4], cb_dtype;
@@ -2849,8 +2881,9 @@ static MPI_Datatype getSummaryDatatype( void )
     blk[0] = 2; din[0] = MPI_DOUBLE;
     blk[1] = 1; din[1] = MPI_LONG_LONG;
     blk[2] = 1; din[2] = MPI_INT;
-    blk[3] = 1; din[3] = MPI_UB;
-    PMPI_Type_struct( 4, blk, displs, din, &cb_dtype );
+    //WCC:del blk[3] = 1; din[3] = MPI_UB;
+    //WCC:alt PMPI_Type_struct( 4, blk, displs, din, &cb_dtype );
+    PMPI_Type_struct( 3, blk, displs, din, &cb_dtype );
 #else    
     PMPI_Address( &cbMax[0].time, &displs[0] );
     PMPI_Address( &cbMax[0].calls, &displs[1] );
@@ -2859,8 +2892,9 @@ static MPI_Datatype getSummaryDatatype( void )
       displs[i] -= displs[0];
     blk[0] = 3; din[0] = MPI_DOUBLE;
     blk[1] = 1; din[1] = MPI_INT;
-    blk[2] = 1; din[2] = MPI_UB;
-    PMPI_Type_struct( 3, blk, displs, din, &cb_dtype );
+    //WCC:del blk[2] = 1; din[2] = MPI_UB;
+    //WCC:alt PMPI_Type_struct( 3, blk, displs, din, &cb_dtype );
+    PMPI_Type_struct( 2, blk, displs, din, &cb_dtype );
 #endif
     PMPI_Type_commit( &cb_dtype );
     
@@ -3049,4 +3083,235 @@ void fpmpiOutputDetailedDataVol( FILE *pf, int llrank )
 	}
     }
     if (llrank == 0) free( p );
+}
+
+/* ---------------------------------------------------------------------- */
+/* Implementation of communication phase support.
+ *
+ * Approach:
+ * Most applications use a single phase, so the code remains optimized for
+ * that case.
+ * We do this be adding routines that can copy the communication data,
+ * reinitializing the arrays, and restore the data to the local arrays.
+ * The output routines work only from the local arrays, but can be called
+ * multiple times.
+ *
+ * Routines:
+ *   fpmpi_SavePhase(name)      - Copy data into phase.  Increment that phase
+ *                                counter.  Save with name "name"
+ *   fpmpi_RestorePhase(i,name) - Copy data from phase i into the local
+ *                                variables.  Return a pointer to "name"
+ *   fpmpi_GetNumPhases()       - Return number of defined phases.  0 if none.
+ *
+ */
+static int nphase = 0, nphaseAlloc = 0;
+static commCounterPhase *phaseData = 0;
+/* allocate phases in blocks - typically on a few phases are needed */
+#define PHASE_ALLOC_BLOCK 5
+
+/* Save and restore macros are in profiler.h, and may be used in this file
+   and in testwait.c */
+
+int fpmpi_GetNumPhases(void)
+{
+    return nphase;
+}
+
+int fpmpi_SavePhase(const char *name)
+{
+    CommData   *rd;
+    NoCommData *nrd;
+    int        size;
+
+    /* Allocate the phase info */
+    if (nphase >= nphaseAlloc) {
+	phaseData = (commCounterPhase *)realloc(phaseData,
+						PHASE_ALLOC_BLOCK*sizeof(commCounterPhase));
+	if (!phaseData) {
+	}
+	nphaseAlloc += PHASE_ALLOC_BLOCK;
+    }
+
+    /* Allocate the CommData structure for this new phase */
+    phaseData[nphase].comm_data = (CommData *)malloc(lastcounter_idx*sizeof(CommData));
+    if (!phaseData[nphase].comm_data) {
+    }
+    phaseData[nphase].nocomm_data = (NoCommData *)malloc(lastcounterBasic_idx*sizeof(NoCommData));
+    if (!phaseData[nphase].nocomm_data) {
+    }
+    phaseData[nphase].name = strdup(name);
+
+    /* Copy the data into the phase, and reinitialize the local data */
+    rd = phaseData[nphase].comm_data;
+    SAVE_COUNTER(rd,allgather);
+    SAVE_COUNTER(rd,allgatherv);
+    SAVE_COUNTER(rd,allreduce);
+    SAVE_COUNTER(rd,alltoall);
+    SAVE_COUNTER(rd,alltoallv);
+    SAVE_COUNTER(rd,alltoallw);
+    SAVE_COUNTER(rd,bcast);
+    SAVE_COUNTER(rd,gather);
+    SAVE_COUNTER(rd,gatherv);
+    SAVE_COUNTER(rd,reduce_scatter);
+    SAVE_COUNTER(rd,reduce_scatter_block);
+    SAVE_COUNTER(rd,reduce);
+    SAVE_COUNTER(rd,scan);
+    SAVE_COUNTER(rd,exscan);
+    SAVE_COUNTER(rd,scatter);
+    SAVE_COUNTER(rd,scatterv);
+    SAVE_COUNTER(rd,recv);
+    SAVE_COUNTER(rd,send);
+    SAVE_COUNTER(rd,sendrecv);
+    SAVE_COUNTER(rd,sendrecv_replace);
+    SAVE_COUNTER(rd,bsend);
+    SAVE_COUNTER(rd,ibsend);
+    SAVE_COUNTER(rd,isend);
+    SAVE_COUNTER(rd,issend);
+    SAVE_COUNTER(rd,irsend);
+    SAVE_COUNTER(rd,rsend);
+    SAVE_COUNTER(rd,ssend);
+    SAVE_COUNTER(rd,irecv);
+    SAVE_COUNTER(rd,pack);
+    SAVE_COUNTER(rd,unpack);
+
+    nrd = phaseData[nphase].nocomm_data;
+    SAVE_COUNTER_BASIC(nrd,iprobe);
+    SAVE_COUNTER_BASIC(nrd,probe);
+    SAVE_COUNTER_BASIC(nrd,barrier);
+    SAVE_COUNTER_BASIC(nrd,ibarrier);
+    /* */
+    fpmpi_TestWaitSavePhase(nrd,wait_idx);
+    SAVE_COUNTER_BASIC(nrd,comm_create);
+    SAVE_COUNTER_BASIC(nrd,comm_split);
+    SAVE_COUNTER_BASIC(nrd,comm_dup);
+    SAVE_COUNTER_BASIC(nrd,comm_split_type);
+    SAVE_COUNTER_BASIC(nrd,comm_cart);
+
+    /* We clear the variables.  This is needed to update any values,
+       including allocating data for communication partners */
+    PMPI_Comm_size(MPI_COMM_WORLD, &size);
+    fpmpi_initCommData(size);
+
+    /* Success in saving.  Increment the phase counter and return */
+    nphase++;
+
+    return 0;
+}
+
+int fpmpi_RestorePhase(int i, const char **name)
+{
+    CommData   *rd;
+    NoCommData *nrd;
+
+    /* Copy the data into the phase, and reinitialize the local data */
+    rd = phaseData[i].comm_data;
+    RESTORE_COUNTER(rd,allgather);
+    RESTORE_COUNTER(rd,allgatherv);
+    RESTORE_COUNTER(rd,allreduce);
+    RESTORE_COUNTER(rd,alltoall);
+    RESTORE_COUNTER(rd,alltoallv);
+    RESTORE_COUNTER(rd,alltoallw);
+    RESTORE_COUNTER(rd,bcast);
+    RESTORE_COUNTER(rd,gather);
+    RESTORE_COUNTER(rd,gatherv);
+    RESTORE_COUNTER(rd,reduce_scatter);
+    RESTORE_COUNTER(rd,reduce_scatter_block);
+    RESTORE_COUNTER(rd,reduce);
+    RESTORE_COUNTER(rd,scan);
+    RESTORE_COUNTER(rd,exscan);
+    RESTORE_COUNTER(rd,scatter);
+    RESTORE_COUNTER(rd,scatterv);
+    RESTORE_COUNTER(rd,recv);
+    RESTORE_COUNTER(rd,send);
+    RESTORE_COUNTER(rd,sendrecv);
+    RESTORE_COUNTER(rd,sendrecv_replace);
+    RESTORE_COUNTER(rd,bsend);
+    RESTORE_COUNTER(rd,ibsend);
+    RESTORE_COUNTER(rd,isend);
+    RESTORE_COUNTER(rd,issend);
+    RESTORE_COUNTER(rd,irsend);
+    RESTORE_COUNTER(rd,rsend);
+    RESTORE_COUNTER(rd,ssend);
+    RESTORE_COUNTER(rd,irecv);
+    RESTORE_COUNTER(rd,pack);
+    RESTORE_COUNTER(rd,unpack);
+
+    nrd = phaseData[i].nocomm_data;
+    RESTORE_COUNTER_BASIC(nrd,iprobe);
+    RESTORE_COUNTER_BASIC(nrd,probe);
+    RESTORE_COUNTER_BASIC(nrd,barrier);
+    RESTORE_COUNTER_BASIC(nrd,ibarrier);
+    fpmpi_TestWaitRestorePhase(nrd, wait_idx);
+    RESTORE_COUNTER_BASIC(nrd,comm_create);
+    RESTORE_COUNTER_BASIC(nrd,comm_split);
+    RESTORE_COUNTER_BASIC(nrd,comm_dup);
+    RESTORE_COUNTER_BASIC(nrd,comm_split_type);
+    RESTORE_COUNTER_BASIC(nrd,comm_cart);
+
+    *name = phaseData[i].name;
+
+    return 0;
+}
+
+/* Output the data in the current set of counter variables.  This is a
+   collective operation */
+void fpmpi_OutputData(FILE *pf, int llrank, int nprocs)
+{
+    /* Gather all of the data to process 0 and perform the various
+       data accumulations */
+    AccumulateData( llrank, nprocs );
+
+    (void)PMPI_Barrier( MPI_COMM_WORLD );
+
+    if (llrank == 0) {
+	PrintAverageData( pf, nprocs );
+	PrintDetailedData( pf, nprocs );
+    }
+    fpmpi_Output_DupSplit( pf, llrank );
+
+    (void)PMPI_Barrier( MPI_COMM_WORLD );
+    PrintDetailedPartners( pf, llrank, nprocs );
+}
+
+
+/* Initialize the comm data variables */
+void fpmpi_initCommData(int size)
+{
+    /* Turn on the collecting-sync-flag for the alternate collectives */
+    if (fpmpi_ProfControlSyncAlt) {
+	int i;
+	for (i=0; collectiveInfo[i].name; i++)
+	    collectiveInfo[i].hasSyncTime = 1;
+    }
+    if (fpmpi_ProfControlDestVol == DESTVOL_DETAIL) {
+	int       i;
+	msgsize_t *dp;
+	/* We can use a single array for all routines as an option to
+	   reduce memory use (could do that for the bitvec as well) */
+	for (i=0; pt2ptInfo[i].name; i++) {
+	    dp = (msgsize_t *)calloc( size, sizeof(msgsize_t) );
+	    if (!dp) {
+		fprintf( stderr,
+		"Unable to allocate %ld bytes for message volume information\n",
+			 (long)size*sizeof(msgsize_t) );
+		PMPI_Abort( MPI_COMM_WORLD, 1 );
+	    }
+	    pt2ptInfo[i].data->sizeToPartner = dp;
+	}
+    }
+    else if (fpmpi_ProfControlDestVol == DESTVOL_SUMMARY) {
+	int       i;
+	msgsize_t *dp;
+	dp = (msgsize_t *)calloc( size, sizeof(msgsize_t) );
+	if (!dp) {
+	    fprintf( stderr,
+	      "Unable to allocate %ld bytes for message volume information\n",
+			 (long)size*sizeof(msgsize_t) );
+	    PMPI_Abort( MPI_COMM_WORLD, 1 );
+	}
+	/* Use a single array for all routines */
+	for (i=0; pt2ptInfo[i].name; i++) {
+	    pt2ptInfo[i].data->sizeToPartner = dp;
+	}
+    }
 }

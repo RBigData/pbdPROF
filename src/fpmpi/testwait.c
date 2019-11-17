@@ -39,7 +39,7 @@ int MPI_Wait( MPI_Request *request, MPI_Status *status )
       wait_data.synctime += endttime - startwtime;
   }
   else {
-      startwtime = MPI_Wtime();	  
+      startwtime = MPI_Wtime();
       returnVal = PMPI_Wait( request, status );
       endwtime = MPI_Wtime();
   }
@@ -182,11 +182,12 @@ int MPI_Test( MPI_Request *request, int *flag, MPI_Status *status )
   int   returnVal;
   double startwtime, endwtime;
 
-  startwtime = MPI_Wtime();	  
+  startwtime = MPI_Wtime();
   returnVal = PMPI_Test( request, flag, status );
   endwtime = MPI_Wtime();
   test_data.time  += endwtime - startwtime;
   test_data.calls += 1;
+  if (*flag) test_data.success += 1;
 
   return returnVal;
 }
@@ -202,6 +203,7 @@ int MPI_Testall( int count, MPI_Request *array_of_requests, int *flag,
   endwtime = MPI_Wtime();
   testall_data.time  += endwtime - startwtime;
   testall_data.calls += 1;
+  if (*flag) testall_data.success += 1;
 
   return returnVal;
 }
@@ -217,23 +219,25 @@ int MPI_Testany( int count, MPI_Request *array_of_requests, int *index,
   endwtime = MPI_Wtime();
   testany_data.time  += endwtime - startwtime;
   testany_data.calls += 1;
+  if (*flag) testany_data.success += 1;
 
   return returnVal;
 }
 
-int  MPI_Testsome( int incount, MPI_Request *array_of_requests, 
-		   int *outcount, int *array_of_indices, 
-		   MPI_Status *array_of_statuses )
+int MPI_Testsome( int incount, MPI_Request *array_of_requests,
+		  int *outcount, int *array_of_indices,
+		  MPI_Status *array_of_statuses )
 {
   int  returnVal;
   double startwtime, endwtime;
 
-  startwtime = MPI_Wtime();	  
-  returnVal = PMPI_Testsome( incount, array_of_requests, outcount, 
+  startwtime = MPI_Wtime();
+  returnVal = PMPI_Testsome( incount, array_of_requests, outcount,
 			     array_of_indices, array_of_statuses );
   endwtime = MPI_Wtime();
   testsome_data.time  += endwtime - startwtime;
   testsome_data.calls += 1;
+  if (*outcount) testsome_data.success += 1;
 
   return returnVal;
 }
@@ -244,9 +248,36 @@ void fpmpi_TestWaitInit( CallBasicData cd[] )
     cd[1].data = &waitall_data;
     cd[2].data = &waitsome_data;
     cd[3].data = &waitany_data;
-    
+
     cd[4].data = &test_data;
     cd[5].data = &testall_data;
     cd[6].data = &testsome_data;
     cd[7].data = &testany_data;
+}
+
+
+/* Save and restore the counter information to the selected phase data.
+   These depend on the ordering of entries in the ..
+ */
+void fpmpi_TestWaitSavePhase(NoCommData *nrd, int baseidx)
+{
+    SAVE_COUNTER_BASIC_IDX(nrd,wait,baseidx);
+    SAVE_COUNTER_BASIC_IDX(nrd,waitall,baseidx+1);
+    SAVE_COUNTER_BASIC_IDX(nrd,waitsome,baseidx+2);
+    SAVE_COUNTER_BASIC_IDX(nrd,waitany,baseidx+3);
+    SAVE_COUNTER_BASIC_IDX(nrd,test,baseidx+4);
+    SAVE_COUNTER_BASIC_IDX(nrd,testall,baseidx+5);
+    SAVE_COUNTER_BASIC_IDX(nrd,testsome,baseidx+6);
+    SAVE_COUNTER_BASIC_IDX(nrd,testany,baseidx+7);
+}
+void fpmpi_TestWaitRestorePhase(NoCommData *nrd, int baseidx)
+{
+    RESTORE_COUNTER_BASIC_IDX(nrd,wait,baseidx);
+    RESTORE_COUNTER_BASIC_IDX(nrd,waitall,baseidx+1);
+    RESTORE_COUNTER_BASIC_IDX(nrd,waitsome,baseidx+2);
+    RESTORE_COUNTER_BASIC_IDX(nrd,waitany,baseidx+3);
+    RESTORE_COUNTER_BASIC_IDX(nrd,test,baseidx+4);
+    RESTORE_COUNTER_BASIC_IDX(nrd,testall,baseidx+5);
+    RESTORE_COUNTER_BASIC_IDX(nrd,testsome,baseidx+6);
+    RESTORE_COUNTER_BASIC_IDX(nrd,testany,baseidx+7);
 }
